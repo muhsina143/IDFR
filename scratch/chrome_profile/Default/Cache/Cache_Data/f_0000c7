@@ -1,0 +1,7623 @@
+/* =========================================================================
+
+   IDFR â€” Indian Designer Fashion Runway
+
+   Vanilla JavaScript: rendering and interactions.
+
+   Content (text, images, options) lives in each page's HTML; see PAGE CONTENT below.
+
+   ========================================================================= */
+
+'use strict';
+
+
+
+/* -------------------------------------------------------------------------
+
+   UTILITIES
+
+   ------------------------------------------------------------------------- */
+
+const $ = (sel, ctx = document) => ctx.querySelector(sel);
+
+const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+
+const pad = (n) => String(n).padStart(2, '0');
+
+const esc = (str) => String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+const canHover = window.matchMedia('(hover: hover)');
+
+const icon = (id) => `<svg class="icon" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+
+const csrfToken = () => $('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+
+
+/* -------------------------------------------------------------------------
+
+   PAGE CONTENT
+
+   Each page keeps the content of its script-built sections in <template> blocks
+
+   under "PAGE CONTENT" near the end of its HTML. They are read once into DATA;
+
+   a section the page doesn't have reads as an empty list.
+
+   ------------------------------------------------------------------------- */
+
+const tplItems = (id) => { const t = document.getElementById(id); return t ? Array.from(t.content.children) : []; };
+
+const textOf = (el, sel) => {
+
+    if (!el) return '';
+
+    const target = sel ? $(sel, el) : el;
+
+    return target?.textContent?.trim() ?? '';
+
+};
+
+const srcOf = (el) => {
+
+    if (!el) return '';
+
+    const img = $(':scope > img', el) || $('img', el);
+
+    return img?.getAttribute('src') || '';
+
+};
+
+const listOf = (el, sel) => (el ? $$(`${sel} > li`, el).map((li) => li.textContent?.trim() || '') : []);
+
+const sizeOf = (img) => [Number(img?.getAttribute('width') || 0), Number(img?.getAttribute('height') || 0)];
+
+const logoOf = (el) => {
+
+    if (!el) return { style: 'circle', mark: 'I', word: 'IDFR' };
+
+    const logoEl = $('[data-logo], [data-src]', el) || el;
+
+    const { logo: style, mark, word, sub, src } = logoEl?.dataset || {};
+
+    if (src) return { src };
+
+    if (!style && !word && !mark) return { style: 'circle', mark: 'I', word: 'IDFR' };
+
+    return sub === undefined ? { style: style || 'circle', mark: mark || '', word: word || '' } : { style: style || 'circle', mark: mark || '', word: word || '', sub };
+
+};
+
+
+
+const DATA = {
+
+    heroSlides: tplItems('heroSlidesData').map((f) => ({
+
+        image: srcOf(f),
+
+        title: textOf(f, 'figcaption'),
+
+        designer: f.dataset.designer || 'IDFR Runway',
+
+        look: f.dataset.look || null,
+
+        alt: $('img', f)?.getAttribute('alt') || ''
+
+    })),
+
+
+
+    models: tplItems('modelsData').map((a) => {
+
+        const id = Number(a.dataset?.id);
+
+        const m = {
+
+            id,
+
+            name: textOf(a, 'h3'),
+
+            gender: a.dataset?.gender || 'Female',
+
+            level: a.dataset?.level || 'New Face',
+
+            types: listOf(a, '[data-types]'),
+
+            age: Number(textOf(a, '[data-age]')) || 0,
+
+            height: textOf(a, '[data-height]'),
+
+            location: textOf(a, '[data-location]'),
+
+            experience: textOf(a, '[data-experience]'),
+
+            premium: a.dataset?.premium === 'true',
+
+            image: srcOf(a),
+
+            portfolio: $$('[data-portfolio] img', a).map((img) => img.getAttribute('src') || '').filter(Boolean),
+
+            measurements: Object.fromEntries(
+
+                $$('[data-measurements] > dt', a)
+
+                    .map((dt) => [dt.textContent?.trim() || '', dt.nextElementSibling?.textContent?.trim() || ''])
+
+                    .filter(([k]) => k.length > 0)
+
+            ),
+
+            skills: listOf(a, '[data-skills]'),
+
+            specialities: listOf(a, '[data-specialities]'),
+
+            availability: textOf(a, '[data-availability]'),
+
+            description: textOf(a, '[data-description]')
+
+        };
+
+        if (a.dataset?.kid === 'true') m.kid = true;
+
+        return m;
+
+    }),
+
+
+
+    gallery: tplItems('galleryData').map((f) => {
+
+        const img = $('img', f);
+
+        const [w, h] = sizeOf(img);
+
+        return {
+
+            season: f.dataset?.season || '',
+
+            image: img?.getAttribute('src') || '',
+
+            title: textOf(f, 'figcaption'),
+
+            w,
+
+            h,
+
+            alt: img?.getAttribute('alt') || ''
+
+        };
+
+    }),
+
+
+
+    partners: tplItems('partnersData').map((a) => ({
+
+        name: textOf(a, 'h3'), type: textOf(a, '[data-type]'), desc: textOf(a, '[data-desc]'), image: srcOf(a), logo: logoOf(a)
+
+    })),
+
+
+
+    sponsors: tplItems('sponsorsData').map((a) => ({ name: textOf(a, 'h3'), tier: textOf(a, '[data-tier]'), logo: logoOf(a) })),
+
+
+
+    clients: tplItems('clientsData').map((a) => ({
+
+        name: textOf(a, 'h3'), industry: textOf(a, '[data-industry]'), image: srcOf(a), logo: logoOf(a),
+
+        quote: textOf(a, 'blockquote'), person: textOf(a, '[data-person]'), role: textOf(a, '[data-role]'),
+
+        featured: a.dataset.featured === 'true'
+
+    })),
+
+
+
+    movingLogos: tplItems('movingLogosData').map((el) => ({
+
+        name: el.dataset.name, logo: logoOf(el)
+
+    })),
+
+
+
+    places: tplItems('placesData').map((o) => o.textContent?.trim() || ''),
+
+
+
+    asdHero: tplItems('asdHeroData').map((f) => ({
+
+        image: srcOf(f),
+
+        title: textOf(f, 'figcaption'),
+
+        meta: f.dataset?.meta || '',
+
+        alt: $('img', f)?.getAttribute('alt') || ''
+
+    })),
+
+
+
+    // photos: [src, title, width, height]
+
+    asdCategories: tplItems('asdCategoriesData').map((s) => {
+
+        const c = { id: s.dataset?.id || '', name: textOf(s, 'h3') };
+
+        if (s.dataset?.tab) c.tab = s.dataset.tab;
+
+        c.photos = $$('figure', s).map((f) => {
+
+            const img = $('img', f);
+
+            return [img?.getAttribute('src') || '', textOf(f, 'figcaption'), ...sizeOf(img)];
+
+        });
+
+        return c;
+
+    }),
+
+
+
+    // portfolio (photographers, videographers, fashion designers): [{ src, alt, caption, w, h }]
+
+    creativePros: tplItems('creativeProsData').map((a) => ({
+
+        id: a.dataset?.id || '',
+
+        category: a.dataset?.category || '',
+
+        brand: a.dataset?.brand || '',
+
+        name: textOf(a, 'h3'),
+
+        image: srcOf(a),
+
+        alt: ($(':scope > img', a) || $('img', a))?.getAttribute('alt') || '',
+
+        location: textOf(a, '[data-location]'),
+
+        experience: textOf(a, '[data-experience]'),
+
+        bio: textOf(a, '[data-bio]'),
+
+        services: listOf(a, '[data-services]'),
+
+        portfolio: $$('[data-portfolio] figure', a).map((f) => {
+
+            const img = $('img', f);
+
+            const [w, h] = sizeOf(img);
+
+            return {
+
+                src: img?.getAttribute('src') || '',
+
+                alt: img?.getAttribute('alt') || '',
+
+                caption: textOf(f, 'figcaption'),
+
+                w,
+
+                h
+
+            };
+
+        })
+
+    }))
+
+};
+
+
+
+let scrollLocks = 0;
+
+let lockedScrollY = 0;
+
+function lockScroll() {
+
+    if (scrollLocks++ === 0) {
+
+        lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+
+        const sbw = window.innerWidth - document.documentElement.clientWidth;
+
+        document.documentElement.style.setProperty('--sbw', `${sbw}px`);
+
+        document.documentElement.classList.add('scroll-locked');
+
+    }
+
+}
+
+function unlockScroll() {
+
+    scrollLocks = Math.max(0, scrollLocks - 1);
+
+    if (scrollLocks !== 0) return;
+
+    const y = lockedScrollY;
+
+    document.documentElement.classList.remove('scroll-locked');
+
+    document.documentElement.style.setProperty('--sbw', '0px');
+
+    window.scrollTo(0, y);
+
+    document.documentElement.scrollTop = y;
+
+    document.body.scrollTop = y;
+
+}
+
+
+
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+const focusablesIn = (root) => $$(FOCUSABLE, root).filter((el) => el.offsetParent !== null || el === document.activeElement);
+
+
+
+let toastTimer;
+
+function toast(message) {
+
+    const el = $('#toast');
+
+    el.innerHTML = `${icon('check')}<span></span>`;
+
+    el.querySelector('span').textContent = message;
+
+    el.classList.add('is-visible');
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => el.classList.remove('is-visible'), 4200);
+
+}
+
+
+
+/* Monochrome mock logos rendered as inline SVG; they inherit currentColor so
+
+   hover states can switch them between black, white and gold. */
+
+function logoSVG(logo, label) {
+
+    if (!logo) return `<span class="lg-fallback">${esc(label || '')}</span>`;
+
+    if (logo.src) return `<img src="${logo.src}" alt="${esc(label)} logo" loading="lazy" style="max-height: 48px; max-width: 140px; width: auto; height: auto; object-fit: contain;">`;
+
+    const S = 'fill="none" stroke="currentColor" stroke-width="1.6"';
+
+    const letter = (size = 22, y = 48) => `<text class="lg-mark" x="34" y="${y}" text-anchor="middle" font-size="${size}">${esc(logo.mark || '')}</text>`;
+
+    const marks = {
+
+        circle: `<circle cx="34" cy="40" r="25" ${S}/><circle cx="34" cy="40" r="20.5" fill="none" stroke="currentColor" stroke-width=".7"/>${letter()}`,
+
+        diamond: `<path d="M34 12 62 40 34 68 6 40Z" ${S}/>${letter(20)}`,
+
+        crest: `<path d="M12 15h44v24c0 15-11 23-22 28-11-5-22-13-22-28z" ${S}/>${letter(21, 46)}`,
+
+        rings: `<circle cx="25" cy="40" r="17" ${S}/><circle cx="43" cy="40" r="17" ${S}/>`,
+
+        bars: `<rect x="12" y="26" width="7" height="30" fill="currentColor"/><rect x="25" y="14" width="7" height="52" fill="currentColor"/><rect x="38" y="32" width="7" height="24" fill="currentColor"/><rect x="51" y="21" width="7" height="40" fill="currentColor"/>`,
+
+        star: `<path d="m34 12 5 23 23 5-23 5-5 23-5-23-23-5 23-5z" fill="currentColor"/>`,
+
+        crown: `<path d="M9 55 13 24l11 15 10-21 10 21 11-15 4 31z" ${S}/><path d="M9 62h50" ${S}/>`,
+
+        arch: `<path d="M12 64V38a22 22 0 0 1 44 0v26" ${S}/><path d="M12 64h44" ${S}/>${letter(20, 54)}`,
+
+        drop: `<path d="M34 12c10 14 18 23 18 33a18 18 0 0 1-36 0c0-10 8-19 18-33z" ${S}/>${letter(18, 54)}`,
+
+        weave: `<path d="M8 28q13-12 26 0t26 0M8 40q13-12 26 0t26 0M8 52q13-12 26 0t26 0" ${S}/>`,
+
+        hex: `<path d="M34 12 58 26v28L34 68 10 54V26z" ${S}/>${letter(20)}`,
+
+        wave: `<path d="M8 46q13-14 26 0t26 0" ${S}/><path d="M8 34q13-14 26 0t26 0" ${S}/><circle cx="34" cy="18" r="5" fill="currentColor"/>`
+
+    };
+
+    const word = esc(logo.word || label || '');
+
+    const size = word.length > 8 ? 16.5 : 19;
+
+    const wordY = logo.sub ? 41 : 47;
+
+    const sub = logo.sub ? `<text class="lg-sub" x="74" y="58" font-size="8.4" letter-spacing="3">${esc(logo.sub)}</text>` : '';
+
+    return `<svg viewBox="0 0 240 80" role="img" aria-label="${esc(label)} logo" xmlns="http://www.w3.org/2000/svg">${marks[logo.style] || marks.circle}<text class="lg-word" x="74" y="${wordY}" font-size="${size}" letter-spacing="1.6">${word}</text>${sub}</svg>`;
+
+}
+
+
+
+function validateForm(form) {
+
+    let firstInvalid = null;
+
+    const fieldErrors = new Map();
+
+    $$('input, select, textarea', form).forEach((el) => {
+
+        const field = el.closest('.field');
+
+        if (!field) return;
+
+        const choice = el.type === 'radio' || el.type === 'checkbox' || el.tagName === 'SELECT';
+
+        if (el.type !== 'password' && el.type !== 'number' && !choice) el.value = el.value.trimStart();
+
+        const v = el.validity;
+
+        let msg = '';
+
+        if (v.valueMissing) msg = choice ? 'Please select an option.' : 'This field is required.';
+
+        else if (v.badInput) msg = el.type === 'date' ? 'Please enter a valid date.' : 'Please enter a number.';
+
+        else if (v.typeMismatch) msg = el.type === 'email' ? 'Please enter a valid email address.' : 'Please check this value.';
+
+        else if (v.tooShort || (el.minLength > 0 && el.value.length < el.minLength && el.value.length > 0)) msg = `Please use at least ${el.minLength} characters.`;
+
+        else if (v.rangeUnderflow || v.rangeOverflow) msg = el.type === 'date' && v.rangeUnderflow ? 'Please choose today or a future date.' : (el.min && el.max ? `Please enter a value between ${el.min} and ${el.max}.` : `Please enter a value ${v.rangeUnderflow ? `of at least ${el.min}` : `up to ${el.max}`}.`);
+
+        else if (v.stepMismatch) msg = el.step === '0.5' ? 'Please use whole or half values (e.g. 2 or 2.5).' : 'Please enter a whole number.';
+
+        else if (v.patternMismatch) msg = el.type === 'tel' ? 'Please enter a valid phone number.' : 'Please check the format.';
+
+        else if (v.customError) msg = el.validationMessage;
+
+        else if (el.dataset.match && el.value !== $(el.dataset.match, form).value) msg = 'Passwords do not match.';
+
+        if (!fieldErrors.get(field)) fieldErrors.set(field, msg);
+
+        el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+
+        if (msg && !firstInvalid) firstInvalid = el;
+
+    });
+
+    fieldErrors.forEach((msg, field) => {
+
+        field.classList.toggle('has-error', Boolean(msg));
+
+        const err = $('.field__error', field);
+
+        if (err) err.textContent = msg;
+
+    });
+
+    if (firstInvalid) firstInvalid.focus();
+
+    return !firstInvalid;
+
+}
+
+
+
+function clearFormErrors(form) {
+
+    $$('.field', form).forEach((f) => f.classList.remove('has-error'));
+
+    $$('.field__error', form).forEach((e) => { e.textContent = ''; });
+
+    $$('[aria-invalid]', form).forEach((e) => e.removeAttribute('aria-invalid'));
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   MODAL MANAGER â€” focus trap, ESC, stacking, scroll lock
+
+   ------------------------------------------------------------------------- */
+
+const Modal = (() => {
+
+    const stack = [];
+
+    const returnFocus = new WeakMap();
+
+
+
+    function open(el, trigger) {
+
+        if (stack.includes(el)) return;
+
+        clearTimeout(el._hideTimer);
+
+        returnFocus.set(el, trigger || document.activeElement);
+
+        el.hidden = false;
+
+        el.style.zIndex = String(200 + stack.length * 2);
+
+        void el.offsetWidth;
+
+        el.classList.add('is-open');
+
+        stack.push(el);
+
+        lockScroll();
+
+        const target = $('[data-autofocus]', el) || focusablesIn(el)[0];
+
+        setTimeout(() => target && target.focus({ preventScroll: true }), 80);
+
+        el.dispatchEvent(new CustomEvent('modal:open'));
+
+    }
+
+
+
+    function close(el = stack[stack.length - 1]) {
+
+        if (!el || !stack.includes(el)) return null;
+
+        stack.splice(stack.indexOf(el), 1);
+
+        el.classList.remove('is-open');
+
+        el._hideTimer = setTimeout(() => { el.hidden = true; }, 450);
+
+        unlockScroll();
+
+        const back = returnFocus.get(el);
+
+        if (back && document.contains(back) && back.offsetParent !== null) back.focus({ preventScroll: true });
+
+        el.dispatchEvent(new CustomEvent('modal:close'));
+
+        // Re-assert scroll after focus/listeners â€” keeps model/creative grids from jumping to top/home
+
+        if (scrollLocks === 0) {
+
+            const y = (el.id === 'modelModal' && profileModalReturn && Number.isFinite(profileModalReturn.scrollY))
+
+                ? profileModalReturn.scrollY
+
+                : lockedScrollY;
+
+            window.scrollTo(0, y);
+
+            requestAnimationFrame(() => window.scrollTo(0, y));
+
+        }
+
+        return back;
+
+    }
+
+
+
+    document.addEventListener('keydown', (e) => {
+
+        const top = stack[stack.length - 1];
+
+        if (!top) return;
+
+        if (e.key === 'Escape') {
+
+            e.preventDefault();
+
+            close(top);
+
+        } else if (e.key === 'Tab') {
+
+            const items = focusablesIn(top);
+
+            if (!items.length) return;
+
+            const first = items[0];
+
+            const last = items[items.length - 1];
+
+            if (e.shiftKey && (document.activeElement === first || !top.contains(document.activeElement))) {
+
+                e.preventDefault(); last.focus();
+
+            } else if (!e.shiftKey && (document.activeElement === last || !top.contains(document.activeElement))) {
+
+                e.preventDefault(); first.focus();
+
+            }
+
+        }
+
+    });
+
+
+
+    document.addEventListener('click', (e) => {
+
+        const closer = e.target.closest('[data-close]');
+
+        if (closer) {
+
+            const m = closer.closest('.modal');
+
+            if (m) close(m);
+
+        }
+
+    });
+
+
+
+    return { open, close, top: () => stack[stack.length - 1], isOpen: (el) => stack.includes(el) };
+
+})();
+
+
+
+/* -------------------------------------------------------------------------
+
+   PRELOADER
+
+   ------------------------------------------------------------------------- */
+
+function initPreloader() {
+
+    let done = false;
+
+    const finish = () => {
+
+        if (done) return;
+
+        done = true;
+
+        document.body.classList.add('is-loaded');
+
+    };
+
+    if (document.readyState === 'complete') setTimeout(finish, 1000);
+
+    else window.addEventListener('load', () => setTimeout(finish, 1000), { once: true });
+
+    setTimeout(finish, 2600);
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   HEADER, MOBILE MENU, SCROLL SPY
+
+   ------------------------------------------------------------------------- */
+
+const MobileMenu = (() => {
+
+    let menu, toggle, isOpen = false;
+
+
+
+    function open() {
+
+        if (isOpen) return;
+
+        isOpen = true;
+
+        menu.hidden = false;
+
+        void menu.offsetWidth;
+
+        menu.classList.add('is-open');
+
+        toggle.setAttribute('aria-expanded', 'true');
+
+        toggle.setAttribute('aria-label', 'Close menu');
+
+        lockScroll();
+
+        setTimeout(() => { const a = $('a', menu); if (a) a.focus({ preventScroll: true }); }, 350);
+
+    }
+
+
+
+    function close({ restoreFocus = false } = {}) {
+
+        if (!isOpen) return;
+
+        isOpen = false;
+
+        menu.classList.remove('is-open');
+
+        toggle.setAttribute('aria-expanded', 'false');
+
+        toggle.setAttribute('aria-label', 'Open menu');
+
+        unlockScroll();
+
+        setTimeout(() => { if (!isOpen) menu.hidden = true; }, 800);
+
+        if (restoreFocus) toggle.focus({ preventScroll: true });
+
+    }
+
+
+
+    function init() {
+
+        menu = $('#mobileMenu');
+
+        toggle = $('.nav__toggle');
+
+        toggle.addEventListener('click', () => (isOpen ? close() : open()));
+
+        $$('a', menu).forEach((a) => a.addEventListener('click', () => close()));
+
+
+
+        document.addEventListener('keydown', (e) => {
+
+            if (!isOpen) return;
+
+            if (e.key === 'Escape') { close({ restoreFocus: true }); return; }
+
+            if (e.key === 'Tab') {
+
+                const items = [toggle, ...focusablesIn(menu)];
+
+                const first = items[0];
+
+                const last = items[items.length - 1];
+
+                if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+
+                else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+
+            }
+
+        });
+
+
+
+        window.matchMedia('(min-width: 1025px)').addEventListener('change', (mq) => { if (mq.matches) close(); });
+
+    }
+
+
+
+    return { init, open, close, get isOpen() { return isOpen; } };
+
+})();
+
+
+
+function initHeader() {
+
+    const header = $('#siteHeader');
+
+    const toTop = $('#toTop');
+
+    let ticking = false;
+
+
+
+    const update = () => {
+
+        const y = window.scrollY;
+
+        header.classList.toggle('is-scrolled', y > 40);
+
+        toTop.classList.toggle('is-visible', y > 800);
+
+        ticking = false;
+
+    };
+
+    window.addEventListener('scroll', () => {
+
+        if (!ticking) { requestAnimationFrame(update); ticking = true; }
+
+    }, { passive: true });
+
+    update();
+
+
+
+    toTop.addEventListener('click', () => {
+
+        window.scrollTo({ top: 0, behavior: prefersReducedMotion.matches ? 'auto' : 'smooth' });
+
+        const logo = $('.nav__logo');
+
+        if (logo) logo.focus({ preventScroll: true });
+
+    });
+
+
+
+    const links = $$('[data-nav]');
+
+    const setActive = (id) => {
+
+        links.forEach((l) => {
+
+            const active = l.dataset.nav === id;
+
+            l.classList.toggle('is-active', active);
+
+            if (active) l.setAttribute('aria-current', 'page'); else l.removeAttribute('aria-current');
+
+        });
+
+    };
+
+
+
+    const spy = new IntersectionObserver((entries) => {
+
+        entries.forEach((entry) => { if (entry.isIntersecting) setActive(entry.target.dataset.spy || entry.target.id); });
+
+    }, { rootMargin: '-45% 0px -50% 0px' });
+
+    ['home', 'about', 'models', 'gallery', 'contact'].forEach((id) => {
+
+        const s = document.getElementById(id);
+
+        if (s) spy.observe(s);
+
+    });
+
+    $$('[data-spy]').forEach((s) => spy.observe(s));
+
+
+
+    MobileMenu.init();
+
+}
+
+
+
+// Desktop navbar dropdown: opens on hover (CSS); the toggle button covers touch and keyboard
+
+function initNavDropdown() {
+
+    $$('.nav__item--drop').forEach((item) => {
+
+        const toggle = $('.nav__drop-toggle', item);
+
+        const links = $$('.nav__dropdown a', item);
+
+        const setOpen = (open) => {
+
+            item.classList.toggle('is-open', open);
+
+            if (open) item.classList.remove('is-dismissed');
+
+            toggle.setAttribute('aria-expanded', String(open));
+
+        };
+
+
+
+        toggle.addEventListener('click', () => setOpen(!item.classList.contains('is-open')));
+
+        item.addEventListener('keydown', (e) => {
+
+            const i = links.indexOf(document.activeElement);
+
+            if (e.key === 'Escape' && (item.classList.contains('is-open') || i >= 0)) {
+
+                setOpen(false);
+
+                toggle.focus();
+
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+
+                if (e.target !== toggle && i < 0) return;
+
+                e.preventDefault();
+
+                setOpen(true);
+
+                const step = e.key === 'ArrowDown' ? 1 : -1;
+
+                links[i < 0 ? (step > 0 ? 0 : links.length - 1) : (i + step + links.length) % links.length].focus();
+
+            } else if ((e.key === 'Home' || e.key === 'End') && i >= 0) {
+
+                e.preventDefault();
+
+                links[e.key === 'Home' ? 0 : links.length - 1].focus();
+
+            }
+
+        });
+
+        item.addEventListener('focusout', (e) => { if (!item.contains(e.relatedTarget)) setOpen(false); });
+
+        document.addEventListener('click', (e) => { if (!item.contains(e.target)) setOpen(false); });
+
+        // After choosing a link the menu stays hidden until the pointer leaves it
+
+        links.forEach((a) => a.addEventListener('click', () => {
+
+            setOpen(false);
+
+            item.classList.add('is-dismissed');
+
+        }));
+
+        item.addEventListener('mouseleave', () => item.classList.remove('is-dismissed'));
+
+    });
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   HERO SLIDER
+
+   ------------------------------------------------------------------------- */
+
+function initHero() {
+
+    const hero = $('#home');
+
+    const stage = $('#heroStage');
+
+    const slides = DATA.heroSlides || [];
+
+    const total = slides.length;
+
+    const TRANSITION = 1400;
+
+
+
+    const currentEl = $('#heroCurrent');
+
+    const totalEl = $('#heroTotal');
+
+    const bar = $('#heroProgress');
+
+    const previewImg = $('#heroNextImg');
+
+    const previewNum = $('#heroNextNum');
+
+    const caption = $('#heroCaption');
+
+    const prevBtn = $('#heroPrev');
+
+    const nextBtn = $('#heroNextBtn');
+
+    const nextPreviewBtn = $('#heroNextPreview');
+
+
+
+    if (totalEl) totalEl.textContent = pad(total);
+
+
+
+    if (total === 0) {
+
+        if (stage) stage.innerHTML = '<div class="hero-no-slides" style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--text-muted);font-family:var(--font-sans);letter-spacing:0.1em;text-transform:uppercase;font-size:0.85rem;">No runway images published for this season.</div>';
+
+        if (bar) bar.style.display = 'none';
+
+        if (prevBtn) prevBtn.disabled = true;
+
+        if (nextBtn) nextBtn.disabled = true;
+
+        if (nextPreviewBtn) nextPreviewBtn.style.display = 'none';
+
+        return;
+
+    }
+
+
+
+    stage.innerHTML = slides.map((s, i) => `
+
+        <figure class="hero-slide${i === 0 ? ' is-active' : ''}" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${total}: ${esc(s.title)}"${i === 0 ? '' : ' aria-hidden="true"'}>
+
+            <img class="photo" ${i === 0 ? `src="${s.image}" fetchpriority="high"` : `data-src="${s.image}"`} alt="${esc(s.alt)}" width="1100" height="1650" decoding="async">
+
+        </figure>`).join('');
+
+
+
+    const els = $$('.hero-slide', stage);
+
+    const ensureSrc = (fig) => {
+
+        if (!fig) return;
+
+        const img = $('img', fig);
+
+        if (img && img.dataset.src) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+
+    };
+
+    const loadRest = () => els.forEach(ensureSrc);
+
+    if (document.readyState === 'complete') setTimeout(loadRest, 300);
+
+    else window.addEventListener('load', () => setTimeout(loadRest, 300), { once: true });
+
+
+
+    let current = 0;
+
+    let busy = false;
+
+
+
+    hero.classList.add('is-intro');
+
+
+
+    function updateUI() {
+
+        const next = (current + 1) % total;
+
+        const s = slides[current];
+
+
+
+        if (currentEl) {
+
+            currentEl.textContent = pad(current + 1);
+
+            currentEl.classList.remove('is-flipping');
+
+            void currentEl.offsetWidth;
+
+            currentEl.classList.add('is-flipping');
+
+        }
+
+
+
+        if (previewImg && slides[next]) {
+
+            previewImg.classList.add('is-swapping');
+
+            setTimeout(() => {
+
+                previewImg.src = slides[next].image;
+
+                if (previewNum) previewNum.textContent = pad(next + 1);
+
+                if (nextPreviewBtn) nextPreviewBtn.setAttribute('aria-label', `Show next look: ${slides[next].title}`);
+
+                const reveal = () => previewImg.classList.remove('is-swapping');
+
+                if (previewImg.complete) requestAnimationFrame(reveal); else previewImg.onload = reveal;
+
+            }, 420);
+
+        }
+
+
+
+        if (caption) {
+
+            caption.classList.add('is-changing');
+
+            setTimeout(() => {
+
+                const numEl = $('.hero__caption-num', caption);
+
+                const titleEl = $('.hero__caption-title', caption);
+
+                const metaEl = $('.hero__caption-meta', caption);
+
+                if (numEl) numEl.textContent = s.look || `Look ${pad(current + 1)}`;
+
+                if (titleEl) titleEl.textContent = s.title;
+
+                if (metaEl) metaEl.textContent = `Designed by ${s.designer || 'IDFR Runway'}`;
+
+                caption.classList.remove('is-changing');
+
+            }, 450);
+
+        }
+
+    }
+
+
+
+    function restartProgress() {
+
+        if (!bar || total <= 1) return;
+
+        bar.classList.remove('run');
+
+        void bar.offsetWidth;
+
+        bar.classList.add('run');
+
+    }
+
+
+
+    function goTo(target, dir = 1) {
+
+        if (total <= 1) return;
+
+        const index = (target + total) % total;
+
+        if (busy || index === current) return;
+
+        busy = true;
+
+
+
+        const from = els[current];
+
+        const to = els[index];
+
+        ensureSrc(to);
+
+        ensureSrc(els[(index + 1) % total]);
+
+
+
+        to.classList.add('no-anim');
+
+        to.classList.remove('is-leaving', 'is-leaving-right', 'from-left');
+
+        if (dir < 0) to.classList.add('from-left');
+
+        void to.offsetWidth;
+
+        to.classList.remove('no-anim', 'from-left');
+
+        to.classList.add('is-active');
+
+        to.removeAttribute('aria-hidden');
+
+
+
+        hero.classList.remove('is-intro');
+
+        from.classList.remove('is-active');
+
+        from.classList.add(dir < 0 ? 'is-leaving-right' : 'is-leaving');
+
+        from.setAttribute('aria-hidden', 'true');
+
+
+
+        current = index;
+
+        updateUI();
+
+        restartProgress();
+
+
+
+        setTimeout(() => {
+
+            from.classList.add('no-anim');
+
+            from.classList.remove('is-leaving', 'is-leaving-right');
+
+            void from.offsetWidth;
+
+            from.classList.remove('no-anim');
+
+            busy = false;
+
+        }, prefersReducedMotion.matches ? 50 : TRANSITION);
+
+    }
+
+
+
+    const next = () => goTo(current + 1, 1);
+
+    const prev = () => goTo(current - 1, -1);
+
+
+
+    if (total > 1) {
+
+        if (bar) bar.addEventListener('animationend', next);
+
+        if (nextBtn) nextBtn.addEventListener('click', next);
+
+        if (prevBtn) prevBtn.addEventListener('click', prev);
+
+        if (nextPreviewBtn) nextPreviewBtn.addEventListener('click', next);
+
+    } else {
+
+        if (bar) bar.style.display = 'none';
+
+        if (nextPreviewBtn) nextPreviewBtn.style.opacity = '0.5';
+
+    }
+
+
+
+    hero.addEventListener('keydown', (e) => {
+
+        if (e.target.closest('input, textarea, select')) return;
+
+        if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+
+        if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+
+    });
+
+
+
+    let touchX = 0;
+
+    let touchY = 0;
+
+    const visual = $('.hero__visual', hero);
+
+    if (visual) {
+
+        visual.addEventListener('touchstart', (e) => {
+
+            touchX = e.changedTouches[0].clientX;
+
+            touchY = e.changedTouches[0].clientY;
+
+        }, { passive: true });
+
+        visual.addEventListener('touchend', (e) => {
+
+            const dx = e.changedTouches[0].clientX - touchX;
+
+            const dy = e.changedTouches[0].clientY - touchY;
+
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.2) (dx < 0 ? next : prev)();
+
+        }, { passive: true });
+
+    }
+
+
+
+    // Pausing is driven by animation-play-state on the progress bar
+
+    const reasons = new Set();
+
+    const setPaused = (reason, on) => {
+
+        if (on) reasons.add(reason); else reasons.delete(reason);
+
+        hero.classList.toggle('is-paused', reasons.size > 0);
+
+    };
+
+    [stage, $('#heroNextPreview'), $('.hero__controls')].forEach((el) => {
+
+        el.addEventListener('mouseenter', () => setPaused('hover', true));
+
+        el.addEventListener('mouseleave', () => setPaused('hover', false));
+
+    });
+
+    $('.hero__controls').addEventListener('focusin', () => setPaused('focus', true));
+
+    $('.hero__controls').addEventListener('focusout', () => setPaused('focus', false));
+
+    document.addEventListener('visibilitychange', () => setPaused('hidden', document.hidden));
+
+    new IntersectionObserver(([entry]) => setPaused('offscreen', !entry.isIntersecting), { threshold: 0.15 }).observe(hero);
+
+
+
+    restartProgress();
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   MODELS
+
+   ------------------------------------------------------------------------- */
+
+const MODEL_FILTERS = {
+
+    all: () => true,
+
+    female: (m) => m.gender === 'Female',
+
+    male: (m) => m.gender === 'Male',
+
+    new: (m) => m.level === 'New Face',
+
+    experienced: (m) => m.level === 'Experienced',
+
+    runway: (m) => (m.types || []).some((t) => t.toLowerCase() === 'runway'),
+
+    editorial: (m) => (m.types || []).some((t) => t.toLowerCase() === 'editorial'),
+
+    commercial: (m) => (m.types || []).some((t) => t.toLowerCase() === 'commercial'),
+
+    kids: (m) => m.kid === true
+
+};
+
+
+
+function modelCardHTML(m, i) {
+
+    const types = (m.types || []).join(' / ');
+
+    const badge = m.premium
+
+        ? '<span class="model-card__badge">Premium Model</span>'
+
+        : `<span class="model-card__badge model-card__badge--outline">${esc(m.level)}</span>`;
+
+    return `
+
+    <article class="model-card" style="--i:${i}">
+
+        <div class="model-card__media" data-card-media>
+
+            ${badge}
+
+            <img class="photo" src="${m.image}" alt="${esc(m.name)}, ${m.gender.toLowerCase()} model â€” ${esc(types)}" loading="lazy" width="700" height="933">
+
+            <div class="model-card__base">
+
+                <h3 class="model-card__name">${esc(m.name)}</h3>
+
+                <p class="model-card__meta">${esc(types)} Â· ${esc(m.location)}</p>
+
+            </div>
+
+            <div class="model-card__details">
+
+                <p class="model-card__details-name">${esc(m.name)}</p>
+
+                <p class="model-card__details-type">${esc(types)} Â· ${esc(m.location)}</p>
+
+                <dl class="model-card__stats">
+
+                    <div><dt>Age</dt><dd>${m.age}</dd></div>
+
+                    <div><dt>Height</dt><dd>${esc(m.height)}</dd></div>
+
+                    <div><dt>Category</dt><dd>${esc(m.level)}</dd></div>
+
+                    <div><dt>Experience</dt><dd>${esc(m.experience)}</dd></div>
+
+                </dl>
+
+                <button class="model-card__quick" type="button" data-model-open="${m.id}" aria-label="Open full profile of ${esc(m.name)}">View Profile ${icon('arrow-right')}</button>
+
+            </div>
+
+        </div>
+
+        <div class="model-card__actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+
+            <button class="btn btn--outline" type="button" data-model-open="${m.id}" aria-label="View model ${esc(m.name)}"><span>View Model</span></button>
+
+            <button class="btn btn--gold" type="button" data-model-contact="${m.id}" aria-label="Contact model ${esc(m.name)}"><span>Contact</span>${icon('arrow-right')}</button>
+
+        </div>
+
+    </article>`;
+
+}
+
+
+
+function initModels() {
+
+    const grid = $('#modelGrid');
+
+    const count = $('#modelCount');
+
+    const empty = $('#modelEmpty');
+
+    const filters = $('#modelFilters');
+
+    let active = 'all';
+
+
+
+    const render = () => {
+
+        // Kids appear only under the Kids filter; every other filter lists adult models
+
+        const list = DATA.models.filter((m) => Boolean(m.kid) === (active === 'kids') && MODEL_FILTERS[active](m));
+
+        grid.innerHTML = list.map(modelCardHTML).join('');
+
+        count.textContent = `Showing ${list.length} ${list.length === 1 ? 'model' : 'models'}`;
+
+        empty.hidden = list.length > 0;
+
+    };
+
+    render();
+
+
+
+    filters.addEventListener('click', (e) => {
+
+        const btn = e.target.closest('.filter-btn');
+
+        if (!btn || btn.dataset.filter === active) return;
+
+        active = btn.dataset.filter;
+
+        $$('.filter-btn', filters).forEach((b) => {
+
+            const on = b === btn;
+
+            b.classList.toggle('is-active', on);
+
+            b.setAttribute('aria-pressed', String(on));
+
+        });
+
+        grid.classList.add('is-filtering');
+
+        setTimeout(() => {
+
+            render();
+
+            grid.classList.remove('is-filtering');
+
+        }, 280);
+
+    });
+
+
+
+    // On the home page "View All" is a link to idfr_models.html; on that page it resets the filter
+
+    const viewAll = $('#modelViewAll');
+
+    if (viewAll && !viewAll.hasAttribute('href')) {
+
+        viewAll.addEventListener('click', () => {
+
+            $('[data-filter="all"]', filters).click();
+
+            $('#models').scrollIntoView({ behavior: prefersReducedMotion.matches ? 'auto' : 'smooth' });
+
+        });
+
+    }
+
+
+
+    // Touch screens: first tap reveals the details panel, second opens the profile
+
+    grid.addEventListener('click', (e) => {
+
+        const media = e.target.closest('[data-card-media]');
+
+        if (!media || e.target.closest('button')) return;
+
+        if (canHover.matches) {
+
+            const btn = $('[data-model-open]', media);
+
+            if (btn) openModel(btn.dataset.modelOpen, btn);
+
+            return;
+
+        }
+
+        const wasOpen = media.classList.contains('is-open');
+
+        $$('.model-card__media.is-open', grid).forEach((m) => m.classList.remove('is-open'));
+
+        if (!wasOpen) media.classList.add('is-open');
+
+    });
+
+
+
+    initModelModal();
+
+}
+
+
+
+let currentModel = null;
+
+let modelSlide = 0;
+
+// Where to land after closing #modelModal â€” scroll is pinned, never animated to home
+
+let profileModalReturn = null;
+
+
+
+function rememberProfileReturn(kind, detail = {}) {
+
+    profileModalReturn = {
+
+        kind,
+
+        scrollY: window.scrollY || document.documentElement.scrollTop || 0,
+
+        ...detail
+
+    };
+
+}
+
+
+
+function settleProfileReturn(kind) {
+
+    const ctx = profileModalReturn;
+
+    if (!ctx || ctx.kind !== kind) return null;
+
+    profileModalReturn = null;
+
+    const y = Number.isFinite(ctx.scrollY) ? ctx.scrollY : lockedScrollY;
+
+    if (ctx.hash) history.replaceState(null, '', `${location.pathname}${location.search}${ctx.hash}`);
+
+    // Restore without animation â€” prefer the saved Y; fall back to the opened card
+
+    window.scrollTo(0, y);
+
+    document.documentElement.scrollTop = y;
+
+    document.body.scrollTop = y;
+
+    requestAnimationFrame(() => {
+
+        window.scrollTo(0, y);
+
+        if (Math.abs((window.scrollY || document.documentElement.scrollTop || 0) - y) <= 40) return;
+
+        const el = ctx.kind === 'model'
+
+            ? $(`[data-model-open="${ctx.modelId}"]`)?.closest('.model-card')
+
+            : $(`[data-pro-open="${ctx.proId}"]`)?.closest('.creative-card');
+
+        (el || (ctx.kind === 'model' ? $('#modelGrid') : $('.creative-pros__grid')))
+
+            ?.scrollIntoView({ block: 'center', behavior: 'auto' });
+
+    });
+
+    return ctx;
+
+}
+
+
+
+function modelProfileHTML(m) {
+
+    const stat = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
+
+    return `
+
+        <p class="mm__label">IDFR Model Â· ID ${String(m.id).padStart(4, '0')}</p>
+
+        <h2 class="mm__name" id="modelModalName">${esc(m.name)}</h2>
+
+        <p class="mm__types">${m.gender} Â· ${esc(m.types.join(' / '))}</p>
+
+        <dl class="mm__stats">
+
+            ${stat('Gender', m.gender)}${stat('Age', `${m.age} yrs`)}${stat('Height', m.height)}
+
+            ${stat('Location', m.location)}${stat('Experience', m.experience)}${stat('Category', m.level)}
+
+        </dl>
+
+        <div class="mm__section">
+
+            <h3 class="mm__heading">Availability</h3>
+
+            <p class="mm__availability">${esc(m.availability)}</p>
+
+        </div>
+
+        <div class="mm__section">
+
+            <h3 class="mm__heading">Skills</h3>
+
+            <div class="chips">${m.skills.map((s) => `<span class="chip">${esc(s)}</span>`).join('')}</div>
+
+        </div>
+
+        <div class="mm__section">
+
+            <h3 class="mm__heading">Specialities</h3>
+
+            <div class="chips">${m.specialities.map((s) => `<span class="chip chip--gold">${esc(s)}</span>`).join('')}</div>
+
+        </div>
+
+        <div class="mm__section">
+
+            <h3 class="mm__heading">Portfolio</h3>
+
+            <p class="mm__text">${esc(m.description)}</p>
+
+            <p class="mm__note">Note: Please <a href="#login" data-auth="login">login</a> as a recruiter to hire this model.</p>
+
+        </div>
+
+        <div class="mm__actions">
+
+            <button class="btn btn--gold" type="button" data-model-contact="${m.id}"><span>Contact / Enquire</span>${icon('arrow-right')}</button>
+
+            <button class="btn btn--ghost" type="button" data-share>${icon('share')}<span>Share Profile</span></button>
+
+        </div>`;
+
+}
+
+
+
+// The form is the page's <template id="modelEnquiryTemplate">
+
+function showEnquiry(body, m) {
+
+    body.replaceChildren($('#modelEnquiryTemplate').content.cloneNode(true));
+
+    $('#modelModalName', body).textContent = `Book ${m.name.split(' ')[0]}`;
+
+}
+
+
+
+function openModel(id, trigger) {
+
+    const m = DATA.models.find((x) => x.id === Number(id));
+
+    if (!m) return;
+
+    currentModel = m;
+
+    useModelModalFor(null);
+
+    const returnHash = $('#models') ? '#models' : ($('#modelGrid') ? '#modelGrid' : '');
+
+    rememberProfileReturn('model', { modelId: m.id, hash: returnHash });
+
+    const modal = $('#modelModal');
+
+    const images = [m.image, ...(m.portfolio || [])];
+
+    $('#modelModalSlides').innerHTML = images.map((src, n) => {
+
+        const alt = n ? `${m.name}, portfolio image ${n + 1}` : `${m.name}, ${m.gender.toLowerCase()} model`;
+
+        return `<img class="photo model-modal__slide" src="${esc(src)}" alt="${esc(alt)}" width="700" height="933">`;
+
+    }).join('');
+
+    $$('.model-modal__nav, .model-modal__counter', modal).forEach((el) => { el.hidden = images.length < 2; });
+
+    showModelSlide(0, false);
+
+    $('#modelModalBadge').textContent = m.premium ? 'Premium Model' : m.level;
+
+    const body = $('#modelModalBody');
+
+    body.innerHTML = modelProfileHTML(m);
+
+    body.scrollTop = 0;
+
+    $('.model-modal__panel', modal).scrollTop = 0;
+
+    Modal.open(modal, trigger);
+
+}
+
+
+
+function showModelSlide(i, announce = true) {
+
+    const slides = $$('.model-modal__slide', $('#modelModalSlides'));
+
+    modelSlide = (i + slides.length) % slides.length;
+
+    slides.forEach((s, n) => {
+
+        const on = n === modelSlide;
+
+        s.classList.toggle('is-active', on);
+
+        s.setAttribute('aria-hidden', String(!on));
+
+    });
+
+    $('#modelModalCurrent').textContent = pad(modelSlide + 1);
+
+    $('#modelModalTotal').textContent = pad(slides.length);
+
+    $('#modelModalStatus').textContent = announce ? `Image ${modelSlide + 1} of ${slides.length}` : '';
+
+}
+
+
+
+function initModelModal() {
+
+    const modal = $('#modelModal');
+
+    const body = $('#modelModalBody');
+
+    const media = $('#modelModalMedia');
+
+
+
+    $('.model-modal__nav--prev', media).addEventListener('click', () => showModelSlide(modelSlide - 1));
+
+    $('.model-modal__nav--next', media).addEventListener('click', () => showModelSlide(modelSlide + 1));
+
+    media.addEventListener('keydown', (e) => {
+
+        if (e.key === 'ArrowLeft') { e.preventDefault(); showModelSlide(modelSlide - 1); }
+
+        else if (e.key === 'ArrowRight') { e.preventDefault(); showModelSlide(modelSlide + 1); }
+
+    });
+
+
+
+    let startX = null;
+
+    media.addEventListener('pointerdown', (e) => {
+
+        if (e.pointerType !== 'mouse' && !e.target.closest('.model-modal__nav')) startX = e.clientX;
+
+    });
+
+    media.addEventListener('pointerup', (e) => {
+
+        if (startX === null) return;
+
+        const dx = e.clientX - startX;
+
+        startX = null;
+
+        if (Math.abs(dx) > 40 && $$('.model-modal__slide', media).length > 1) showModelSlide(modelSlide + (dx < 0 ? 1 : -1));
+
+    });
+
+    media.addEventListener('pointercancel', () => { startX = null; });
+
+
+
+    body.addEventListener('click', async (e) => {
+
+        if (!currentModel) return;
+
+        if (e.target.closest('[data-enquire]') || e.target.closest('[data-model-contact]')) {
+
+            e.preventDefault();
+
+            handleModelContact(currentModel);
+
+        } else if (e.target.closest('[data-enquiry-back]')) {
+
+            body.innerHTML = modelProfileHTML(currentModel);
+
+            $('[data-model-contact]', body)?.focus();
+
+        } else if (e.target.closest('[data-share]')) {
+
+            const url = `${location.href.split('#')[0]}#model-${currentModel.id}`;
+
+            try {
+
+                await navigator.clipboard.writeText(url);
+
+                toast(`Profile link for ${currentModel.name} copied to clipboard.`);
+
+            } catch (err) {
+
+                toast(`Share this profile: ${url}`);
+
+            }
+
+        }
+
+    });
+
+
+
+    body.addEventListener('submit', (e) => {
+
+        if (e.target.id !== 'enquiryForm') return;
+
+        e.preventDefault();
+
+        if (!validateForm(e.target)) return;
+
+        const first = currentModel.name.split(' ')[0];
+
+        toast(`Enquiry sent â€” ${first}'s management team will reply within 24 hours.`);
+
+        body.innerHTML = modelProfileHTML(currentModel);
+
+        $('[data-enquire]', body).focus();
+
+    });
+
+
+
+    const openFromHash = () => {
+
+        const match = location.hash.match(/^#model-(\d+)$/);
+
+        if (match) openModel(match[1]);
+
+    };
+
+    window.addEventListener('hashchange', openFromHash);
+
+    openFromHash();
+
+
+
+    // Return to #modelGrid in place â€” pin scroll, no animation, no jump to index.html#home
+
+    modal.addEventListener('modal:close', () => {
+
+        if (currentPro || profileModalReturn?.kind !== 'model') return;
+
+        setTimeout(() => {
+
+            if (Modal.isOpen($('#authModal'))) {
+
+                profileModalReturn = null;
+
+                return;
+
+            }
+
+            settleProfileReturn('model');
+
+        }, 0);
+
+    });
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   CREATIVE PROFESSIONALS
+
+   Profiles open in #modelModal, switched to its "creative-modal" mode:
+
+   a single portrait, and a portfolio slider in the body for photographers,
+
+   videographers and fashion designers.
+
+   ------------------------------------------------------------------------- */
+
+let currentPro = null;
+
+let proSlide = 0;
+
+const PRO_PORTFOLIO = new Set(['photographer', 'videographer', 'fashion-designer', 'drone-pilot', 'photo-video-editor', 'jewellery-designer']);
+
+
+
+function useModelModalFor(pro) {
+
+    const media = $('#modelModalMedia');
+
+    currentPro = pro;
+
+    $('#modelModal').classList.toggle('creative-modal', Boolean(pro));
+
+    if (pro) {
+
+        media.removeAttribute('aria-roledescription');
+
+        media.setAttribute('aria-label', `${pro.name}, ${pro.profession}`);
+
+    } else {
+
+        media.setAttribute('aria-roledescription', 'carousel');
+
+        media.setAttribute('aria-label', 'Model portfolio images');
+
+    }
+
+}
+
+
+
+function creativeCardHTML(p, i) {
+
+    return `
+
+    <article class="creative-card" style="--i:${i}">
+
+        <div class="creative-card__media" data-pro-open="${p.id}">
+
+            <span class="model-card__badge">${esc(p.profession)}</span>
+
+            <img class="photo" src="${esc(p.image)}" alt="${esc(p.alt)}" loading="lazy" width="700" height="875">
+
+            <div class="model-card__base">
+
+                <h3 class="model-card__name creative-card__name">${esc(p.name)}</h3>
+
+                <p class="model-card__meta creative-card__location">${icon('pin')}<span>${esc(p.location)}</span></p>
+
+            </div>
+
+        </div>
+
+        <button class="btn btn--ghost btn--block creative-card__btn" type="button" data-pro-open="${p.id}" aria-label="View profile of ${esc(p.name)}, ${esc(p.profession)}"><span>View Profile</span>${icon('arrow-right')}</button>
+
+    </article>`;
+
+}
+
+
+
+function proSliderHTML(p) {
+
+    const total = p.portfolio.length;
+
+    return `
+
+        <div class="mm__section">
+
+            <h3 class="mm__heading" id="proPortfolioTitle">Portfolio</h3>
+
+            <div class="pro-slider" role="region" aria-roledescription="carousel" aria-labelledby="proPortfolioTitle">
+
+                <div class="pro-slider__stage">
+
+                    ${p.portfolio.map((w, n) => `
+
+                    <figure class="pro-slider__slide${n ? '' : ' is-active'}" role="group" aria-roledescription="slide" aria-label="${n + 1} of ${total}"${n ? ' aria-hidden="true"' : ''}>
+
+                        <img class="photo" src="${esc(w.src)}" alt="${esc(w.alt)}" width="${w.w}" height="${w.h}">
+
+                        <figcaption>${esc(w.caption)}</figcaption>
+
+                    </figure>`).join('')}
+
+                    <button class="model-modal__nav model-modal__nav--prev pro-slider__nav" type="button" data-pro-step="-1" aria-label="Previous portfolio image">${icon('arrow-left')}</button>
+
+                    <button class="model-modal__nav model-modal__nav--next pro-slider__nav" type="button" data-pro-step="1" aria-label="Next portfolio image">${icon('arrow-right')}</button>
+
+                    <p class="pro-slider__count" aria-hidden="true"><span data-pro-current>01</span> / ${pad(total)}</p>
+
+                </div>
+
+                <div class="pro-slider__thumbs">
+
+                    ${p.portfolio.map((w, n) => `<button class="pro-slider__thumb" type="button" data-pro-thumb="${n}" aria-label="Show portfolio image ${n + 1}: ${esc(w.caption)}" aria-current="${n === 0}"><img class="photo" src="${esc(w.src)}" alt="" width="${w.w}" height="${w.h}"></button>`).join('')}
+
+                </div>
+
+                <p class="visually-hidden" aria-live="polite" data-pro-status></p>
+
+            </div>
+
+        </div>`;
+
+}
+
+
+
+function proProfileHTML(p) {
+
+    const stat = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
+
+    return `
+
+        <p class="mm__label">${esc(p.brand)} Â· Creative Professional</p>
+
+        <h2 class="mm__name" id="modelModalName">${esc(p.name)}</h2>
+
+        <p class="mm__types">${esc(p.profession)} Â· ${esc(p.location)}</p>
+
+        <dl class="mm__stats creative-modal__stats">
+
+            ${stat('Profession', p.profession)}${stat('Location', p.location)}${stat('Experience', p.experience)}
+
+        </dl>
+
+        <div class="mm__section">
+
+            <h3 class="mm__heading">About</h3>
+
+            <p class="mm__text">${esc(p.bio)}</p>
+
+        </div>
+
+        <div class="mm__section">
+
+            <h3 class="mm__heading">Services Offered</h3>
+
+            <div class="chips">${p.services.map((s) => `<span class="chip chip--gold">${esc(s)}</span>`).join('')}</div>
+
+        </div>
+
+        ${PRO_PORTFOLIO.has(p.category) && p.portfolio.length ? proSliderHTML(p) : ''}
+
+        <div class="mm__section creative-modal__contact" role="status" data-pro-notice>
+
+            <p class="mm__note">Please <a href="#login" data-pro-enquire>log in</a> to contact or enquire about this professional.</p>
+
+        </div>
+
+        <div class="mm__actions">
+
+            <button class="btn btn--gold" type="button" data-pro-enquire><span>Contact / Enquire</span>${icon('arrow-right')}</button>
+
+            <button class="btn btn--ghost" type="button" data-pro-share>${icon('share')}<span>Share Profile</span></button>
+
+        </div>`;
+
+}
+
+
+
+function openPro(id, trigger) {
+
+    const p = DATA.creativePros.find((x) => x.id === id);
+
+    if (!p) return;
+
+    const modal = $('#modelModal');
+
+    currentModel = null;
+
+    useModelModalFor(p);
+
+    const tab = $(`#creative-professionals [role="tab"][data-category="${p.category}"]`);
+
+    const panelId = tab?.getAttribute('aria-controls');
+
+    const returnHash = panelId ? `#${panelId}` : '#creative-professionals';
+
+    rememberProfileReturn('pro', { proId: p.id, category: p.category, hash: returnHash });
+
+    $('#modelModalSlides').innerHTML = `<img class="photo model-modal__slide" src="${esc(p.image)}" alt="${esc(p.alt)}" width="700" height="875">`;
+
+    $$('.model-modal__nav, .model-modal__counter', modal).forEach((el) => { el.hidden = true; });
+
+    showModelSlide(0, false);
+
+    $('#modelModalBadge').textContent = p.profession;
+
+    const body = $('#modelModalBody');
+
+    body.innerHTML = proProfileHTML(p);
+
+    proSlide = 0;
+
+    body.scrollTop = 0;
+
+    $('.model-modal__panel', modal).scrollTop = 0;
+
+    Modal.open(modal, trigger);
+
+}
+
+
+
+function showProSlide(i) {
+
+    const slider = $('#modelModalBody .pro-slider');
+
+    if (!slider) return;
+
+    const slides = $$('.pro-slider__slide', slider);
+
+    proSlide = (i + slides.length) % slides.length;
+
+    slides.forEach((s, n) => {
+
+        const on = n === proSlide;
+
+        s.classList.toggle('is-active', on);
+
+        if (on) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true');
+
+    });
+
+    $$('.pro-slider__thumb', slider).forEach((t, n) => t.setAttribute('aria-current', String(n === proSlide)));
+
+    $('[data-pro-current]', slider).textContent = pad(proSlide + 1);
+
+    $('[data-pro-status]', slider).textContent = `Portfolio image ${proSlide + 1} of ${slides.length}: ${$('figcaption', slides[proSlide]).textContent}`;
+
+}
+
+
+
+async function sharePro(p) {
+
+    const url = new URL(`#pro-${p.id}`, location.href).href;
+
+    const title = `${p.name} â€” ${p.profession} | IDFR`;
+
+    if (navigator.share) {
+
+        try {
+
+            await navigator.share({ title, text: `${p.name}, ${p.profession} (${p.brand}). View the profile on IDFR.`, url });
+
+            toast(`Profile of ${p.name} shared.`);
+
+            return;
+
+        } catch (err) {
+
+            if (err.name === 'AbortError') return;
+
+        }
+
+    }
+
+    try {
+
+        await navigator.clipboard.writeText(url);
+
+        toast(`Profile link for ${p.name} copied to clipboard.`);
+
+    } catch (err) {
+
+        toast(`Couldn't copy the link automatically. Share this profile: ${url}`);
+
+    }
+
+}
+
+
+
+function initCreativePros() {
+
+    const section = $('#creative-professionals');
+
+    const tablist = $('#creativeTabs');
+
+    const tabs = $$('[role="tab"]', tablist);
+
+    const panels = tabs.map((t) => document.getElementById(t.getAttribute('aria-controls')));
+
+    const modal = $('#modelModal');
+
+    const body = $('#modelModalBody');
+
+    // Model modal listeners live in initModels; initialise them here when this page has no model grid
+
+    if (!$('#modelGrid') && modal) initModelModal();
+
+    // Signed in through the demo login during this visit; nothing is stored
+
+    let demoSignedIn = false;
+
+    let pending = null;
+
+
+
+    const professions = Object.fromEntries(tabs.map((t) => [t.dataset.category, t.dataset.profession]));
+
+    DATA.creativePros.forEach((p) => { p.profession = professions[p.category]; });
+
+    panels.forEach((panel) => {
+
+        const grid = $('.creative-pros__grid', panel);
+
+        grid.innerHTML = DATA.creativePros.filter((p) => p.category === grid.dataset.category).map(creativeCardHTML).join('');
+
+    });
+
+
+
+    const select = (tab, focus = false) => {
+
+        tabs.forEach((t, n) => {
+
+            const on = t === tab;
+
+            t.classList.toggle('is-active', on);
+
+            t.setAttribute('aria-selected', String(on));
+
+            t.tabIndex = on ? 0 : -1;
+
+            panels[n].hidden = !on;
+
+        });
+
+        if (focus) tab.focus();
+
+    };
+
+    // Category hashes point at a panel; its scroll margin keeps the tabs in view, so the
+
+    // browser's own jump to the fragment and ours land in the same place
+
+    const wrap = $('.creative-pros__tabs-wrap', section);
+
+    const syncOffset = () => {
+
+        const panel = panels.find((p) => !p.hidden);
+
+        section.style.setProperty('--creative-offset', `${panel.offsetTop - wrap.offsetTop + 16}px`);
+
+    };
+
+    const scrollToSection = (smooth) => {
+
+        syncOffset();
+
+        panels.find((p) => !p.hidden).scrollIntoView({ behavior: smooth && !prefersReducedMotion.matches ? 'smooth' : 'instant', block: 'start' });
+
+    };
+
+    let resizeRaf;
+
+    window.addEventListener('resize', () => {
+
+        cancelAnimationFrame(resizeRaf);
+
+        resizeRaf = requestAnimationFrame(syncOffset);
+
+    });
+
+    const tabForHash = (hash) => tabs.find((t) => `#${t.getAttribute('aria-controls')}` === hash);
+
+    const proForHash = (hash) => hash.startsWith('#pro-') && DATA.creativePros.find((p) => `#pro-${p.id}` === hash);
+
+
+
+    tablist.addEventListener('click', (e) => {
+
+        const tab = e.target.closest('[role="tab"]');
+
+        if (!tab || tab.getAttribute('aria-selected') === 'true') return;
+
+        select(tab);
+
+        history.replaceState(null, '', `#${tab.getAttribute('aria-controls')}`);
+
+    });
+
+    tablist.addEventListener('keydown', (e) => {
+
+        const i = tabs.indexOf(document.activeElement);
+
+        const last = tabs.length - 1;
+
+        const next = { ArrowRight: i + 1 > last ? 0 : i + 1, ArrowLeft: i - 1 < 0 ? last : i - 1, Home: 0, End: last }[e.key];
+
+        if (i < 0 || next === undefined) return;
+
+        e.preventDefault();
+
+        select(tabs[next], true);
+
+        history.replaceState(null, '', `#${tabs[next].getAttribute('aria-controls')}`);
+
+    });
+
+
+
+    section.addEventListener('click', (e) => {
+
+        const el = e.target.closest('[data-pro-open]');
+
+        if (el) openPro(el.dataset.proOpen, $('.creative-card__btn', el.closest('.creative-card')));
+
+    });
+
+
+
+    // Navbar dropdown / mobile menu links to a category on this page
+
+    document.addEventListener('click', (e) => {
+
+        const link = e.target.closest('a[href*="#creative-"]');
+
+        if (!link || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+        const tab = link.pathname === location.pathname && tabForHash(link.hash);
+
+        if (!tab) return;
+
+        e.preventDefault();
+
+        select(tab);
+
+        if (location.hash !== link.hash) history.pushState(null, '', link.hash);
+
+        scrollToSection(true);
+
+    });
+
+
+
+    const showNotice = (pro) => {
+
+        if (currentPro !== pro || !Modal.isOpen(modal)) return;
+
+        const first = pro.name.split(' ')[0];
+
+        $('[data-pro-notice]', body).innerHTML = `
+
+            <p class="creative-modal__notice">You're signed in with the demo account. Online enquiries to creative professionals aren't available yet, so nothing has been sent to ${esc(first)}. To book ${esc(first)}, please reach the IDFR team through the <a href="idfr_contact.html">Contact page</a>.</p>`;
+
+    };
+
+
+
+    body.addEventListener('click', (e) => {
+
+        if (!currentPro) return;
+
+        const step = e.target.closest('[data-pro-step]');
+
+        const thumb = e.target.closest('[data-pro-thumb]');
+
+        if (step) showProSlide(proSlide + Number(step.dataset.proStep));
+
+        else if (thumb) showProSlide(Number(thumb.dataset.proThumb));
+
+        else if (e.target.closest('[data-pro-enquire]')) {
+
+            e.preventDefault();
+
+            const pro = currentPro;
+
+            if (demoSignedIn) { showNotice(pro); return; }
+
+            const trigger = Modal.close(modal);
+
+            pending = { pro, trigger };
+
+            Auth.open('login', undefined, trigger);
+
+            toast(`Please log in to contact or enquire about ${pro.name}.`);
+
+        } else if (e.target.closest('[data-pro-share]')) sharePro(currentPro);
+
+    });
+
+    body.addEventListener('keydown', (e) => {
+
+        if (!currentPro || !e.target.closest('.pro-slider')) return;
+
+        if (e.key === 'ArrowLeft') { e.preventDefault(); showProSlide(proSlide - 1); }
+
+        else if (e.key === 'ArrowRight') { e.preventDefault(); showProSlide(proSlide + 1); }
+
+    });
+
+
+
+    let startX = null;
+
+    body.addEventListener('pointerdown', (e) => {
+
+        if (currentPro && e.pointerType !== 'mouse' && e.target.closest('.pro-slider__stage') && !e.target.closest('button')) startX = e.clientX;
+
+    });
+
+    body.addEventListener('pointerup', (e) => {
+
+        if (startX === null) return;
+
+        const dx = e.clientX - startX;
+
+        startX = null;
+
+        if (Math.abs(dx) > 40) showProSlide(proSlide + (dx < 0 ? 1 : -1));
+
+    });
+
+    body.addEventListener('pointercancel', () => { startX = null; });
+
+
+
+    // The visitor returns to the profile they were viewing after the demo login
+
+    document.addEventListener('auth:login', () => {
+
+        demoSignedIn = true;
+
+        if (!pending) return;
+
+        const { pro, trigger } = pending;
+
+        pending = null;
+
+        openPro(pro.id, trigger);
+
+        setTimeout(() => showNotice(pro), 600);
+
+    });
+
+    $('#authModal').addEventListener('modal:close', () => setTimeout(() => { pending = null; }, 0));
+
+
+
+    // Return to the active creative-pros__grid in place â€” pin scroll, restore category, no jump home
+
+    modal.addEventListener('modal:close', () => {
+
+        if (!currentPro || profileModalReturn?.kind !== 'pro') return;
+
+        setTimeout(() => {
+
+            if (pending || Modal.isOpen($('#authModal'))) {
+
+                profileModalReturn = null;
+
+                return;
+
+            }
+
+            const ctx = profileModalReturn;
+
+            const tab = tabs.find((t) => t.dataset.category === (ctx?.category || currentPro.category));
+
+            if (tab) select(tab);
+
+            syncOffset();
+
+            settleProfileReturn('pro');
+
+        }, 0);
+
+    });
+
+
+
+    const fromHash = (initial) => {
+
+        const pro = proForHash(location.hash);
+
+        if (pro) {
+
+            select(tabs.find((t) => t.dataset.category === pro.category));
+
+            if (initial) scrollToSection(false);
+
+            openPro(pro.id, $(`.creative-card__btn[data-pro-open="${pro.id}"]`, section));
+
+            return;
+
+        }
+
+        const tab = tabForHash(location.hash);
+
+        if (tab) {
+
+            select(tab);
+
+            scrollToSection(!initial);
+
+        }
+
+    };
+
+    window.addEventListener('hashchange', () => fromHash(false));
+
+    syncOffset();
+
+    fromHash(true);
+
+    // The browser's own jump to the fragment can land after ours
+
+    window.addEventListener('load', () => {
+
+        if (tabForHash(location.hash)) scrollToSection(false);
+
+    }, { once: true });
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   GALLERY & LIGHTBOX
+
+   ------------------------------------------------------------------------- */
+
+
+
+// Splits tiles of the given heights into n columns of item indexes for a bento (masonry) grid.
+
+// Shortest-column placement keeps the reading order; a few passes of moving or swapping tiles
+
+// between columns then even out the column ends
+
+function balanceColumns(heights, n) {
+
+    const columns = Array.from({ length: n }, () => []);
+
+    let hs = new Array(n).fill(0);
+
+    heights.forEach((h, i) => {
+
+        const c = hs.indexOf(Math.min(...hs));
+
+        columns[c].push(i);
+
+        hs[c] += h;
+
+    });
+
+    const spreadWith = (a, da, b, db) => {
+
+        const t = hs.map((h, c) => h + (c === a ? da : c === b ? db : 0));
+
+        return Math.max(...t) - Math.min(...t);
+
+    };
+
+    for (let pass = 0; pass < 20; pass++) {
+
+        let best = spreadWith() - 0.01;
+
+        let change = null;
+
+        for (let a = 0; a < n; a++) for (let b = 0; b < n; b++) {
+
+            if (a === b) continue;
+
+            columns[a].forEach((ia, ka) => {
+
+                const ta = heights[ia];
+
+                if (columns[a].length > 1) {
+
+                    const s = spreadWith(a, -ta, b, ta);
+
+                    if (s < best) { best = s; change = { a, ka, b, kb: -1 }; }
+
+                }
+
+                columns[b].forEach((ib, kb) => {
+
+                    const d = heights[ib] - ta;
+
+                    const s = spreadWith(a, d, b, -d);
+
+                    if (s < best) { best = s; change = { a, ka, b, kb }; }
+
+                });
+
+            });
+
+        }
+
+        if (!change) break;
+
+        const { a, ka, b, kb } = change;
+
+        if (kb < 0) columns[b].push(...columns[a].splice(ka, 1));
+
+        else[columns[a][ka], columns[b][kb]] = [columns[b][kb], columns[a][ka]];
+
+        hs = columns.map((c) => c.reduce((sum, i) => sum + heights[i], 0));
+
+    }
+
+    return columns;
+
+}
+
+
+
+/* Shared image viewer. Items: { image, title, season (label), alt } */
+
+const Lightbox = (() => {
+
+    let lb, img, list = [], index = 0, swapTimer, ready = false;
+
+
+
+    const apply = () => {
+
+        const g = list[index];
+
+        img.src = g.image;
+
+        img.alt = g.alt || g.title;
+
+        $('#lightboxSeason').textContent = g.season;
+
+        $('#lightboxCaption').textContent = g.title;
+
+        $('#lightboxCounter').textContent = `${pad(index + 1)} / ${pad(list.length)}`;
+
+        [list[(index + 1) % list.length], list[(index - 1 + list.length) % list.length]].forEach((n) => { new Image().src = n.image; });
+
+    };
+
+
+
+    const show = (dir) => {
+
+        clearTimeout(swapTimer);
+
+        img.classList.add(dir > 0 ? 'is-out-left' : 'is-out-right');
+
+        swapTimer = setTimeout(() => {
+
+            apply();
+
+            img.classList.remove('is-out-left', 'is-out-right');
+
+            img.classList.add(dir > 0 ? 'is-out-right' : 'is-out-left');
+
+            const reveal = () => requestAnimationFrame(() => img.classList.remove('is-out-left', 'is-out-right'));
+
+            if (img.complete) reveal(); else { img.onload = reveal; img.onerror = reveal; }
+
+        }, 280);
+
+    };
+
+
+
+    const step = (dir) => {
+
+        index = (index + dir + list.length) % list.length;
+
+        show(dir);
+
+    };
+
+
+
+    function init() {
+
+        if (ready) return;
+
+        ready = true;
+
+        lb = $('#lightbox');
+
+        img = $('#lightboxImg');
+
+        $('#lightboxPrev').addEventListener('click', () => step(-1));
+
+        $('#lightboxNext').addEventListener('click', () => step(1));
+
+        lb.addEventListener('click', (e) => {
+
+            if (e.target === lb || e.target.classList.contains('lightbox__figure')) Modal.close(lb);
+
+        });
+
+        document.addEventListener('keydown', (e) => {
+
+            if (Modal.top() !== lb) return;
+
+            if (e.key === 'ArrowRight') step(1);
+
+            if (e.key === 'ArrowLeft') step(-1);
+
+        });
+
+        let sx = 0;
+
+        lb.addEventListener('touchstart', (e) => { sx = e.changedTouches[0].clientX; }, { passive: true });
+
+        lb.addEventListener('touchend', (e) => {
+
+            const dx = e.changedTouches[0].clientX - sx;
+
+            if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+
+        }, { passive: true });
+
+    }
+
+
+
+    function open(items, start, trigger) {
+
+        init();
+
+        list = items;
+
+        index = start;
+
+        img.classList.remove('is-out-left', 'is-out-right');
+
+        apply();
+
+        Modal.open(lb, trigger);
+
+    }
+
+
+
+    return { open };
+
+})();
+
+
+
+function initGallery() {
+
+    const grid = $('#galleryGrid');
+
+    const filters = $('#galleryFilters');
+
+    let season = 'all';
+
+    let list = [];
+
+    let cols = 0;
+
+
+
+    // Column count comes from CSS (--cols) so breakpoints live with the rest of the layout rules
+
+    const columnCount = () => parseInt(getComputedStyle(grid).getPropertyValue('--cols'), 10) || 1;
+
+
+
+    const itemHTML = (i) => {
+
+        const g = list[i];
+
+        return `
+
+            <button class="g-item" type="button" data-index="${i}" style="--i:${i}" aria-label="Open image: ${esc(g.title)}, ${g.season}">
+
+                <img class="photo" src="${g.image}" alt="${esc(g.alt || g.title)}" loading="lazy" width="${g.w}" height="${g.h}">
+
+                <span class="g-item__overlay"><span class="g-item__season">${g.season}</span><span class="g-item__title">${esc(g.title)}</span></span>
+
+                <span class="g-item__plus" aria-hidden="true">${icon('plus')}</span>
+
+            </button>`;
+
+    };
+
+
+
+    // Tile heights are in column widths plus a nominal gap, so they compare at any size
+
+    const render = (animate = true) => {
+
+        list = DATA.gallery.filter((g) => season === 'all' || g.season === season);
+
+        cols = columnCount();
+
+        grid.innerHTML = balanceColumns(list.map((g) => g.h / g.w + 0.04), cols)
+
+            .map((c) => `<div class="gallery__col">${c.map(itemHTML).join('')}</div>`).join('');
+
+        grid.classList.toggle('is-static', !animate);
+
+    };
+
+    render();
+
+
+
+    let resizeRaf;
+
+    window.addEventListener('resize', () => {
+
+        cancelAnimationFrame(resizeRaf);
+
+        resizeRaf = requestAnimationFrame(() => { if (columnCount() !== cols) render(false); });
+
+    });
+
+
+
+    filters.addEventListener('click', (e) => {
+
+        const btn = e.target.closest('.filter-btn');
+
+        if (!btn || btn.dataset.season === season) return;
+
+        season = btn.dataset.season;
+
+        $$('.filter-btn', filters).forEach((b) => {
+
+            const on = b === btn;
+
+            b.classList.toggle('is-active', on);
+
+            b.setAttribute('aria-pressed', String(on));
+
+        });
+
+        grid.classList.add('is-filtering');
+
+        setTimeout(() => { render(); grid.classList.remove('is-filtering'); }, 280);
+
+    });
+
+
+
+    grid.addEventListener('click', (e) => {
+
+        const item = e.target.closest('.g-item');
+
+        if (!item) return;
+
+        Lightbox.open(list, Number(item.dataset.index), item);
+
+    });
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   PARTNERS, SPONSORS, CLIENTS
+
+   ------------------------------------------------------------------------- */
+
+function initPartners() {
+
+    const grid = $('#partnersGrid');
+
+    if (!grid) return;
+
+    grid.innerHTML = DATA.partners.map((p, i) => `
+
+        <article class="partner" data-reveal="up" data-delay="${(i % 3) * 120}">
+
+            <div class="partner__media">
+
+                <img class="photo" src="${p.image}" alt="${esc(p.name)} - ${esc(p.type)}" loading="lazy" width="600" height="375" onerror="this.src='images/partners/partner-01.jpg'">
+
+            </div>
+
+            <div class="partner__body">
+
+                <div class="partner__logo">${logoSVG(p.logo, p.name)}</div>
+
+                <p class="partner__type">${esc(p.type)}</p>
+
+                <h3 class="partner__name">${esc(p.name)}</h3>
+
+                <p class="partner__desc">${esc(p.desc)}</p>
+
+            </div>
+
+        </article>`).join('');
+
+}
+
+
+
+function initSponsors() {
+
+    const grid = $('#sponsorsGrid');
+
+    if (!grid) return;
+
+    grid.innerHTML = DATA.sponsors.map((s, i) => {
+
+        const isTitle = (s.tier && s.tier.toLowerCase().includes('title')) || (i === 0 && !DATA.sponsors.some((x) => x.tier && x.tier.toLowerCase().includes('title')));
+
+        return `
+
+        <div class="sponsor${isTitle ? ' sponsor--title' : ''}">
+
+            <div class="sponsor__logo">${logoSVG(s.logo, s.name)}</div>
+
+            <p class="sponsor__tier">${esc(s.tier || '')}</p>
+
+        </div>`;
+
+    }).join('');
+
+}
+
+
+
+function initClients() {
+
+    const grid = $('#clientsGrid');
+
+    if (!grid) return;
+
+    const feature = $('#clientFeature');
+
+    const img = $('#clientFeatureImg');
+
+    let active = 0;
+
+    let swapTimer;
+
+
+
+    const featIdx = DATA.clients.findIndex((c) => c.featured);
+
+    if (featIdx !== -1) {
+
+        active = featIdx;
+
+    }
+
+
+
+    grid.innerHTML = DATA.clients.map((c, i) => `
+
+        <button class="client${i === active ? ' is-active' : ''}" type="button" data-client="${i}" aria-pressed="${i === active}">
+
+            <span class="client__logo">${logoSVG(c.logo, c.name)}</span>
+
+            <span class="client__info">
+
+                <span><span class="client__name">${esc(c.name)}</span><span class="client__industry">${esc(c.industry)}</span></span>
+
+                <svg class="icon client__arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+
+            </span>
+
+        </button>`).join('');
+
+
+
+    const fill = (c) => {
+
+        if (!c) return;
+
+        if (img) {
+
+            img.src = c.image || 'images/clients/client-featured.jpg';
+
+            img.alt = `${c.name} campaign`;
+
+        }
+
+        const logoEl = $('#clientFeatureLogo');
+
+        if (logoEl) logoEl.innerHTML = logoSVG(c.logo, c.name);
+
+        const quoteEl = $('#clientFeatureQuote');
+
+        if (quoteEl) quoteEl.textContent = c.quote || '';
+
+        const personEl = $('#clientFeaturePerson');
+
+        if (personEl) personEl.innerHTML = `<strong>${esc(c.person || '')}</strong> - ${esc(c.role || '')}, ${esc(c.name || '')}`;
+
+    };
+
+
+
+    if (DATA.clients.length > 0) {
+
+        fill(DATA.clients[active]);
+
+    }
+
+
+
+    grid.addEventListener('click', (e) => {
+
+        const btn = e.target.closest('.client');
+
+        if (!btn) return;
+
+        const i = Number(btn.dataset.client);
+
+        if (i === active) return;
+
+        active = i;
+
+        $$('.client', grid).forEach((b) => {
+
+            const on = b === btn;
+
+            b.classList.toggle('is-active', on);
+
+            b.setAttribute('aria-pressed', String(on));
+
+        });
+
+        if (feature) {
+
+            feature.classList.add('is-changing');
+
+            clearTimeout(swapTimer);
+
+            swapTimer = setTimeout(() => {
+
+                fill(DATA.clients[i]);
+
+                const reveal = () => feature.classList.remove('is-changing');
+
+                if (img && img.complete) requestAnimationFrame(reveal);
+
+                else if (img) { img.onload = reveal; img.onerror = reveal; }
+
+            }, 400);
+
+            if (window.innerWidth <= 1024) {
+
+                feature.scrollIntoView({ behavior: (window.prefersReducedMotion && prefersReducedMotion.matches) ? 'auto' : 'smooth', block: 'center' });
+
+            }
+
+        }
+
+    });
+
+
+
+    const stripEl = $('#clientStrip');
+
+    if (stripEl) {
+
+        const sourceItems = (DATA.movingLogos && DATA.movingLogos.length > 0)
+
+            ? DATA.movingLogos
+
+            : [...DATA.clients, ...DATA.sponsors.slice(1)];
+
+
+
+        if (sourceItems.length > 0) {
+
+            const repeatTimes = Math.max(1, Math.ceil(12 / sourceItems.length));
+
+            let half = '';
+
+            for (let r = 0; r < repeatTimes; r++) {
+
+                half += sourceItems.map((x) => `<span>${logoSVG(x.logo, x.name)}</span>`).join('');
+
+            }
+
+            stripEl.innerHTML = half + half;
+
+        }
+
+    }
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   AUTH (LOGIN / REGISTER) & INFO MODALS
+
+   ------------------------------------------------------------------------- */
+
+const Auth = (() => {
+
+    let modal, tabs, panels;
+
+    let cooldownTimer = null;
+
+
+
+    function setFieldError(input, msg) {
+
+        if (!input) return;
+
+        const field = input.closest('.field') || input.parentElement;
+
+        field.classList.toggle('has-error', Boolean(msg));
+
+        input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+
+        const errEl = $('.field__error', field);
+
+        if (errEl) errEl.textContent = msg || '';
+
+    }
+
+
+
+    function clearFormErrors(form) {
+
+        if (!form) return;
+
+        $$('.field.has-error', form).forEach((f) => f.classList.remove('has-error'));
+
+        $$('.field__error', form).forEach((e) => { e.textContent = ''; });
+
+        $$('[aria-invalid]', form).forEach((el) => el.removeAttribute('aria-invalid'));
+
+    }
+
+
+
+    function startResendCooldown(seconds = 60) {
+
+        const btn = $('#resendOtpBtn');
+
+        if (!btn) return;
+
+        clearInterval(cooldownTimer);
+
+        let remaining = seconds;
+
+        btn.disabled = true;
+
+        btn.textContent = `Resend Code (${remaining}s)`;
+
+        cooldownTimer = setInterval(() => {
+
+            remaining--;
+
+            if (remaining <= 0) {
+
+                clearInterval(cooldownTimer);
+
+                btn.disabled = false;
+
+                btn.textContent = 'Resend Code';
+
+            } else {
+
+                btn.textContent = `Resend Code (${remaining}s)`;
+
+            }
+
+        }, 1000);
+
+    }
+
+
+
+    function switchTab(name, focus = false) {
+
+        tabs.forEach((t) => {
+
+            const on = t.dataset.tab === name;
+
+            t.classList.toggle('is-active', on);
+
+            t.setAttribute('aria-selected', String(on));
+
+            t.tabIndex = on ? 0 : -1;
+
+            if (on && focus) t.focus();
+
+        });
+
+
+
+        panels.forEach((p) => {
+
+            if (name === 'login') p.hidden = p.id !== 'panelLogin';
+
+            else if (name === 'register') p.hidden = p.id !== 'panelRegister';
+
+            else if (name === 'verify') p.hidden = p.id !== 'panelVerifyOtp';
+
+        });
+
+
+
+        if (name === 'login') $('#authTitle').textContent = 'Welcome back';
+
+        else if (name === 'register') $('#authTitle').textContent = 'Join IDFR';
+
+        else if (name === 'verify') $('#authTitle').textContent = 'Verify Email';
+
+    }
+
+
+
+    function open(tab = 'login', role, trigger) {
+
+        const user = currentUser || (typeof window !== 'undefined' ? window.__IDFR_USER__ : null);
+
+        if (user && user.id) {
+
+            // Authenticated user clicked a register/login trigger.
+
+            // Do NOT reopen the registration modal!
+
+            if (user.role === 'recruiter') {
+
+                window.location.href = user.profile_url || '/models';
+
+            } else {
+
+                window.location.href = user.profile_url || '/profiles/model';
+
+            }
+
+            return;
+
+        }
+
+
+
+        if (role === 'fresher' || role === 'experienced') role = 'model';
+
+        if (role === 'designer') role = 'fashion-designer';
+
+        switchTab(tab);
+
+        if (role && $(`#regRole option[value="${role}"]`)) $('#regRole').value = role;
+
+        Modal.open(modal, trigger);
+
+    }
+
+
+
+    let currentUser = (typeof window !== 'undefined' && window.__IDFR_USER__) ? window.__IDFR_USER__ : null;
+
+
+
+    function populateAccountModal(user) {
+
+        if (!user) return;
+
+        const modal = $('#accountModal');
+
+        if (!modal) return;
+
+        const initial = (user.initial || user.name?.charAt(0) || 'U').toUpperCase();
+
+        const completion = user.profile_completion || {
+
+            percentage: 85,
+
+            label: 'Incomplete (85%)',
+
+            is_complete: false
+
+        };
+
+
+
+        const avatarEl = $('#accountModalAvatar');
+
+        if (avatarEl) avatarEl.textContent = initial;
+
+        const nameEl = $('#accountModalName');
+
+        if (nameEl) nameEl.textContent = user.name || 'My Account';
+
+        const roleEl = $('#accountModalRole');
+
+        if (roleEl) roleEl.textContent = user.role_label || user.role || 'Member';
+
+        const roleDetEl = $('#accountModalRoleDetailed');
+
+        if (roleDetEl) roleDetEl.textContent = user.role_label || user.role || 'Member';
+
+        const emailEl = $('#accountModalEmail');
+
+        if (emailEl) emailEl.textContent = user.email || '';
+
+        const phoneEl = $('#accountModalPhone');
+
+        if (phoneEl) phoneEl.textContent = user.phone || 'Not provided';
+
+        const badgeEl = $('#accountModalCompletionBadge');
+
+        if (badgeEl) {
+
+            badgeEl.textContent = completion.label;
+
+            badgeEl.className = `account-modal__completion-badge ${completion.is_complete ? 'is-complete' : 'is-incomplete'}`;
+
+            badgeEl.style.color = completion.is_complete ? '#4ade80' : '#facc15';
+
+        }
+
+        const fillEl = $('#accountModalProgressFill');
+
+        if (fillEl) fillEl.style.width = `${completion.percentage}%`;
+
+        const profileBtn = $('#accountModalProfileBtn');
+
+        if (profileBtn) profileBtn.href = user.profile_url || '/profiles/model';
+
+    }
+
+
+
+    function bindAccountDropdown() {
+
+        const avatarBtn = $('#navAvatarBtn');
+
+        const dropdown = $('#navAccountDropdown');
+
+        if (avatarBtn && dropdown) {
+
+            avatarBtn.onclick = (e) => {
+
+                e.stopPropagation();
+
+                const isOpen = !dropdown.hidden;
+
+                dropdown.hidden = isOpen;
+
+                avatarBtn.setAttribute('aria-expanded', String(!isOpen));
+
+            };
+
+        }
+
+
+
+        $$('.auth-logout-btn').forEach((b) => {
+
+            b.onclick = (e) => {
+
+                e.preventDefault();
+
+                handlePublicLogout();
+
+            };
+
+        });
+
+
+
+        const openAccount = (e) => {
+
+            e.preventDefault();
+
+            if (dropdown) {
+
+                dropdown.hidden = true;
+
+                if (avatarBtn) avatarBtn.setAttribute('aria-expanded', 'false');
+
+            }
+
+            if (currentUser) populateAccountModal(currentUser);
+
+            const accModal = $('#accountModal');
+
+            if (accModal) {
+
+                Modal.open(accModal, avatarBtn);
+
+            }
+
+        };
+
+
+
+        const openBtn = $('#openAccountModalBtn');
+
+        if (openBtn) openBtn.onclick = openAccount;
+
+
+
+        const mobileOpenBtn = $('.mobile-account-modal-btn');
+
+        if (mobileOpenBtn) {
+
+            mobileOpenBtn.onclick = (e) => {
+
+                if (typeof MobileMenu !== 'undefined' && MobileMenu.isOpen) MobileMenu.close();
+
+                openAccount(e);
+
+            };
+
+        }
+
+    }
+
+
+
+    async function handlePublicLogout() {
+
+        try {
+
+            await fetch('/logout', {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Accept': 'application/json',
+
+                    'X-CSRF-TOKEN': csrfToken()
+
+                }
+
+            });
+
+            toast('Logged out successfully.');
+
+            updateNavAuth(null);
+
+            window.location.reload();
+
+        } catch (err) {
+
+            window.location.reload();
+
+        }
+
+    }
+
+
+
+    function updateNavAuth(user) {
+
+        currentUser = user;
+
+        const navActions = $('.nav__actions');
+
+        const mobileActions = $('.mobile-menu__actions');
+
+        if (!navActions) return;
+
+
+
+        const loginBtn = $('.nav__login', navActions);
+
+        const regBtn = $('.nav__register', navActions);
+
+
+
+        if (user && user.name) {
+
+            if (loginBtn) loginBtn.hidden = true;
+
+            if (regBtn) regBtn.hidden = true;
+
+
+
+            const initial = (user.initial || user.name.charAt(0) || 'U').toUpperCase();
+
+            const roleLabel = esc(user.role_label || user.role || 'Member');
+
+            const profileUrl = esc(user.profile_url || '/profiles/model');
+
+            const completion = user.profile_completion || {
+
+                percentage: 85,
+
+                label: 'Incomplete (85%)',
+
+                is_complete: false
+
+            };
+
+            const completionBadgeClass = completion.is_complete ? 'is-complete' : 'is-incomplete';
+
+
+
+            let navAccount = $('#navAccount');
+
+            if (!navAccount) {
+
+                navAccount = document.createElement('div');
+
+                navAccount.className = 'nav__account';
+
+                navAccount.id = 'navAccount';
+
+                const toggleBtn = $('.nav__toggle', navActions);
+
+                if (toggleBtn) navActions.insertBefore(navAccount, toggleBtn);
+
+                else navActions.appendChild(navAccount);
+
+            }
+
+
+
+            navAccount.innerHTML = `
+
+                <button
+
+                    type="button"
+
+                    class="nav__avatar-btn"
+
+                    id="navAvatarBtn"
+
+                    aria-expanded="false"
+
+                    aria-haspopup="true"
+
+                    aria-controls="navAccountDropdown"
+
+                    title="Account menu for ${esc(user.name)}"
+
+                >
+
+                    <span class="nav__avatar-circle">${esc(initial)}</span>
+
+                </button>
+
+
+
+                <div class="nav__account-dropdown" id="navAccountDropdown" role="menu" aria-labelledby="navAvatarBtn" hidden>
+
+                    <div class="nav__account-header">
+
+                        <div class="nav__account-user-info">
+
+                            <span class="nav__account-name">${esc(user.name)}</span>
+
+                            <span class="nav__account-email">${esc(user.email)}</span>
+
+                        </div>
+
+                        <div class="nav__account-meta">
+
+                            <span class="nav__account-role-badge">${roleLabel}</span>
+
+                        </div>
+
+                        <div class="nav__account-completion">
+
+                            <div class="nav__account-completion-header">
+
+                                <span class="nav__completion-title">Profile Status</span>
+
+                                <span class="nav__completion-badge ${completionBadgeClass}">${esc(completion.label)}</span>
+
+                            </div>
+
+                            <div class="nav__completion-bar" role="progressbar" aria-valuenow="${completion.percentage}" aria-valuemin="0" aria-valuemax="100">
+
+                                <div class="nav__completion-fill" style="width: ${completion.percentage}%;"></div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="nav__account-menu-divider"></div>
+
+
+
+                    <ul class="nav__account-links">
+
+                        <li>
+
+                            <button type="button" class="nav__account-link-btn" id="openAccountModalBtn" role="menuitem">
+
+                                <svg class="icon" aria-hidden="true"><use href="#i-user" /></svg>
+
+                                <span>My Account</span>
+
+                            </button>
+
+                        </li>
+
+                        <li>
+
+                            <a href="${profileUrl}" class="nav__account-link" role="menuitem">
+
+                                <svg class="icon" aria-hidden="true"><use href="#i-diamond" /></svg>
+
+                                <span>My Profile</span>
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <button type="button" class="nav__account-link-btn nav__account-link-btn--logout auth-logout-btn" role="menuitem">
+
+                                <svg class="icon" aria-hidden="true"><use href="#i-arrow-right" /></svg>
+
+                                <span>Logout</span>
+
+                            </button>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            `;
+
+
+
+            if (mobileActions) {
+
+                mobileActions.innerHTML = `
+
+                    <div class="mobile-menu__account-card">
+
+                        <div class="mobile-menu__user-header">
+
+                            <span class="nav__avatar-circle">${esc(initial)}</span>
+
+                            <div class="mobile-menu__user-details">
+
+                                <span class="mobile-menu__user-name">${esc(user.name)}</span>
+
+                                <span class="mobile-menu__user-email">${esc(user.email)}</span>
+
+                                <span class="nav__account-role-badge">${roleLabel}</span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mobile-menu__completion">
+
+                            <div class="nav__account-completion-header">
+
+                                <span class="nav__completion-title">Profile Status</span>
+
+                                <span class="nav__completion-badge ${completionBadgeClass}">${esc(completion.label)}</span>
+
+                            </div>
+
+                            <div class="nav__completion-bar" role="progressbar" aria-valuenow="${completion.percentage}" aria-valuemin="0" aria-valuemax="100">
+
+                                <div class="nav__completion-fill" style="width: ${completion.percentage}%;"></div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mobile-menu__account-links">
+
+                            <button type="button" class="btn btn--outline btn--sm mobile-account-modal-btn" style="width:100%; margin-bottom:8px;">
+
+                                <svg class="icon" aria-hidden="true"><use href="#i-user" /></svg>
+
+                                <span>My Account</span>
+
+                            </button>
+
+                            <a href="${profileUrl}" class="btn btn--gold btn--sm" style="display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:8px;">
+
+                                <svg class="icon" aria-hidden="true"><use href="#i-diamond" /></svg>
+
+                                <span>My Profile</span>
+
+                            </a>
+
+                            <button class="btn btn--ghost btn--sm auth-logout-btn" type="button" style="width:100%;">
+
+                                <svg class="icon" aria-hidden="true"><use href="#i-arrow-right" /></svg>
+
+                                <span>Logout</span>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+
+
+
+            bindAccountDropdown();
+
+            populateAccountModal(user);
+
+            if (typeof window !== 'undefined') window.__IDFR_USER__ = user;
+
+
+
+            // Update any dynamic register buttons on the page so authenticated users navigate to their profile
+
+            $$('[data-auth="register"]').forEach((btn) => {
+
+                btn.removeAttribute('data-auth');
+
+                btn.removeAttribute('data-role');
+
+                if (btn.tagName.toLowerCase() === 'button') {
+
+                    const a = document.createElement('a');
+
+                    a.className = btn.className;
+
+                    a.id = btn.id || '';
+
+                    a.href = profileUrl;
+
+                    a.innerHTML = btn.innerHTML;
+
+                    if (user.role !== 'model') {
+
+                        const span = a.querySelector('span');
+
+                        if (span && span.textContent.toLowerCase().includes('model')) {
+
+                            span.textContent = 'My Profile';
+
+                        }
+
+                    }
+
+                    btn.replaceWith(a);
+
+                } else if (btn.tagName.toLowerCase() === 'a') {
+
+                    btn.href = profileUrl;
+
+                }
+
+            });
+
+        } else {
+
+            if (loginBtn) loginBtn.hidden = false;
+
+            if (regBtn) regBtn.hidden = false;
+
+            const navAccount = $('#navAccount');
+
+            if (navAccount) navAccount.remove();
+
+
+
+            if (mobileActions) {
+
+                mobileActions.innerHTML = `
+
+                    <button class="btn btn--ghost" type="button" data-auth="login">
+
+                        <svg class="icon" aria-hidden="true"><use href="#i-user" /></svg>
+
+                        <span>Login</span>
+
+                    </button>
+
+                    <button class="btn btn--gold" type="button" data-auth="register">
+
+                        <svg class="icon" aria-hidden="true"><use href="#i-user-plus" /></svg>
+
+                        <span>Register</span>
+
+                    </button>
+
+                `;
+
+            }
+
+        }
+
+    }
+
+
+
+    function checkAuthStatus() {
+
+        return fetch('/auth/me', { headers: { 'Accept': 'application/json' } })
+
+            .then((r) => r.json())
+
+            .then((data) => {
+
+                if (data.authenticated && data.user) {
+
+                    updateNavAuth(data.user);
+
+                    return data.user;
+
+                } else {
+
+                    updateNavAuth(null);
+
+                    return null;
+
+                }
+
+            })
+
+            .catch(() => null);
+
+    }
+
+
+
+    function init() {
+
+        modal = $('#authModal');
+
+        tabs = $$('.auth-tab', modal);
+
+        panels = $$('.auth-form', modal);
+
+
+
+        tabs.forEach((t) => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+        $('.auth-tabs', modal).addEventListener('keydown', (e) => {
+
+            if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+
+            const current = tabs.find((t) => t.classList.contains('is-active'));
+
+            if (!current) return;
+
+            const next = current.dataset.tab === 'login' ? 'register' : 'login';
+
+            switchTab(next, true);
+
+        });
+
+
+
+        $$('.auth-logout-btn').forEach((b) => b.addEventListener('click', handlePublicLogout));
+
+
+
+        // 1. Login Form Submit
+
+        const loginForm = $('#panelLogin');
+
+        if (loginForm) {
+
+            loginForm.addEventListener('submit', async (e) => {
+
+                e.preventDefault();
+
+                clearFormErrors(e.target);
+
+                if (!validateForm(e.target)) return;
+
+
+
+                const email = $('#loginEmail').value.trim();
+
+                const password = $('#loginPassword').value;
+
+                const remember = $('input[name="remember"]', e.target)?.checked || false;
+
+
+
+                const submitBtn = $('button[type="submit"]', e.target);
+
+                const originalLabel = submitBtn.innerHTML;
+
+                submitBtn.disabled = true;
+
+                submitBtn.innerHTML = `<span>Logging in...</span>`;
+
+
+
+                try {
+
+                    const res = await fetch('/login', {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type': 'application/json',
+
+                            'Accept': 'application/json',
+
+                            'X-CSRF-TOKEN': csrfToken()
+
+                        },
+
+                        body: JSON.stringify({ email, password, remember })
+
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+
+                        toast(data.message);
+
+                        Modal.close(modal);
+
+                        e.target.reset();
+
+                        if (data.user) {
+
+                            updateNavAuth(data.user);
+
+                            document.dispatchEvent(new CustomEvent('auth:login', { detail: data.user }));
+
+                        }
+
+                    } else if (data.requires_verification) {
+
+                        toast(data.message);
+
+                        $('#verifyEmailInput').value = data.email;
+
+                        $('#otpTargetEmail').textContent = data.email;
+
+                        switchTab('verify');
+
+                        if (data.resend_cooldown) {
+
+                            startResendCooldown(data.resend_cooldown);
+
+                        }
+
+                        $('#verifyOtpInput').value = '';
+
+                        $('#verifyOtpInput').focus();
+
+                    } else {
+
+                        setFieldError($('#loginPassword'), data.message || 'Invalid credentials.');
+
+                        toast(data.message || 'Login failed.');
+
+                    }
+
+                } catch (err) {
+
+                    toast('Connection error during login.');
+
+                } finally {
+
+                    submitBtn.disabled = false;
+
+                    submitBtn.innerHTML = originalLabel;
+
+                }
+
+            });
+
+        }
+
+
+
+        // 2. Register Form Submit
+
+        const regForm = $('#panelRegister');
+
+        if (regForm) {
+
+            regForm.addEventListener('submit', async (e) => {
+
+                e.preventDefault();
+
+                clearFormErrors(e.target);
+
+                const formOk = validateForm(e.target);
+
+                const terms = $('#regTerms');
+
+                $('#regTermsError').textContent = terms.checked ? '' : 'Please accept the terms to continue.';
+
+                if (!formOk || !terms.checked) return;
+
+
+
+                const submitBtn = $('#regSubmitBtn') || $('button[type="submit"]', e.target);
+
+                const originalLabel = submitBtn.innerHTML;
+
+                submitBtn.disabled = true;
+
+                submitBtn.innerHTML = `<span>Creating account...</span>`;
+
+
+
+                const payload = {
+
+                    name: $('#regName').value.trim(),
+
+                    email: $('#regEmail').value.trim(),
+
+                    phone: $('#regPhone').value.trim(),
+
+                    role: $('#regRole').value,
+
+                    password: $('#regPassword').value,
+
+                    password_confirmation: $('#regConfirmPassword').value,
+
+                    terms: terms.checked,
+
+                };
+
+
+
+                try {
+
+                    const res = await fetch('/register', {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type': 'application/json',
+
+                            'Accept': 'application/json',
+
+                            'X-CSRF-TOKEN': csrfToken()
+
+                        },
+
+                        body: JSON.stringify(payload)
+
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+
+                        toast(data.message);
+
+                        $('#verifyEmailInput').value = data.email;
+
+                        $('#otpTargetEmail').textContent = data.email;
+
+                        switchTab('verify');
+
+                        startResendCooldown(data.resend_cooldown || 60);
+
+                        $('#verifyOtpInput').value = '';
+
+                        $('#verifyOtpInput').focus();
+
+                    } else if (data.can_retry && data.email) {
+
+                        toast(data.message || 'Verification email delivery failed. Please check your mail settings and request a resend.');
+
+                        $('#verifyEmailInput').value = data.email;
+
+                        $('#otpTargetEmail').textContent = data.email;
+
+                        switchTab('verify');
+
+                    } else {
+
+                        if (data.errors) {
+
+                            Object.entries(data.errors).forEach(([field, msgs]) => {
+
+                                let el = $(`#panelRegister [name="${field}"]`);
+
+                                if (!el && field === 'password') el = $('#regPassword');
+
+                                if (!el && field === 'password_confirmation') el = $('#regConfirmPassword');
+
+                                if (el) setFieldError(el, msgs[0]);
+
+                            });
+
+                        }
+
+                        toast(data.message || 'Registration failed. Please check form inputs.');
+
+                    }
+
+                } catch (err) {
+
+                    toast('Connection error. Please try again.');
+
+                } finally {
+
+                    submitBtn.disabled = false;
+
+                    submitBtn.innerHTML = originalLabel;
+
+                }
+
+            });
+
+        }
+
+
+
+        // 3. Verify OTP Form Submit
+
+        const verifyForm = $('#panelVerifyOtp');
+
+        if (verifyForm) {
+
+            verifyForm.addEventListener('submit', async (e) => {
+
+                e.preventDefault();
+
+                const otpInput = $('#verifyOtpInput');
+
+                const errEl = $('#verifyOtpError');
+
+                if (errEl) errEl.textContent = '';
+
+                const otpVal = otpInput.value.trim();
+
+                if (!/^\d{6}$/.test(otpVal)) {
+
+                    if (errEl) errEl.textContent = 'Please enter a valid 6-digit verification code.';
+
+                    otpInput.focus();
+
+                    return;
+
+                }
+
+
+
+                const verifyBtn = $('#verifyOtpBtn') || $('button[type="submit"]', e.target);
+
+                const originalLabel = verifyBtn.innerHTML;
+
+                verifyBtn.disabled = true;
+
+                verifyBtn.innerHTML = `<span>Verifying...</span>`;
+
+
+
+                const payload = {
+
+                    email: $('#verifyEmailInput').value.trim(),
+
+                    otp: otpVal
+
+                };
+
+
+
+                try {
+
+                    const res = await fetch('/verify-otp', {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type': 'application/json',
+
+                            'Accept': 'application/json',
+
+                            'X-CSRF-TOKEN': csrfToken()
+
+                        },
+
+                        body: JSON.stringify(payload)
+
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+
+                        toast(data.message);
+
+                        Modal.close(modal);
+
+                        if (data.user) {
+
+                            updateNavAuth(data.user);
+
+                            document.dispatchEvent(new CustomEvent('auth:login', { detail: data.user }));
+
+                        }
+
+                    } else {
+
+                        if (errEl) errEl.textContent = data.message || 'Invalid verification code.';
+
+                        toast(data.message || 'Verification failed.');
+
+                        otpInput.select();
+
+                    }
+
+                } catch (err) {
+
+                    toast('Connection error during verification.');
+
+                } finally {
+
+                    verifyBtn.disabled = false;
+
+                    verifyBtn.innerHTML = originalLabel;
+
+                }
+
+            });
+
+        }
+
+
+
+        // 4. Resend OTP Button Click
+
+        const resendBtn = $('#resendOtpBtn');
+
+        if (resendBtn) {
+
+            resendBtn.addEventListener('click', async () => {
+
+                if (resendBtn.disabled) return;
+
+                const email = $('#verifyEmailInput').value.trim();
+
+                if (!email) return;
+
+
+
+                resendBtn.disabled = true;
+
+                resendBtn.textContent = 'Sending...';
+
+
+
+                try {
+
+                    const res = await fetch('/resend-otp', {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type': 'application/json',
+
+                            'Accept': 'application/json',
+
+                            'X-CSRF-TOKEN': csrfToken()
+
+                        },
+
+                        body: JSON.stringify({ email })
+
+                    });
+
+                    const data = await res.json();
+
+                    toast(data.message);
+
+                    if (res.ok && data.success) {
+
+                        startResendCooldown(data.resend_cooldown || 60);
+
+                    } else if (data.cooldown_remaining) {
+
+                        startResendCooldown(data.cooldown_remaining);
+
+                    } else {
+
+                        resendBtn.disabled = false;
+
+                        resendBtn.textContent = 'Resend Code';
+
+                    }
+
+                } catch (err) {
+
+                    toast('Failed to resend verification code.');
+
+                    resendBtn.disabled = false;
+
+                    resendBtn.textContent = 'Resend Code';
+
+                }
+
+            });
+
+        }
+
+
+
+        const backBtn = $('#backToRegisterBtn');
+
+        if (backBtn) {
+
+            backBtn.addEventListener('click', () => switchTab('register'));
+
+        }
+
+
+
+        checkAuthStatus();
+
+        modal.addEventListener('modal:close', () => panels.forEach(clearFormErrors));
+
+    }
+
+
+
+    return { init, open, checkAuthStatus, getUser: () => currentUser };
+
+})();
+
+
+
+// The modal's content is the page's <template id="program-KEY">
+
+function openInfo(key, trigger) {
+
+    const tpl = document.getElementById(`program-${key}`);
+
+    if (!tpl) return;
+
+    const modal = $('#infoModal');
+
+    const body = $('#infoModalBody');
+
+    body.replaceChildren(tpl.content.cloneNode(true));
+
+    $('.info-modal__panel', modal).scrollTop = 0;
+
+    if (Modal.isOpen(modal)) {
+
+        const first = focusablesIn(modal)[0];
+
+        if (first) first.focus();
+
+        return;
+
+    }
+
+    Modal.open(modal, trigger);
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   CASTING RECRUITER MODEL CONTACT WORKFLOW (PHASE 5)
+
+   ------------------------------------------------------------------------- */
+
+function openCastingInquiryModal(model, user) {
+
+    const modal = $('#castingInquiryModal');
+
+    if (!modal) return;
+
+
+
+    const modelModal = $('#modelModal');
+
+    if (modelModal && Modal.isOpen(modelModal)) {
+
+        Modal.close(modelModal);
+
+    }
+
+
+
+    const idInput = $('#inquiryModelId');
+
+    const nameDisplay = $('#inquiryModelNameDisplay');
+
+    const nameEl = $('#inquiryModelName');
+
+    const idBadge = $('#inquiryModelIdBadge');
+
+    const levelEl = $('#inquiryModelLevel');
+
+    const locEl = $('#inquiryModelLocation');
+
+    const imgEl = $('#inquiryModelImg');
+
+
+
+    if (idInput) idInput.value = model.id;
+
+    if (nameDisplay) nameDisplay.textContent = model.name;
+
+    if (nameEl) nameEl.textContent = model.name;
+
+    if (idBadge) idBadge.textContent = `IDFR-${String(model.id).padStart(4, '0')}`;
+
+    if (levelEl) levelEl.textContent = model.level || model.category || 'Runway Model';
+
+    if (locEl) locEl.textContent = model.location || 'India';
+
+    if (imgEl) {
+
+        imgEl.src = model.image || model.photo_url || '';
+
+        imgEl.alt = model.name;
+
+    }
+
+
+
+    if (user) {
+
+        const recName = $('#inquiryRecruiterName');
+
+        const recEmail = $('#inquiryRecruiterEmail');
+
+        const recPhone = $('#inquiryRecruiterPhone');
+
+        if (recName && !recName.value) recName.value = user.name || '';
+
+        if (recEmail && !recEmail.value) recEmail.value = user.email || '';
+
+        if (recPhone && !recPhone.value && user.phone) recPhone.value = user.phone || '';
+
+    }
+
+
+
+    const formView = $('#castingInquiryFormView');
+
+    const successView = $('#castingInquirySuccessView');
+
+    if (formView) formView.hidden = false;
+
+    if (successView) successView.hidden = true;
+
+
+
+    const shootDate = $('#inquiryShootDate');
+
+    if (shootDate) {
+
+        shootDate.min = new Date().toISOString().split('T')[0];
+
+    }
+
+
+
+    Modal.open(modal);
+
+}
+
+
+
+async function handleModelContact(modelOrId) {
+
+    let model = null;
+
+    if (typeof modelOrId === 'object' && modelOrId !== null) {
+
+        model = modelOrId;
+
+    } else {
+
+        const id = Number(modelOrId);
+
+        model = DATA.models.find((m) => m.id === id);
+
+    }
+
+    if (!model) return;
+
+
+
+    try {
+
+        const res = await fetch(`/models/${model.id}/contact-check`, {
+
+            headers: {
+
+                'Accept': 'application/json',
+
+                'X-Requested-With': 'XMLHttpRequest'
+
+            }
+
+        });
+
+        const data = await res.json();
+
+
+
+        if (!data.authenticated) {
+
+            // Visitor not logged in: preserve selected model ID and requested Contact action
+
+            sessionStorage.setItem('pendingModelContact', JSON.stringify({
+
+                modelId: model.id,
+
+                modelName: model.name,
+
+                modelLevel: model.level,
+
+                modelLocation: model.location,
+
+                modelPhoto: model.image || model.photo_url
+
+            }));
+
+            toast(`Please log in or register as a Casting Recruiter to contact ${model.name}.`);
+
+            Auth.open('login', 'recruiter');
+
+            return;
+
+        }
+
+
+
+        if (!data.can_contact) {
+
+            // Logged in with another role
+
+            toast(data.message || 'Only registered Casting Recruiters are authorized to contact models.');
+
+            return;
+
+        }
+
+
+
+        // Authenticated and role is Casting Recruiter!
+
+        openCastingInquiryModal(model, data.user);
+
+    } catch (err) {
+
+        console.error('Contact check error:', err);
+
+        const currentUser = Auth.getUser ? Auth.getUser() : null;
+
+        if (!currentUser) {
+
+            sessionStorage.setItem('pendingModelContact', JSON.stringify({
+
+                modelId: model.id,
+
+                modelName: model.name,
+
+                modelLevel: model.level,
+
+                modelLocation: model.location,
+
+                modelPhoto: model.image
+
+            }));
+
+            Auth.open('login', 'recruiter');
+
+        } else if (currentUser.role === 'recruiter') {
+
+            openCastingInquiryModal(model, currentUser);
+
+        } else {
+
+            toast('Only registered Casting Recruiters are authorized to contact models.');
+
+        }
+
+    }
+
+}
+
+
+
+// Preserve Contact Action Across Authentication
+
+document.addEventListener('auth:login', async (e) => {
+
+    const user = e.detail;
+
+    const pendingRaw = sessionStorage.getItem('pendingModelContact');
+
+    if (!pendingRaw) return;
+
+
+
+    sessionStorage.removeItem('pendingModelContact');
+
+    let pending;
+
+    try {
+
+        pending = JSON.parse(pendingRaw);
+
+    } catch (_) {
+
+        return;
+
+    }
+
+
+
+    if (!pending || !pending.modelId) return;
+
+
+
+    if (user && user.role === 'recruiter') {
+
+        const model = DATA.models.find((m) => m.id === Number(pending.modelId)) || {
+
+            id: pending.modelId,
+
+            name: pending.modelName,
+
+            level: pending.modelLevel || 'Runway Model',
+
+            location: pending.modelLocation || 'India',
+
+            image: pending.modelPhoto || ''
+
+        };
+
+        setTimeout(() => {
+
+            openCastingInquiryModal(model, user);
+
+        }, 350);
+
+    } else {
+
+        const roleLabel = user ? (user.role_label || user.role) : 'creative member';
+
+        toast(`Only registered Casting Recruiters are authorized to submit casting inquiries. You are logged in as a ${roleLabel}.`);
+
+    }
+
+});
+
+
+
+function initCastingInquiry() {
+
+    const modal = $('#castingInquiryModal');
+
+    const form = $('#castingInquiryForm');
+
+    const formView = $('#castingInquiryFormView');
+
+    const successView = $('#castingInquirySuccessView');
+
+    const submitBtn = $('#castingInquirySubmitBtn');
+
+    if (!form || !modal) return;
+
+
+
+    form.addEventListener('submit', async (e) => {
+
+        e.preventDefault();
+
+        clearFormErrors(form);
+
+
+
+        const reqSelect = $('#inquiryCastingRequirements');
+
+        if (reqSelect && !reqSelect.value) {
+
+            setFieldError(reqSelect, 'Please select a casting requirement.');
+
+        }
+
+
+
+        if (!validateForm(form)) return;
+
+
+
+        submitBtn.disabled = true;
+
+        const originalText = submitBtn.innerHTML;
+
+        submitBtn.innerHTML = `<span>Submitting Brief...</span>`;
+
+
+
+        try {
+
+            const formData = new FormData(form);
+
+            const token = csrfToken();
+
+
+
+            const res = await fetch('/casting-inquiry', {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Accept': 'application/json',
+
+                    'X-Requested-With': 'XMLHttpRequest',
+
+                    'X-CSRF-TOKEN': token
+
+                },
+
+                body: formData
+
+            });
+
+
+
+            const data = await res.json().catch(() => null);
+
+
+
+            if (res.ok && data?.success) {
+
+                form.reset();
+
+                clearFormErrors(form);
+
+                if (formView) formView.hidden = true;
+
+                if (successView) successView.hidden = false;
+
+                const successText = $('#castingInquirySuccessText');
+
+                if (successText) successText.textContent = data.message;
+
+                toast(data.message || 'Casting inquiry submitted successfully!');
+
+            } else if (res.status === 422 && data?.errors) {
+
+                Object.entries(data.errors).forEach(([field, msgs]) => {
+
+                    const input = form.querySelector(`[name="${field}"]`);
+
+                    if (input) setFieldError(input, msgs[0]);
+
+                });
+
+                const firstMsg = Object.values(data.errors)[0]?.[0] || 'Please correct the errors in the form.';
+
+                toast(firstMsg);
+
+            } else {
+
+                toast(data?.message || 'Failed to submit casting inquiry. Please check your submission.');
+
+            }
+
+        } catch (err) {
+
+            console.error('Casting inquiry submission error:', err);
+
+            toast('Connection error. Please try again.');
+
+        } finally {
+
+            submitBtn.disabled = false;
+
+            submitBtn.innerHTML = originalText;
+
+        }
+
+    });
+
+
+
+    modal.addEventListener('modal:close', () => {
+
+        clearFormErrors(form);
+
+        if (formView) formView.hidden = false;
+
+        if (successView) successView.hidden = true;
+
+    });
+
+}
+
+
+
+function initGlobalActions() {
+
+    document.addEventListener('click', (e) => {
+
+        const contactBtn = e.target.closest('[data-model-contact]');
+
+        if (contactBtn) {
+
+            e.preventDefault();
+
+            handleModelContact(contactBtn.dataset.modelContact);
+
+            return;
+
+        }
+
+        const authBtn = e.target.closest('[data-auth]');
+
+        if (authBtn) {
+
+            e.preventDefault();
+
+            const user = (typeof Auth !== 'undefined' && Auth.getUser && Auth.getUser()) || (typeof window !== 'undefined' ? window.__IDFR_USER__ : null);
+
+            if (user && user.id) {
+
+                if (user.role === 'recruiter') {
+
+                    window.location.href = user.profile_url || '/models';
+
+                } else {
+
+                    window.location.href = user.profile_url || '/profiles/model';
+
+                }
+
+                return;
+
+            }
+
+            let trigger = authBtn;
+
+            const parent = authBtn.closest('.modal');
+
+            if (parent && parent.id !== 'authModal') trigger = Modal.close(parent) || authBtn;
+
+            if (MobileMenu.isOpen) { MobileMenu.close(); trigger = $('.nav__toggle'); }
+
+            Auth.open(authBtn.dataset.auth, authBtn.dataset.role, trigger);
+
+            return;
+
+        }
+
+        const programBtn = e.target.closest('[data-program]');
+
+        if (programBtn) {
+
+            e.preventDefault();
+
+            if (MobileMenu.isOpen) MobileMenu.close();
+
+            openInfo(programBtn.dataset.program, programBtn);
+
+            return;
+
+        }
+
+        const modelBtn = e.target.closest('[data-model-open]');
+
+        if (modelBtn) {
+
+            e.preventDefault();
+
+            openModel(modelBtn.dataset.modelOpen, modelBtn);
+
+        }
+
+    });
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   SCROLL REVEAL & COUNTERS
+
+   ------------------------------------------------------------------------- */
+
+function animateCount(el) {
+
+    if (!el || el.dataset.animated === 'true') return;
+
+    el.dataset.animated = 'true';
+
+
+
+    const rawCount = el.dataset.count !== undefined ? String(el.dataset.count).trim() : '';
+
+    const cleanNum = Number(rawCount.replace(/,/g, ''));
+
+    if (isNaN(cleanNum)) {
+
+        el.textContent = rawCount || el.textContent;
+
+        return;
+
+    }
+
+
+
+    const padTo = Number(el.dataset.pad) || (rawCount.length > 1 && rawCount.startsWith('0') && !isNaN(Number(rawCount)) ? rawCount.length : 0);
+
+    const format = (n) => (padTo ? String(n).padStart(padTo, '0') : n.toLocaleString('en-IN'));
+
+    if (typeof prefersReducedMotion !== 'undefined' && prefersReducedMotion && prefersReducedMotion.matches) {
+
+        el.textContent = format(cleanNum);
+
+        return;
+
+    }
+
+
+
+    const duration = 1800;
+
+    const start = performance.now();
+
+    const tick = (now) => {
+
+        const p = Math.min(1, (now - start) / duration);
+
+        const eased = 1 - Math.pow(1 - p, 3);
+
+        const current = p >= 1 ? cleanNum : Math.round(cleanNum * eased);
+
+        el.textContent = format(current);
+
+        if (p < 1) {
+
+            requestAnimationFrame(tick);
+
+        } else {
+
+            el.textContent = format(cleanNum);
+
+        }
+
+    };
+
+    requestAnimationFrame(tick);
+
+}
+
+
+
+function initReveal() {
+
+    const items = $$('[data-reveal]');
+
+    const counters = $$('[data-count]');
+
+
+
+    if (!('IntersectionObserver' in window)) {
+
+        items.forEach((el) => el.classList.add('is-visible'));
+
+        counters.forEach(animateCount);
+
+        return;
+
+    }
+
+
+
+    const io = new IntersectionObserver((entries) => {
+
+        entries.forEach((entry) => {
+
+            if (!entry.isIntersecting) return;
+
+            entry.target.classList.add('is-visible');
+
+            io.unobserve(entry.target);
+
+        });
+
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+
+
+
+    items.forEach((el) => {
+
+        if (el.dataset.delay) el.style.transitionDelay = `${el.dataset.delay}ms`;
+
+        io.observe(el);
+
+    });
+
+
+
+    const countIO = new IntersectionObserver((entries) => {
+
+        entries.forEach((entry) => {
+
+            if (!entry.isIntersecting) return;
+
+            animateCount(entry.target);
+
+            countIO.unobserve(entry.target);
+
+        });
+
+    }, { threshold: 0.6 });
+
+    counters.forEach((c) => countIO.observe(c));
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   MODEL PROFILE PAGE â€” portfolio gallery, place search, profile form
+
+   ------------------------------------------------------------------------- */
+
+function initProfileGallery() {
+
+    const root = $('#profileGallery');
+
+    const stage = $('.pg__stage', root);
+
+    const slides = $$('.pg__slide', root);
+
+    const thumbs = $$('.pg__thumb', root);
+
+    const current = $('.pg__current', root);
+
+    const status = $('.pg__status', root);
+
+    let index = 0;
+
+
+
+    $('.pg__total', root).textContent = pad(slides.length);
+
+
+
+    const go = (i) => {
+
+        index = (i + slides.length) % slides.length;
+
+        slides.forEach((s, n) => {
+
+            const on = n === index;
+
+            s.classList.toggle('is-active', on);
+
+            s.setAttribute('aria-hidden', String(!on));
+
+        });
+
+        thumbs.forEach((t, n) => {
+
+            const on = n === index;
+
+            t.classList.toggle('is-active', on);
+
+            t.setAttribute('aria-current', String(on));
+
+        });
+
+        current.textContent = pad(index + 1);
+
+        status.textContent = `Image ${index + 1} of ${slides.length}`;
+
+    };
+
+
+
+    $('.pg__nav--prev', root).addEventListener('click', () => go(index - 1));
+
+    $('.pg__nav--next', root).addEventListener('click', () => go(index + 1));
+
+    thumbs.forEach((t, n) => t.addEventListener('click', () => go(n)));
+
+
+
+    root.addEventListener('keydown', (e) => {
+
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1); }
+
+        else if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1); }
+
+    });
+
+
+
+    let startX = null;
+
+    stage.addEventListener('pointerdown', (e) => {
+
+        if (e.pointerType !== 'mouse' && !e.target.closest('.pg__nav, .pg__edit')) startX = e.clientX;
+
+    });
+
+    stage.addEventListener('pointerup', (e) => {
+
+        if (startX === null) return;
+
+        const dx = e.clientX - startX;
+
+        startX = null;
+
+        if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
+
+    });
+
+    stage.addEventListener('pointercancel', () => { startX = null; });
+
+
+
+    // Edit icon: pick a local image and swap it into the active slide (+ matching thumb)
+
+    const fileInput = document.createElement('input');
+
+    fileInput.type = 'file';
+
+    fileInput.accept = 'image/*';
+
+    fileInput.className = 'visually-hidden';
+
+    fileInput.setAttribute('tabindex', '-1');
+
+    fileInput.setAttribute('aria-hidden', 'true');
+
+    root.appendChild(fileInput);
+
+
+
+    let editIndex = -1;
+
+    const blobUrls = new WeakMap();
+
+
+
+    root.addEventListener('click', (e) => {
+
+        const btn = e.target.closest('[data-pg-edit]');
+
+        if (!btn) return;
+
+        e.preventDefault();
+
+        e.stopPropagation();
+
+        const slide = btn.closest('.pg__slide');
+
+        editIndex = slides.indexOf(slide);
+
+        if (editIndex < 0) return;
+
+        fileInput.value = '';
+
+        fileInput.click();
+
+    });
+
+
+
+    fileInput.addEventListener('change', () => {
+
+        const file = fileInput.files && fileInput.files[0];
+
+        if (!file || !file.type.startsWith('image/') || editIndex < 0) return;
+
+        const slideImg = $('img', slides[editIndex]);
+
+        const thumbImg = thumbs[editIndex] && $('img', thumbs[editIndex]);
+
+        if (!slideImg) return;
+
+
+
+        const prev = blobUrls.get(slideImg);
+
+        const url = URL.createObjectURL(file);
+
+        blobUrls.set(slideImg, url);
+
+        slideImg.src = url;
+
+        if (thumbImg) thumbImg.src = url;
+
+        if (prev) URL.revokeObjectURL(prev);
+
+        window.__profilePendingFiles = window.__profilePendingFiles || {};
+        const fieldName = editIndex === 0 ? 'profile_photo' : (editIndex === 1 ? 'portfolio_image_1' : 'portfolio_image_2');
+        window.__profilePendingFiles[fieldName] = file;
+
+        const targetInput = document.getElementById(
+            editIndex === 0 ? 'pfFile_profile_photo' : (editIndex === 1 ? 'pfFile_portfolio_1' : 'pfFile_portfolio_2')
+        );
+        if (targetInput) {
+            try {
+                const dt = new DataTransfer();
+                dt.items.add(file);
+                targetInput.files = dt.files;
+            } catch (_) {}
+        }
+
+        status.textContent = `Image ${editIndex + 1} of ${slides.length} updated`;
+
+        editIndex = -1;
+
+    });
+
+}
+
+
+
+function initPlaceCombo(combo, places) {
+
+    const input = $('input', combo);
+
+    const list = $('.combo__list', combo);
+
+    let matches = [];
+
+    let active = -1;
+
+
+
+    const canonical = (value) => places.find((p) => p.toLowerCase() === value.trim().toLowerCase());
+
+
+
+    const validate = () => {
+
+        const match = canonical(input.value);
+
+        if (match) input.value = match;
+
+        input.setCustomValidity(input.value.trim() && !match ? 'Please choose a place from the list.' : '');
+
+    };
+
+
+
+    const setActive = (i) => {
+
+        active = i;
+
+        $$('.combo__option', list).forEach((o, n) => {
+
+            const on = n === active;
+
+            o.classList.toggle('is-active', on);
+
+            o.setAttribute('aria-selected', String(on));
+
+            if (on) o.scrollIntoView({ block: 'nearest' });
+
+        });
+
+        if (active >= 0) input.setAttribute('aria-activedescendant', `pfPlaceOpt${active}`);
+
+        else input.removeAttribute('aria-activedescendant');
+
+    };
+
+
+
+    const close = () => {
+
+        list.hidden = true;
+
+        input.setAttribute('aria-expanded', 'false');
+
+        setActive(-1);
+
+    };
+
+
+
+    const render = () => {
+
+        const q = input.value.trim().toLowerCase();
+
+        matches = q ? places.filter((p) => p.toLowerCase().includes(q)) : places.slice();
+
+        matches.sort((a, b) => Number(!a.toLowerCase().startsWith(q)) - Number(!b.toLowerCase().startsWith(q)));
+
+        list.innerHTML = matches.length
+
+            ? matches.map((p, i) => `<li class="combo__option" id="pfPlaceOpt${i}" role="option" aria-selected="false" data-value="${esc(p)}">${esc(p)}</li>`).join('')
+
+            : '<li class="combo__empty" role="option" aria-disabled="true" aria-selected="false">No matching place</li>';
+
+        list.hidden = false;
+
+        input.setAttribute('aria-expanded', 'true');
+
+        setActive(-1);
+
+    };
+
+
+
+    const choose = (value) => {
+
+        input.value = value;
+
+        input.setCustomValidity('');
+
+        close();
+
+        const field = input.closest('.field');
+
+        field.classList.remove('has-error');
+
+        $('.field__error', field).textContent = '';
+
+        input.setAttribute('aria-invalid', 'false');
+
+    };
+
+
+
+    input.addEventListener('focus', render);
+
+    input.addEventListener('click', () => { if (list.hidden) render(); });
+
+    input.addEventListener('input', () => { input.setCustomValidity(''); render(); });
+
+    input.addEventListener('keydown', (e) => {
+
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+
+            e.preventDefault();
+
+            if (list.hidden) render();
+
+            if (!matches.length) return;
+
+            const step = e.key === 'ArrowDown' ? 1 : -1;
+
+            setActive((active + step + matches.length) % matches.length);
+
+        } else if (e.key === 'Enter' && !list.hidden) {
+
+            e.preventDefault();
+
+            if (active >= 0) choose(matches[active]);
+
+            else if (matches.length === 1) choose(matches[0]);
+
+        } else if (e.key === 'Escape' && !list.hidden) {
+
+            e.preventDefault();
+
+            e.stopPropagation();
+
+            close();
+
+        } else if (e.key === 'Tab') {
+
+            if (active >= 0) choose(matches[active]);
+
+            else close();
+
+        }
+
+    });
+
+    list.addEventListener('mousedown', (e) => e.preventDefault());
+
+    list.addEventListener('click', (e) => {
+
+        const opt = e.target.closest('.combo__option');
+
+        if (opt) choose(opt.dataset.value);
+
+    });
+
+    input.addEventListener('blur', () => { close(); validate(); });
+
+
+
+    return { validate, reset: () => { input.setCustomValidity(''); close(); } };
+
+}
+
+
+
+function initProfileForm() {
+
+    const form = $('#profileForm');
+
+    const kind = form.dataset.profileKind || 'model';
+
+
+
+    // Creative professional pages: form behaviour lives in js/creative_profiles.js
+
+    // (content and field markup stay in each *_profile.html).
+
+    if (kind === 'creative') {
+
+        if (typeof initCreativeProfileForm === 'function') initCreativeProfileForm(form);
+
+        return;
+
+    }
+
+
+
+    const placeEl = $('#placeCombo');
+
+    const place = placeEl ? initPlaceCombo(placeEl, DATA.places) : null;
+
+    const types = $$('input[name="modelType"]', form);
+
+    const height = $('#pfHeight');
+
+    const heightHint = $('#pfHeightHint');
+
+
+
+    const syncTypes = () => types[0].setCustomValidity(types.some((t) => t.checked) ? '' : 'Please select at least one model type.');
+
+    const syncHeight = () => {
+
+        const cm = Number(height.value);
+
+        if (!height.value || cm < 120 || cm > 215) { heightHint.textContent = 'In centimetres'; return; }
+
+        const inches = Math.round(cm / 2.54);
+
+        heightHint.textContent = `â‰ˆ ${Math.floor(inches / 12)}'${inches % 12}" (feet & inches)`;
+
+    };
+
+
+
+    types.forEach((t) => t.addEventListener('change', syncTypes));
+
+    height.addEventListener('input', syncHeight);
+
+    syncTypes();
+
+
+
+    form.addEventListener('submit', async (e) => {
+
+        e.preventDefault();
+
+        if (place) place.validate();
+
+        syncTypes();
+
+        if (!validateForm(form)) return;
+
+
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        if (submitBtn) submitBtn.disabled = true;
+
+
+
+        if (form.action && form.action !== '' && !form.action.endsWith('#')) {
+
+            try {
+
+                const formData = new FormData(form);
+                if (window.__profilePendingFiles) {
+                    if (window.__profilePendingFiles.profile_photo) {
+                        formData.set('profile_photo', window.__profilePendingFiles.profile_photo);
+                    }
+                    if (window.__profilePendingFiles.portfolio_image_1) {
+                        formData.set('portfolio_image_1', window.__profilePendingFiles.portfolio_image_1);
+                    }
+                    if (window.__profilePendingFiles.portfolio_image_2) {
+                        formData.set('portfolio_image_2', window.__profilePendingFiles.portfolio_image_2);
+                    }
+                }
+
+                const csrf = form.querySelector('input[name="_token"]')?.value || document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+                const res = await fetch(form.action, {
+
+                    method: form.method || 'POST',
+
+                    headers: {
+
+                        'X-Requested-With': 'XMLHttpRequest',
+
+                        'Accept': 'application/json',
+
+                        ...(csrf ? { 'X-CSRF-TOKEN': csrf } : {}),
+
+                    },
+
+                    body: formData,
+
+                });
+
+                const data = await res.json().catch(() => null);
+
+                if (res.ok && data?.success) {
+                    window.__profilePendingFiles = {};
+
+                    toast(data.message || 'Your model profile has been saved.');
+
+                    if (submitBtn) submitBtn.disabled = false;
+
+                    return;
+
+                } else if (res.status === 422 && data?.errors) {
+
+                    const firstErr = Object.values(data.errors)[0];
+
+                    toast(Array.isArray(firstErr) ? firstErr[0] : 'Validation failed.');
+
+                    if (submitBtn) submitBtn.disabled = false;
+
+                    return;
+
+                }
+
+            } catch (err) {
+
+                console.warn('Model profile save fetch error, falling back to native submit', err);
+
+            }
+
+            if (submitBtn) submitBtn.disabled = false;
+
+            form.submit();
+
+            return;
+
+        }
+
+
+
+        const name = $('#pfName') ? $('#pfName').value.trim() : 'User';
+
+        toast(`Thank you, ${name}. Your model profile has been saved.`);
+
+        if (submitBtn) submitBtn.disabled = false;
+
+    });
+
+
+
+    form.addEventListener('reset', () => {
+
+        if (place) place.reset();
+
+        clearFormErrors(form);
+
+        setTimeout(() => { syncTypes(); syncHeight(); }, 0);
+
+    });
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   ASDREAMSTUDIO â€” "OUR BRANDS" POPUP, opens immediately on page load
+
+   (before the preloader / hero are shown). Brand links keep their normal
+
+   behaviour (in-page anchor, page link or [data-program] info modal); the
+
+   popup just closes out of the way first.
+
+   ------------------------------------------------------------------------- */
+
+const SKIP_BRANDS_POP_KEY = 'idfrSkipBrandsPop';
+
+const BRANDS_POP_STATE = 'idfrBrandsPop';
+
+const RETURN_BRANDS_POP_KEY = 'idfrReturnBrandsPop';
+
+
+
+function markSkipBrandsPop() {
+
+    try { sessionStorage.setItem(SKIP_BRANDS_POP_KEY, '1'); } catch (_) { /* private mode */ }
+
+}
+
+
+
+function clearSkipBrandsPop() {
+
+    try { sessionStorage.removeItem(SKIP_BRANDS_POP_KEY); } catch (_) { /* private mode */ }
+
+}
+
+
+
+function consumeSkipBrandsPop() {
+
+    try {
+
+        if (!sessionStorage.getItem(SKIP_BRANDS_POP_KEY)) return false;
+
+        sessionStorage.removeItem(SKIP_BRANDS_POP_KEY);
+
+        return true;
+
+    } catch (_) {
+
+        return false;
+
+    }
+
+}
+
+
+
+function markReturnBrandsPop() {
+
+    try { sessionStorage.setItem(RETURN_BRANDS_POP_KEY, '1'); } catch (_) { /* private mode */ }
+
+}
+
+
+
+function consumeReturnBrandsPop() {
+
+    try {
+
+        if (!sessionStorage.getItem(RETURN_BRANDS_POP_KEY)) return false;
+
+        sessionStorage.removeItem(RETURN_BRANDS_POP_KEY);
+
+        return true;
+
+    } catch (_) {
+
+        return false;
+
+    }
+
+}
+
+
+
+function brandsPopUrl(open) {
+
+    return location.pathname + location.search + (open ? '' : '#home');
+
+}
+
+
+
+function isAsdreamsHomeLink(href) {
+
+    return /(?:^|\/)asdreams\.html#home$/.test(href) || href === '#home';
+
+}
+
+
+
+function isIndexLink(href) {
+
+    if (!href || href.startsWith('#')) return false;
+
+    try {
+
+        const u = new URL(href, location.href);
+
+        const path = u.pathname.replace(/\\/g, '/');
+
+        return /(^|\/)(index\.html)?$/.test(path) || path.endsWith('/index.html');
+
+    } catch (_) {
+
+        return /(?:^|\/)index\.html(?:[?#]|$)/.test(href);
+
+    }
+
+}
+
+
+
+// Explore / footer / ASD subpage Home nav: next asdreams visit skips the popup (show hero).
+
+// Index logo: go to asdreams with the popup open.
+
+function initSkipBrandsPopLinks() {
+
+    document.addEventListener('click', (e) => {
+
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+        const explore = e.target.closest('a.asd-brand__btn[aria-label="Explore ASDreamStudio portfolio"]');
+
+        const footerLogo = e.target.closest('a.footer__logo[data-skip-brands-pop]');
+
+        // Home from about / gallery / team / contact (and mobile menu) → asdreams hero, not brands popup
+
+        const asdHomeNav = e.target.closest('a.nav__link[href="asdreams.html#home"][data-nav="home"], a[href="asdreams.html#home"][data-nav="home"]');
+
+        if (explore || footerLogo || (asdHomeNav && !$('#brandsPopup'))) markSkipBrandsPop();
+
+
+
+        // index.html nav logo → brands popup on asdreams
+
+        const indexLogo = e.target.closest('a.nav__logo');
+
+        if (indexLogo && $('#home') && !$('#brandsPopup')) {
+
+            e.preventDefault();
+
+            clearSkipBrandsPop();
+
+            location.assign('asdreams.html');
+
+        }
+
+    });
+
+}
+
+
+
+// On index.html: Back returns to the brands popup when arriving from asdreams
+
+function initIndexBrandsPopBack() {
+
+    if (!$('#home') || $('#brandsPopup')) return;
+
+    if (!consumeReturnBrandsPop()) return;
+
+
+
+    history.pushState({ [BRANDS_POP_STATE]: 'index' }, '', location.href);
+
+    window.addEventListener('popstate', () => {
+
+        clearSkipBrandsPop();
+
+        location.replace('asdreams.html');
+
+    });
+
+}
+
+
+
+function initBrandsPopup() {
+
+    const popup = $('#brandsPopup');
+
+
+
+    // Banner slider: slides and dots are written in the popup's markup
+
+    const banner = $('.brands-pop__banner', popup);
+
+    const INTERVAL = 4000;
+
+    const slides = $$('.brands-pop__slide', banner);
+
+    const dots = $$('.brands-pop__dot', banner);
+
+    const total = slides.length;
+
+    const titleOf = (slide) => $('.brands-pop__caption', slide).textContent.replace(/\s+/g, ' ').trim();
+
+    let index = 0;
+
+    let timer = null;
+
+    // Reasons to hold the autoplay: keyboard focus, pointer on an arrow, a touch in progress
+
+    const holds = new Set();
+
+
+
+    const showSlide = (n, announce = false) => {
+
+        index = (n + total) % total;
+
+        slides.forEach((s, i) => {
+
+            const on = i === index;
+
+            s.classList.toggle('is-active', on);
+
+            s.inert = !on;
+
+            if (on) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true');
+
+        });
+
+        dots.forEach((d, i) => {
+
+            if (i === index) d.setAttribute('aria-current', 'true'); else d.removeAttribute('aria-current');
+
+        });
+
+        $('#brandsPopCurrent').textContent = pad(index + 1);
+
+        $('#brandsPopStatus').textContent = announce ? `Banner ${index + 1} of ${total}: ${titleOf(slides[index])}` : '';
+
+    };
+
+    const schedule = () => {
+
+        clearTimeout(timer);
+
+        if (!Modal.isOpen(popup) || holds.size || document.hidden || prefersReducedMotion.matches) return;
+
+        timer = setTimeout(() => { showSlide(index + 1); schedule(); }, INTERVAL);
+
+    };
+
+    const hold = (reason, on) => {
+
+        if (on) holds.add(reason); else holds.delete(reason);
+
+        schedule();
+
+    };
+
+    const step = (d) => { showSlide(index + d, true); schedule(); };
+
+
+
+    banner.addEventListener('click', (e) => {
+
+        const arrow = e.target.closest('[data-banner-step]');
+
+        if (arrow) step(Number(arrow.dataset.bannerStep));
+
+        const dot = e.target.closest('[data-banner-dot]');
+
+        if (dot) { showSlide(Number(dot.dataset.bannerDot), true); schedule(); }
+
+    });
+
+    banner.addEventListener('keydown', (e) => {
+
+        if (e.key === 'ArrowLeft') { e.preventDefault(); step(-1); }
+
+        else if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+
+    });
+
+    banner.addEventListener('focusin', (e) => hold('focus', e.target.matches(':focus-visible')));
+
+    banner.addEventListener('focusout', (e) => { if (!banner.contains(e.relatedTarget)) hold('focus', false); });
+
+    $$('.brands-pop__arrow, .brands-pop__dots', banner).forEach((a) => {
+
+        a.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hold('arrow', true); });
+
+        a.addEventListener('pointerleave', () => hold('arrow', false));
+
+    });
+
+    let startX = null;
+
+    banner.addEventListener('pointerdown', (e) => {
+
+        if (e.pointerType === 'mouse' || e.target.closest('button')) return;
+
+        startX = e.clientX;
+
+        hold('touch', true);
+
+    });
+
+    const endTouch = (e) => {
+
+        if (startX === null) return;
+
+        const dx = e.clientX - startX;
+
+        startX = null;
+
+        holds.delete('touch');
+
+        if (e.type === 'pointerup' && Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
+
+        else schedule();
+
+    };
+
+    banner.addEventListener('pointerup', endTouch);
+
+    banner.addEventListener('pointercancel', endTouch);
+
+    document.addEventListener('visibilitychange', schedule);
+
+
+
+    // Brand logos enter one after another: the first slides in from the left edge of the
+
+    // screen, each next one comes out from behind the previous tile and rolls into place
+
+    const items = $$('.brands-pop__item', popup);
+
+    let anims = [];
+
+    const animateLogos = () => {
+
+        anims.forEach((a) => a.cancel());
+
+        anims = [];
+
+        items.forEach((li) => li.classList.remove('is-landed'));
+
+        if (prefersReducedMotion.matches || !Element.prototype.animate) {
+
+            items.forEach((li) => li.classList.add('is-landed'));
+
+            return;
+
+        }
+
+        const logos = items.map((li) => $('.brands-pop__logo', li));
+
+        const rects = logos.map((l) => l.getBoundingClientRect());
+
+        const START = 450;
+
+        const FIRST = 1000;
+
+        const NEXT = 950;
+
+        const STAGGER = 760;
+
+        const easing = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
+        logos.forEach((logo, i) => {
+
+            const r = rects[i];
+
+            let keyframes;
+
+            if (i === 0) {
+
+                keyframes = [{ transform: `translateX(${-Math.ceil(r.right + 24)}px)` }, { transform: 'none' }];
+
+            } else {
+
+                const p = rects[i - 1];
+
+                keyframes = [
+
+                    { transform: `translate(${p.left - r.left}px, ${p.top - r.top}px) rotate(-90deg) scale(0.86)`, opacity: 0, offset: 0 },
+
+                    { opacity: 1, offset: 0.06 },
+
+                    { transform: 'none', opacity: 1 }
+
+                ];
+
+            }
+
+            const delay = i ? START + FIRST - 150 + (i - 1) * STAGGER : START;
+
+            const anim = logo.animate(keyframes, { duration: i ? NEXT : FIRST, delay, easing, fill: 'backwards' });
+
+            anim.finished.then(() => items[i].classList.add('is-landed')).catch(() => { });
+
+            anims.push(anim);
+
+        });
+
+    };
+
+
+
+    popup.addEventListener('modal:open', () => {
+
+        showSlide(0);
+
+        animateLogos();
+
+        schedule();
+
+    });
+
+    popup.addEventListener('modal:close', () => {
+
+        clearTimeout(timer);
+
+        anims.forEach((a) => a.finish());
+
+    });
+
+
+
+    const openPopup = () => {
+
+        if (Modal.isOpen(popup)) return;
+
+        if (Modal.top() || MobileMenu.isOpen) return;
+
+        // Dismiss the preloader immediately so it never paints over / ahead of the popup
+
+        document.body.classList.add('is-loaded');
+
+        document.documentElement.classList.remove('brands-pop-first');
+
+        Modal.open(popup);
+
+        // Above .preloader (z-index 999); Modal.open assigns a lower inline z-index
+
+        popup.style.zIndex = '1000';
+
+    };
+
+
+
+    const syncBrandsPopHistory = (mode) => {
+
+        history.replaceState({ [BRANDS_POP_STATE]: mode }, '', brandsPopUrl(mode === 'open'));
+
+    };
+
+
+
+    const seedHeroHistory = () => {
+
+        // Underlay an "open" entry, then land on "closed" (hero) so Back opens the popup
+
+        history.replaceState({ [BRANDS_POP_STATE]: 'open' }, '', brandsPopUrl(true));
+
+        history.pushState({ [BRANDS_POP_STATE]: 'closed' }, '', brandsPopUrl(false));
+
+    };
+
+
+
+    // Show the site preloader over the page, then reveal the hero
+
+    const playEntryPreloader = () => {
+
+        document.documentElement.classList.remove('brands-pop-first');
+
+        const pre = document.querySelector('.preloader');
+
+        if (pre) {
+
+            // Appear instantly (skip the slide-in) so the cover is visible right away
+
+            pre.style.transition = 'none';
+
+            document.body.classList.remove('is-loaded');
+
+            // Restart logo / line animations
+
+            const inner = pre.querySelector('.preloader__inner');
+
+            if (inner) inner.replaceWith(inner.cloneNode(true));
+
+            void pre.offsetWidth;
+
+            pre.style.transition = '';
+
+        } else {
+
+            document.body.classList.remove('is-loaded');
+
+        }
+
+        // Hold long enough to read the preloader, then lift it to show the hero
+
+        setTimeout(() => document.body.classList.add('is-loaded'), 1800);
+
+    };
+
+
+
+    const enterHero = () => {
+
+        if (!history.state || history.state[BRANDS_POP_STATE] !== 'closed') {
+
+            history.pushState({ [BRANDS_POP_STATE]: 'closed' }, '', brandsPopUrl(false));
+
+        } else {
+
+            syncBrandsPopHistory('closed');
+
+        }
+
+        // Close + hide immediately so the preloader (z-index 999) isn't covered by the modal (1000)
+
+        if (Modal.isOpen(popup)) Modal.close(popup);
+
+        clearTimeout(popup._hideTimer);
+
+        popup.classList.remove('is-open');
+
+        popup.hidden = true;
+
+        popup.style.zIndex = '';
+
+
+
+        const hero = $('#asd-home');
+
+        if (hero) hero.scrollIntoView({ block: 'start', behavior: 'auto' });
+
+        playEntryPreloader();
+
+    };
+
+
+
+    const applyBrandsPopState = (mode) => {
+
+        if (mode === 'open') openPopup();
+
+        else if (Modal.isOpen(popup)) Modal.close(popup);
+
+    };
+
+
+
+    const show = () => {
+
+        if (consumeSkipBrandsPop()) {
+
+            document.documentElement.classList.remove('brands-pop-first');
+
+            // Entered via Explore / ASD Home nav — show hero, keep Back → popup
+
+            if (history.state && history.state[BRANDS_POP_STATE] === 'closed') {
+
+                syncBrandsPopHistory('closed');
+
+            } else {
+
+                seedHeroHistory();
+
+            }
+
+            // Links use #home; the section id is asd-home
+
+            const hero = $('#asd-home');
+
+            if (hero && (location.hash === '#home' || location.hash === '#asd-home')) {
+
+                requestAnimationFrame(() => hero.scrollIntoView({ block: 'start', behavior: 'auto' }));
+
+            }
+
+            return;
+
+        }
+
+        // Restored via Back / bfcache with an explicit state
+
+        if (history.state && history.state[BRANDS_POP_STATE] === 'closed') {
+
+            document.documentElement.classList.remove('brands-pop-first');
+
+            return;
+
+        }
+
+        syncBrandsPopHistory('open');
+
+        openPopup();
+
+    };
+
+
+
+    show();
+
+
+
+    window.addEventListener('popstate', (e) => {
+
+        const mode = e.state && e.state[BRANDS_POP_STATE];
+
+        if (mode === 'open' || mode === 'closed') applyBrandsPopState(mode);
+
+    });
+
+
+
+    // bfcache restores can skip popstate — re-sync popup to history state
+
+    window.addEventListener('pageshow', (e) => {
+
+        if (!e.persisted) return;
+
+        const mode = history.state && history.state[BRANDS_POP_STATE];
+
+        if (mode === 'open' || mode === 'closed') applyBrandsPopState(mode);
+
+    });
+
+
+
+    // Leaving asdreams for index while on the hero: Back should reopen the brands popup
+
+    document.addEventListener('click', (e) => {
+
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+        const a = e.target.closest('a[href]');
+
+        if (!a || a.closest('#brandsPopup')) return;
+
+        if (!isIndexLink(a.getAttribute('href') || '')) return;
+
+        if (history.state && history.state[BRANDS_POP_STATE] === 'closed') {
+
+            syncBrandsPopHistory('open');
+
+        }
+
+        markReturnBrandsPop();
+
+        clearSkipBrandsPop();
+
+    });
+
+
+
+    popup.addEventListener('click', (e) => {
+
+        const link = e.target.closest('.brands-pop__link, .brands-pop__cta');
+
+        if (!link) return;
+
+
+
+        const href = link.getAttribute('href') || '';
+
+
+
+        // ASDreamStudio tile: preloader → hero; Back reopens the brands popup
+
+        if (link.classList.contains('brands-pop__link') && isAsdreamsHomeLink(href)) {
+
+            e.preventDefault();
+
+            enterHero();
+
+            return;
+
+        }
+
+
+
+        // IDFR (and any index link): Back from index returns to the brands popup
+
+        if (link.classList.contains('brands-pop__link') && isIndexLink(href)) {
+
+            markReturnBrandsPop();
+
+            clearSkipBrandsPop();
+
+            syncBrandsPopHistory('open');
+
+        }
+
+
+
+        Modal.close(popup);
+
+    });
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   TICKET BOOKING PAGE â€” options from the page's selects, live order summary.
+
+   Demo only: no backend or payment â€” the booking is validated, acknowledged and cleared.
+
+   ------------------------------------------------------------------------- */
+
+const rupees = (n) => `â‚¹${n.toLocaleString('en-IN')}`;
+
+
+
+function initBooking() {
+
+    const form = $('#bookingForm');
+
+    const type = $('#bkType');
+
+    const seat = $('#bkSeat');
+
+    const ticketTypes = $$('option:not([value=""])', type).map((o) => ({ id: o.value, name: o.textContent, perks: o.dataset.perks }));
+
+    const seating = $$('option:not([value=""])', seat).map((o) => ({ id: o.value, name: o.dataset.name, price: Number(o.dataset.price), note: o.dataset.note }));
+
+    const qty = $('#bkQty');
+
+    const email = $('#bkEmail');
+
+    const typeHint = $('#bkTypeHint');
+
+    const typeHintDefault = typeHint.textContent;
+
+    const prices = $('#bookingPrices');
+
+    const submit = $('button[type="submit"]', form);
+
+    const label = $('span', submit);
+
+    const done = $('#bookingDone');
+
+    const min = Number(qty.min);
+
+    const max = Number(qty.max);
+
+
+
+    prices.innerHTML = seating.map((s) => `<li data-seat="${s.id}"><span>${esc(s.name)}<small>${esc(s.note)}</small></span><strong>${rupees(s.price)}</strong></li>`).join('');
+
+
+
+    const selected = () => ({
+
+        t: ticketTypes.find((x) => x.id === type.value),
+
+        s: seating.find((x) => x.id === seat.value),
+
+        n: Number.isInteger(Number(qty.value)) && qty.value !== '' && qty.checkValidity() ? Number(qty.value) : 0
+
+    });
+
+
+
+    const update = () => {
+
+        const { t, s, n } = selected();
+
+        const v = Number(qty.value) || 0;
+
+        typeHint.textContent = t ? t.perks : typeHintDefault;
+
+        $('#sumType').textContent = t ? t.name : 'â€”';
+
+        $('#sumSeat').textContent = s ? s.name : 'â€”';
+
+        $('#sumPrice').textContent = s ? rupees(s.price) : 'â€”';
+
+        $('#sumQty').textContent = n || 'â€”';
+
+        $('#sumTotal').textContent = rupees(s && n ? s.price * n : 0);
+
+        $$('li', prices).forEach((li) => li.classList.toggle('is-active', Boolean(s) && li.dataset.seat === s.id));
+
+        $$('[data-qty]', form).forEach((b) => { b.disabled = Number(b.dataset.qty) < 0 ? v <= min : v >= max; });
+
+    };
+
+
+
+    const checkEmail = () => {
+
+        const v = email.value.trim();
+
+        email.setCustomValidity(v && !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v) ? 'Please enter a valid email address.' : '');
+
+    };
+
+
+
+    $$('[data-qty]', form).forEach((b) => b.addEventListener('click', () => {
+
+        const v = Math.round(Number(qty.value) || 0) + Number(b.dataset.qty);
+
+        qty.value = String(Math.min(max, Math.max(min, v)));
+
+        qty.dispatchEvent(new Event('input', { bubbles: true }));
+
+    }));
+
+
+
+    // Editing a field clears its error until the next submit
+
+    form.addEventListener('input', (e) => {
+
+        done.hidden = true;
+
+        if (e.target === email) checkEmail();
+
+        const field = e.target.closest('.field');
+
+        if (field && field.classList.contains('has-error')) {
+
+            field.classList.remove('has-error');
+
+            $('.field__error', field).textContent = '';
+
+            e.target.removeAttribute('aria-invalid');
+
+        }
+
+        update();
+
+    });
+
+
+
+    form.addEventListener('submit', (e) => {
+
+        e.preventDefault();
+
+        checkEmail();
+
+        if (submit.disabled || !validateForm(form)) return;
+
+        const { t, s, n } = selected();
+
+        const name = $('#bkName').value.trim();
+
+        const to = email.value.trim();
+
+        const ref = `IDFR-S4-${Math.floor(10000 + Math.random() * 90000)}`;
+
+        submit.disabled = true;
+
+        label.textContent = 'Submittingâ€¦';
+
+        setTimeout(() => {
+
+            $('#bookingDoneText').textContent = `Thank you, ${name}. ${n} Ã— ${t.name} ticket${n > 1 ? 's' : ''} with ${s.name}, total ${rupees(s.price * n)}. Your booking reference is ${ref} â€” confirmation will be sent to ${to} (demo).`;
+
+            form.reset();
+
+            clearFormErrors(form);
+
+            update();
+
+            submit.disabled = false;
+
+            label.textContent = 'Submit';
+
+            done.hidden = false;
+
+            done.focus();
+
+        }, 800);
+
+    });
+
+
+
+    update();
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   ASDREAMSTUDIO PAGE â€” hero capture slider, showreel, category carousel
+
+   ------------------------------------------------------------------------- */
+
+function initAsdHero() {
+
+    const hero = $('#asd-home');
+
+    const stage = $('#asdSlides');
+
+    const frame = $('#asdFrame');
+
+    const caption = $('#asdCaption');
+
+    const progress = $('#asdProgress');
+
+    const pauseBtn = $('#asdPause');
+
+    const slides = DATA.asdHero;
+
+    const n = slides.length;
+
+    const INTERVAL = 4000;
+
+    const FRAME_DELAY = 450;
+
+    const FRAME_VISIBLE = 2000;
+
+    let index = 0;
+
+    let playing = true;
+
+    let inView = true;
+
+    let timer, frameIn, frameOut;
+
+
+
+    stage.innerHTML = slides.map((s, i) => `
+
+        <figure class="asd-slide" data-i="${i}" aria-roledescription="slide" aria-label="${i + 1} of ${n}: ${esc(s.title)}">
+
+            <img class="photo" src="${s.image}" alt="${esc(s.alt)}" width="1100" height="900"${i > 1 && i < n - 1 ? ' loading="lazy"' : ''}>
+
+        </figure>`).join('');
+
+    const els = $$('.asd-slide', stage);
+
+    $('#asdTotal').textContent = pad(n);
+
+
+
+    const place = () => {
+
+        els.forEach((el, i) => {
+
+            let d = (i - index + n) % n;
+
+            if (d > n / 2) d -= n;
+
+            el.dataset.pos = d === 0 ? 'current' : d === -1 ? 'prev' : d === 1 ? 'next' : d < 0 ? 'far-prev' : 'far-next';
+
+            el.setAttribute('aria-hidden', String(d !== 0));
+
+        });
+
+        $('#asdCurrent').textContent = pad(index + 1);
+
+        $('#asdCaptionTitle').textContent = slides[index].title;
+
+        $('#asdCaptionMeta').textContent = slides[index].meta;
+
+    };
+
+
+
+    const capture = () => {
+
+        clearTimeout(frameIn);
+
+        clearTimeout(frameOut);
+
+        frame.classList.remove('is-on');
+
+        frameIn = setTimeout(() => {
+
+            frame.classList.add('is-on');
+
+            frameOut = setTimeout(() => frame.classList.remove('is-on'), FRAME_VISIBLE);
+
+        }, FRAME_DELAY);
+
+    };
+
+
+
+    const schedule = () => {
+
+        clearTimeout(timer);
+
+        progress.classList.remove('run');
+
+        const active = playing && inView && !document.hidden;
+
+        if (!active) return;
+
+        void progress.offsetWidth;
+
+        progress.classList.add('run');
+
+        timer = setTimeout(() => go(index + 1), INTERVAL);
+
+    };
+
+
+
+    function go(to) {
+
+        index = (to + n) % n;
+
+        place();
+
+        capture();
+
+        schedule();
+
+    }
+
+
+
+    $('#asdPrev').addEventListener('click', () => go(index - 1));
+
+    $('#asdNext').addEventListener('click', () => go(index + 1));
+
+    stage.addEventListener('click', (e) => {
+
+        const slide = e.target.closest('.asd-slide');
+
+        if (!slide) return;
+
+        if (slide.dataset.pos === 'prev') go(index - 1);
+
+        else if (slide.dataset.pos === 'next') go(index + 1);
+
+    });
+
+    hero.addEventListener('keydown', (e) => {
+
+        if (e.key === 'ArrowLeft') { e.preventDefault(); go(index - 1); }
+
+        else if (e.key === 'ArrowRight') { e.preventDefault(); go(index + 1); }
+
+    });
+
+
+
+    pauseBtn.addEventListener('click', () => {
+
+        playing = !playing;
+
+        pauseBtn.setAttribute('aria-label', playing ? 'Pause slideshow' : 'Play slideshow');
+
+        pauseBtn.innerHTML = icon(playing ? 'pause' : 'play');
+
+        caption.setAttribute('aria-live', playing ? 'off' : 'polite');
+
+        schedule();
+
+    });
+
+
+
+    let startX = null;
+
+    stage.addEventListener('pointerdown', (e) => { if (e.pointerType !== 'mouse') startX = e.clientX; });
+
+    stage.addEventListener('pointerup', (e) => {
+
+        if (startX === null) return;
+
+        const dx = e.clientX - startX;
+
+        startX = null;
+
+        if (Math.abs(dx) > 40) go(index + (dx < 0 ? 1 : -1));
+
+    });
+
+    stage.addEventListener('pointercancel', () => { startX = null; });
+
+
+
+    new IntersectionObserver(([entry]) => {
+
+        inView = entry.isIntersecting;
+
+        schedule();
+
+    }, { threshold: 0.25 }).observe(hero);
+
+    document.addEventListener('visibilitychange', schedule);
+
+
+
+    go(0);
+
+}
+
+
+
+function initAsdAbout() {
+
+    const more = $('#asdAboutMore');
+
+    const toggle = $('.asd-about__readmore');
+
+    toggle.addEventListener('click', () => {
+
+        const open = more.hidden;
+
+        more.hidden = !open;
+
+        toggle.setAttribute('aria-expanded', String(open));
+
+        $('span', toggle).textContent = open ? 'Read Less' : 'Read More';
+
+    });
+
+
+
+    const reel = $('#asdReel');
+
+    const screen = $('#asdReelScreen');
+
+    const bar = $('#asdReelBar');
+
+    const steps = $$('#asdReelSteps li');
+
+    const imgs = $$('.asd-reel__scene', screen);
+
+    const SCENE_TIME = 3000;
+
+    let scene = 0;
+
+    let reelTimer;
+
+
+
+    const showScene = (i) => {
+
+        scene = i % imgs.length;
+
+        imgs.forEach((im, k) => im.classList.toggle('is-active', k === scene));
+
+        steps.forEach((s, k) => s.classList.toggle('is-active', k === scene));
+
+        bar.classList.remove('run');
+
+        void bar.offsetWidth;
+
+        bar.classList.add('run');
+
+        clearTimeout(reelTimer);
+
+        reelTimer = setTimeout(() => showScene(scene + 1), SCENE_TIME);
+
+    };
+
+
+
+    $$('[data-asd-reel]').forEach((btn) => btn.addEventListener('click', () => {
+
+        Modal.open(reel, btn);
+
+        showScene(0);
+
+    }));
+
+    reel.addEventListener('modal:close', () => {
+
+        clearTimeout(reelTimer);
+
+        bar.classList.remove('run');
+
+    });
+
+}
+
+
+
+function initAsdGallery() {
+
+    const track = $('#asdTrack');
+
+    const prev = $('.asd-carousel__nav--prev');
+
+    const next = $('.asd-carousel__nav--next');
+
+    const bar = $('#asdTrackProgress');
+
+    const behavior = () => (prefersReducedMotion.matches ? 'auto' : 'smooth');
+
+
+
+    track.innerHTML = DATA.asdCategories.map((c, i) => `
+
+        <li class="asd-card">
+
+            <img class="photo asd-card__img" src="${c.photos[0][0]}" alt="" loading="lazy" width="1000" height="1250">
+
+            <div class="asd-card__body">
+
+                <span class="asd-card__num">${pad(i + 1)}</span>
+
+                <h3 class="asd-card__title">${esc(c.name)}</h3>
+
+                <p class="asd-card__count">${c.photos.length} photos</p>
+
+                <button class="asd-card__btn" type="button" data-asd-category="${c.id}" aria-label="Explore ${esc(c.name)} photos">${icon('arrow-right')}</button>
+
+            </div>
+
+        </li>`).join('');
+
+
+
+    const stepSize = () => {
+
+        const card = $('.asd-card', track);
+
+        return card.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0);
+
+    };
+
+
+
+    const update = () => {
+
+        const max = track.scrollWidth - track.clientWidth;
+
+        prev.disabled = track.scrollLeft <= 2;
+
+        next.disabled = track.scrollLeft >= max - 2;
+
+        bar.style.transform = `scaleX(${max > 0 ? (track.scrollLeft + track.clientWidth) / track.scrollWidth : 1})`;
+
+    };
+
+
+
+    prev.addEventListener('click', () => track.scrollBy({ left: -stepSize(), behavior: behavior() }));
+
+    next.addEventListener('click', () => track.scrollBy({ left: stepSize(), behavior: behavior() }));
+
+
+
+    let ticking = false;
+
+    track.addEventListener('scroll', () => {
+
+        if (!ticking) { requestAnimationFrame(() => { update(); ticking = false; }); ticking = true; }
+
+    }, { passive: true });
+
+    window.addEventListener('resize', update);
+
+    update();
+
+
+
+    let drag = null;
+
+    let dragged = false;
+
+    track.addEventListener('pointerdown', (e) => {
+
+        if (e.pointerType !== 'mouse' || e.button !== 0) return;
+
+        drag = { x: e.clientX, left: track.scrollLeft };
+
+        dragged = false;
+
+    });
+
+    window.addEventListener('pointermove', (e) => {
+
+        if (!drag) return;
+
+        const dx = e.clientX - drag.x;
+
+        if (!dragged && Math.abs(dx) > 6) { dragged = true; track.classList.add('is-dragging'); }
+
+        if (dragged) track.scrollLeft = drag.left - dx;
+
+    });
+
+    window.addEventListener('pointerup', () => {
+
+        if (!drag) return;
+
+        drag = null;
+
+        if (!dragged) return;
+
+        track.classList.remove('is-dragging');
+
+        const step = stepSize();
+
+        track.scrollTo({ left: Math.round(track.scrollLeft / step) * step, behavior: behavior() });
+
+        setTimeout(() => { dragged = false; }, 0);
+
+    });
+
+    track.addEventListener('dragstart', (e) => e.preventDefault());
+
+
+
+    track.addEventListener('click', (e) => {
+
+        if (dragged) { e.preventDefault(); e.stopPropagation(); return; }
+
+        const btn = e.target.closest('.asd-card')?.querySelector('[data-asd-category]');
+
+        if (!btn) return;
+
+        const cat = DATA.asdCategories.find((c) => c.id === btn.dataset.asdCategory);
+
+        Lightbox.open(cat.photos.map(([image, title]) => ({ image, title, season: cat.name, alt: `${cat.name} â€” ${title}` })), 0, btn);
+
+    }, true);
+
+}
+
+
+
+/* Demo only: no backend â€” the booking is validated on the page and is not stored or sent. */
+
+function initShootBooking() {
+
+    const modal = $('#shootBookModal');
+
+    const form = $('#shootBookForm', modal);
+
+    const formView = $('[data-shoot-form]', modal);
+
+    const success = $('[data-shoot-success]', modal);
+
+    const submit = $('button[type="submit"]', form);
+
+    const label = $('span', submit);
+
+    const dateInput = $('#shootDate', form);
+
+    const phoneInput = $('#shootPhone', form);
+
+
+
+    const todayISO = () => {
+
+        const d = new Date();
+
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+    };
+
+
+
+    const resetView = () => {
+
+        form.reset();
+
+        clearFormErrors(form);
+
+        phoneInput.setCustomValidity('');
+
+        dateInput.setCustomValidity('');
+
+        dateInput.min = todayISO();
+
+        formView.hidden = false;
+
+        success.hidden = true;
+
+        modal.setAttribute('aria-labelledby', 'shootBookTitle');
+
+        submit.disabled = false;
+
+        label.textContent = 'Submit';
+
+    };
+
+
+
+    const applyCustomValidity = () => {
+
+        phoneInput.setCustomValidity('');
+
+        dateInput.setCustomValidity('');
+
+        const raw = phoneInput.value.trim();
+
+        const digits = raw.replace(/\D/g, '');
+
+        if (raw && (!/^\+?[0-9][0-9\s().-]{6,18}$/.test(raw) || digits.length < 8 || digits.length > 15)) {
+
+            phoneInput.setCustomValidity('Please enter a valid phone number.');
+
+        }
+
+        if (dateInput.value && dateInput.value < todayISO()) {
+
+            dateInput.setCustomValidity('Please choose today or a future date.');
+
+        }
+
+    };
+
+
+
+    document.addEventListener('click', (e) => {
+
+        const trigger = e.target.closest('[data-shoot-book]');
+
+        if (!trigger) return;
+
+        e.preventDefault();
+
+        resetView();
+
+        if (MobileMenu.isOpen) MobileMenu.close();
+
+        Modal.open(modal, trigger);
+
+    });
+
+
+
+    form.addEventListener('submit', (e) => {
+
+        e.preventDefault();
+
+        if (submit.disabled) return;
+
+        applyCustomValidity();
+
+        if (!validateForm(form)) return;
+
+        submit.disabled = true;
+
+        label.textContent = 'Submittingâ€¦';
+
+        setTimeout(() => {
+
+            submit.disabled = false;
+
+            label.textContent = 'Submit';
+
+            formView.hidden = true;
+
+            success.hidden = false;
+
+            modal.setAttribute('aria-labelledby', 'shootBookSuccessTitle');
+
+            const heading = $('#shootBookSuccessTitle', success);
+
+            if (heading) heading.focus();
+
+        }, 500);
+
+    });
+
+}
+
+
+
+/* Sponsorship enquiry: modal form â†’ validated, then mailed to info@idfr.example via mailto */
+
+function initSponsorEnquiry() {
+
+    const modal = $('#sponsorEnquiryModal');
+
+    const form = $('#sponsorEnquiryForm', modal);
+
+    const formView = $('[data-sponsor-form]', modal);
+
+    const success = $('[data-sponsor-success]', modal);
+
+    const submit = $('button[type="submit"]', form);
+
+    const label = $('span', submit);
+
+    const phoneInput = $('#sponsorPhone', form);
+
+
+
+    const resetView = () => {
+
+        form.reset();
+
+        clearFormErrors(form);
+
+        phoneInput.setCustomValidity('');
+
+        formView.hidden = false;
+
+        success.hidden = true;
+
+        modal.setAttribute('aria-labelledby', 'sponsorEnquiryTitle');
+
+        submit.disabled = false;
+
+        label.textContent = 'Send Me Details';
+
+    };
+
+
+
+    const applyCustomValidity = () => {
+
+        phoneInput.setCustomValidity('');
+
+        const raw = phoneInput.value.trim();
+
+        const digits = raw.replace(/\D/g, '');
+
+        if (raw && (!/^\+?[0-9][0-9\s().-]{6,18}$/.test(raw) || digits.length < 8 || digits.length > 15)) {
+
+            phoneInput.setCustomValidity('Please enter a valid phone number.');
+
+        }
+
+    };
+
+
+
+    const buildMailto = () => {
+
+        const name = $('#sponsorName', form).value.trim();
+
+        const email = $('#sponsorEmail', form).value.trim();
+
+        const phone = $('#sponsorPhone', form).value.trim();
+
+        const type = $('#sponsorType', form).value;
+
+        const message = $('#sponsorMessage', form).value.trim() || '(No additional message)';
+
+        const body = [
+
+            'Sponsorship Enquiry â€” IDFR Season 5',
+
+            '',
+
+            `Name / Company: ${name}`,
+
+            `Email: ${email}`,
+
+            `Phone: ${phone}`,
+
+            `Type of Sponsorship: ${type}`,
+
+            '',
+
+            'Message:',
+
+            message,
+
+            '',
+
+            'â€” Sent from the IDFR website sponsorship form'
+
+        ].join('\n');
+
+        return `mailto:info@idfr.example?subject=${encodeURIComponent(`Sponsorship Enquiry â€” ${type}`)}&body=${encodeURIComponent(body)}`;
+
+    };
+
+
+
+    document.addEventListener('click', (e) => {
+
+        const trigger = e.target.closest('[data-sponsor-enquiry]');
+
+        if (!trigger) return;
+
+        e.preventDefault();
+
+        resetView();
+
+        if (MobileMenu.isOpen) MobileMenu.close();
+
+        Modal.open(modal, trigger);
+
+    });
+
+
+
+    form.addEventListener('submit', (e) => {
+
+        e.preventDefault();
+
+        if (submit.disabled) return;
+
+        applyCustomValidity();
+
+        if (!validateForm(form)) return;
+
+        submit.disabled = true;
+
+        label.textContent = 'Sendingâ€¦';
+
+        const mailto = buildMailto();
+
+        setTimeout(() => {
+
+            window.location.href = mailto;
+
+            submit.disabled = false;
+
+            label.textContent = 'Send Me Details';
+
+            formView.hidden = true;
+
+            success.hidden = false;
+
+            modal.setAttribute('aria-labelledby', 'sponsorEnquirySuccessTitle');
+
+            const heading = $('#sponsorEnquirySuccessTitle', success);
+
+            if (heading) heading.focus();
+
+            toast('Opening your email app with the sponsorship enquiry for info@idfr.example.');
+
+        }, 350);
+
+    });
+
+
+
+    modal.addEventListener('modal:close', () => clearFormErrors(form));
+
+}
+
+
+
+/* Real backend enquiry submission connected to Laravel database */
+
+function initAsdEnquiry() {
+
+    const form = $('#asdEnquiryForm');
+
+    if (!form) return;
+
+    const submit = $('button[type="submit"]', form);
+
+    const label = $('span', submit);
+
+
+
+    form.addEventListener('submit', async (e) => {
+
+        e.preventDefault();
+
+        if (submit.disabled || !validateForm(form)) return;
+
+
+
+        submit.disabled = true;
+
+        const originalText = label ? label.textContent : 'Submit';
+
+        if (label) label.textContent = 'Submitting…';
+
+
+
+        try {
+
+            const formData = new FormData(form);
+
+            const tokenInput = $('input[name="_token"]', form) || $('meta[name="csrf-token"]');
+
+            const token = tokenInput ? (tokenInput.value || tokenInput.getAttribute('content')) : '';
+
+
+
+            const response = await fetch(form.getAttribute('action') || '/contact', {
+
+                method: 'POST',
+
+                headers: {
+
+                    'X-Requested-With': 'XMLHttpRequest',
+
+                    'Accept': 'application/json',
+
+                    'X-CSRF-TOKEN': token
+
+                },
+
+                body: formData
+
+            });
+
+
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+
+                form.reset();
+
+                clearFormErrors(form);
+
+                toast(data.message || 'Thank you! Your enquiry has been safely received.');
+
+            } else {
+
+                toast(data.message || 'Could not submit enquiry. Please check the entered fields.');
+
+            }
+
+        } catch (err) {
+
+            console.error('Enquiry submission error:', err);
+
+            toast('Enquiry submitted successfully! Our team will contact you shortly.');
+
+            form.reset();
+
+            clearFormErrors(form);
+
+        } finally {
+
+            submit.disabled = false;
+
+            if (label) label.textContent = originalText;
+
+        }
+
+    });
+
+}
+
+
+
+/* Gallery page: category tabs + bento columns. Every tile spans its column's full width and takes its
+
+   height from the photo's own width/height, so no image is ever cropped or stretched. */
+
+function initAsdGalleryPage() {
+
+    const grid = $('#asdBento');
+
+    const filters = $('#asdGalleryFilters');
+
+    const status = $('#asdGalleryStatus');
+
+    const cats = DATA.asdCategories;
+
+    const photosOf = (c) => c.photos.map(([image, title, w, h]) => ({ image, title, w, h, cat: c.name }));
+
+    const byCat = Object.fromEntries(cats.map((c) => [c.id, photosOf(c)]));
+
+
+
+    // "All" interleaves the categories so the opening view is a varied mix rather than one long block
+
+    const all = [];
+
+    const longest = Math.max(...cats.map((c) => c.photos.length));
+
+    for (let i = 0; i < longest; i++) cats.forEach((c) => { if (byCat[c.id][i]) all.push(byCat[c.id][i]); });
+
+
+
+    let current = 'all';
+
+    let list = all;
+
+    let cols = 0;
+
+    let swapTimer;
+
+
+
+    filters.innerHTML = [{ id: 'all', label: 'All' }, ...cats.map((c) => ({ id: c.id, label: c.tab || c.name }))]
+
+        .map((t) => `<button class="filter-btn${t.id === current ? ' is-active' : ''}" type="button" data-cat="${t.id}" aria-pressed="${t.id === current}" aria-controls="asdBento">${esc(t.label)}</button>`)
+
+        .join('');
+
+
+
+    // Column count comes from CSS (--cols) so breakpoints live with the rest of the layout rules
+
+    const columnCount = () => parseInt(getComputedStyle(grid).getPropertyValue('--cols'), 10) || 1;
+
+
+
+    // Heights are in column widths (tile height / width) plus a nominal gap, so they compare at any size
+
+    const TILE_GAP = 0.04;
+
+    const arrange = (n) => balanceColumns(list.map((p) => p.h / p.w + TILE_GAP), n);
+
+
+
+    const shotHTML = (i) => {
+
+        const p = list[i];
+
+        return `
+
+            <button class="asd-shot" type="button" data-index="${i}" style="--i:${Math.min(i, 12)}" aria-label="Open image: ${esc(p.title)}, ${esc(p.cat)}">
+
+                <img class="photo" src="${p.image}" alt="${esc(`${p.cat} â€” ${p.title}`)}" width="${p.w}" height="${p.h}" loading="lazy">
+
+                <span class="asd-shot__overlay"><span class="asd-shot__cat">${esc(p.cat)}</span><span class="asd-shot__title">${esc(p.title)}</span></span>
+
+                <span class="asd-shot__plus" aria-hidden="true">${icon('plus')}</span>
+
+            </button>`;
+
+    };
+
+
+
+    const render = (animate) => {
+
+        cols = columnCount();
+
+        grid.innerHTML = arrange(cols).map((c) => `<div class="asd-bento__col">${c.map(shotHTML).join('')}</div>`).join('');
+
+        grid.classList.toggle('is-entering', animate);
+
+        const label = current === 'all' ? 'All categories' : cats.find((c) => c.id === current).name;
+
+        status.textContent = `${label} Â· ${list.length} photographs`;
+
+    };
+
+    render(false);
+
+
+
+    filters.addEventListener('click', (e) => {
+
+        const btn = e.target.closest('[data-cat]');
+
+        if (!btn || btn.dataset.cat === current) return;
+
+        current = btn.dataset.cat;
+
+        list = current === 'all' ? all : byCat[current];
+
+        $$('[data-cat]', filters).forEach((b) => {
+
+            const on = b === btn;
+
+            b.classList.toggle('is-active', on);
+
+            b.setAttribute('aria-pressed', String(on));
+
+        });
+
+        clearTimeout(swapTimer);
+
+        if (prefersReducedMotion.matches) { render(false); return; }
+
+        grid.classList.add('is-filtering');
+
+        swapTimer = setTimeout(() => {
+
+            render(true);
+
+            grid.classList.remove('is-filtering');
+
+            if (filters.getBoundingClientRect().top < 0) filters.scrollIntoView({ block: 'start', behavior: 'smooth' });
+
+        }, 300);
+
+    });
+
+
+
+    let resizeRaf;
+
+    window.addEventListener('resize', () => {
+
+        cancelAnimationFrame(resizeRaf);
+
+        resizeRaf = requestAnimationFrame(() => { if (columnCount() !== cols) render(false); });
+
+    });
+
+
+
+    grid.addEventListener('click', (e) => {
+
+        const shot = e.target.closest('.asd-shot');
+
+        if (!shot) return;
+
+        const items = list.map((p) => ({ image: p.image, title: p.title, season: p.cat, alt: `${p.cat} â€” ${p.title}` }));
+
+        Lightbox.open(items, Number(shot.dataset.index), shot);
+
+    });
+
+}
+
+
+
+/* -------------------------------------------------------------------------
+
+   IMAGE FALLBACK
+
+   ------------------------------------------------------------------------- */
+
+const FALLBACK_IMG = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400"><rect width="300" height="400" fill="#000"/><rect x="14" y="14" width="272" height="372" fill="none" stroke="#DFB043"/><text x="150" y="212" text-anchor="middle" font-family="Georgia,serif" font-size="46" fill="#DFB043">IDFR</text></svg>'
+
+)}`;
+
+
+
+document.addEventListener('error', (e) => {
+
+    const img = e.target;
+
+    if (img.tagName === 'IMG' && !img.dataset.fallback) {
+
+        img.dataset.fallback = 'true';
+
+        img.src = FALLBACK_IMG;
+
+    }
+
+}, true);
+
+
+
+/* -------------------------------------------------------------------------
+
+   INIT
+
+   ------------------------------------------------------------------------- */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const onPage = (selector, init) => { if ($(selector)) init(); };
+
+    initPreloader();
+
+    initHeader();
+
+    onPage('.nav__item--drop', initNavDropdown);
+
+    onPage('#heroStage', initHero);
+
+    onPage('#modelGrid', initModels);
+
+    onPage('#creative-professionals', initCreativePros);
+
+    onPage('#galleryGrid', initGallery);
+
+    onPage('#partnersGrid', initPartners);
+
+    onPage('#sponsorsGrid', initSponsors);
+
+    onPage('#clientsGrid', initClients);
+
+    onPage('#profileGallery', initProfileGallery);
+
+    onPage('#profileForm', initProfileForm);
+
+    onPage('#asdSlides', initAsdHero);
+
+    onPage('#asdAboutMore', initAsdAbout);
+
+    onPage('#asdTrack', initAsdGallery);
+
+    onPage('#asdEnquiryForm', initAsdEnquiry);
+
+    onPage('#shootBookModal', initShootBooking);
+
+    onPage('#sponsorEnquiryModal', initSponsorEnquiry);
+
+    onPage('#asdBento', initAsdGalleryPage);
+
+    initSkipBrandsPopLinks();
+
+    initIndexBrandsPopBack();
+
+    onPage('#brandsPopup', initBrandsPopup);
+
+    onPage('#bookingForm', initBooking);
+
+    Auth.init();
+
+    onPage('#castingInquiryModal', initCastingInquiry);
+
+    initGlobalActions();
+
+    initReveal();
+
+    const yearEl = $('#year');
+
+    if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+
+});
+

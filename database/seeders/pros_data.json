@@ -1,0 +1,1106 @@
+[
+  {
+    "id_code": "makeup-artist-ananya-menon",
+    "category": "makeup-artist",
+    "name": "Ananya Menon",
+    "profile_photo": "images/creative/makeup-artist/ananya-menon.jpg",
+    "location": "Kozhikode, Kerala",
+    "experience": "4 years",
+    "biography": "Ananya creates soft, luminous bridal looks and bold runway faces, and has worked backstage at IDFR shows since Season 2. She is known for long-wear makeup that stays camera-ready from the first ritual to the last dance.",
+    "services": [
+      "Bridal makeup",
+      "Engagement makeup",
+      "Fashion-show makeup",
+      "Editorial makeup",
+      "Party makeup"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "makeup-artist-diya-thomas",
+    "category": "makeup-artist",
+    "name": "Diya Thomas",
+    "profile_photo": "images/creative/makeup-artist/diya-thomas.jpg",
+    "location": "Kochi, Kerala",
+    "experience": "6 years",
+    "biography": "Diya specialises in high-definition makeup for film, print and live events. She leads the backstage beauty team on IDFR show nights, keeping dozens of looks consistent under bright runway lights.",
+    "services": [
+      "HD bridal makeup",
+      "Runway and backstage makeup",
+      "Film and TV makeup",
+      "Airbrush makeup",
+      "Pre-wedding shoot makeup"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "makeup-artist-meera-nair",
+    "category": "makeup-artist",
+    "name": "Meera Nair",
+    "profile_photo": "images/creative/makeup-artist/meera-nair.jpg",
+    "location": "Kannur, Kerala",
+    "experience": "3 years",
+    "biography": "Meera blends traditional Kerala bridal styles with contemporary techniques, keeping skin fresh and natural even in coastal humidity. Her calm, unhurried approach puts brides at ease.",
+    "services": [
+      "Kerala bridal makeup",
+      "Reception makeup",
+      "Natural and no-makeup looks",
+      "Saree draping",
+      "Bridesmaid makeup"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "makeup-artist-fathima-rahman",
+    "category": "makeup-artist",
+    "name": "Fathima Rahman",
+    "profile_photo": "images/creative/makeup-artist/fathima-rahman.jpg",
+    "location": "Kasaragod, Kerala",
+    "experience": "5 years",
+    "biography": "Fathima specialises in bridal makeup and hijab-friendly styling. Her detail-driven work and steady hand make her a favourite for busy wedding mornings with large bridal parties.",
+    "services": [
+      "Bridal makeup",
+      "Hijab styling",
+      "Nikah and reception looks",
+      "Engagement makeup",
+      "Family and guest makeup"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "makeup-artist-neha-joseph",
+    "category": "makeup-artist",
+    "name": "Neha Joseph",
+    "profile_photo": "images/creative/makeup-artist/neha-joseph.jpg",
+    "location": "Thrissur, Kerala",
+    "experience": "2 years",
+    "biography": "An emerging artist from the IDFR network, Neha brings colour-led, editorial creativity to fashion shoots, festivals and themed events, and loves building a look around a single bold detail.",
+    "services": [
+      "Editorial makeup",
+      "Creative and colour makeup",
+      "Festival looks",
+      "Photoshoot makeup",
+      "Party makeup"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "makeup-artist-riya-mathew",
+    "category": "makeup-artist",
+    "name": "Riya Mathew",
+    "profile_photo": "images/creative/makeup-artist/riya-mathew.jpg",
+    "location": "Bengaluru, Karnataka",
+    "experience": "7 years",
+    "biography": "Riya works across Bengaluru and Kerala on commercial campaigns, celebrity events and luxury weddings. She also mentors new artists at IDFR beauty workshops.",
+    "services": [
+      "Celebrity and event makeup",
+      "Commercial campaign makeup",
+      "Luxury bridal makeup",
+      "Airbrush makeup",
+      "Makeup workshops"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "hairstylist-kavya-raj",
+    "category": "hairstylist",
+    "name": "Kavya Raj",
+    "profile_photo": "images/creative/hairstylist/kavya-raj.jpg",
+    "location": "Kochi, Kerala",
+    "experience": "5 years",
+    "biography": "Kavya designs hairstyles that move beautifully on the runway and hold through long bridal days, from sleek editorial looks to intricate updos finished with fresh flowers.",
+    "services": [
+      "Bridal hairstyling",
+      "Editorial hairstyles",
+      "Fashion-show styling",
+      "Hair updos",
+      "Event hairstyling"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "hairstylist-nisha-varghese",
+    "category": "hairstylist",
+    "name": "Nisha Varghese",
+    "profile_photo": "images/creative/hairstylist/nisha-varghese.jpg",
+    "location": "Kozhikode, Kerala",
+    "experience": "8 years",
+    "biography": "A senior stylist and colour specialist, Nisha has styled models for three IDFR seasons and leads the show's backstage hair team, planning every look before the first model takes the stage.",
+    "services": [
+      "Runway hairstyling",
+      "Hair colour consultation",
+      "Blow-dry and styling",
+      "Bridal hairstyling",
+      "Backstage team management"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "hairstylist-sneha-das",
+    "category": "hairstylist",
+    "name": "Sneha Das",
+    "profile_photo": "images/creative/hairstylist/sneha-das.jpg",
+    "location": "Kannur, Kerala",
+    "experience": "3 years",
+    "biography": "Sneha specialises in traditional Kerala bridal hair, from jasmine-adorned braids to classic temple-style buns, and adapts each look to the bride's jewellery and saree.",
+    "services": [
+      "Kerala bridal hairstyling",
+      "Jasmine and flower styling",
+      "Braids and buns",
+      "Engagement hairstyling",
+      "Hair accessory styling"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "hairstylist-aiswarya-mohan",
+    "category": "hairstylist",
+    "name": "Aiswarya Mohan",
+    "profile_photo": "images/creative/hairstylist/aiswarya-mohan.jpg",
+    "location": "Thrissur, Kerala",
+    "experience": "4 years",
+    "biography": "Aiswarya creates soft waves, textured braids and modern bridal styles, with a focus on healthy hair and a hold that lasts from the morning ceremony to the evening reception.",
+    "services": [
+      "Bridal hairstyling",
+      "Curls and waves",
+      "Textured braids",
+      "Party hairstyling",
+      "Pre-event hair care"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "hairstylist-maria-george",
+    "category": "hairstylist",
+    "name": "Maria George",
+    "profile_photo": "images/creative/hairstylist/maria-george.jpg",
+    "location": "Kasaragod, Kerala",
+    "experience": "6 years",
+    "biography": "Maria works on editorial shoots and fashion films, shaping hair for camera, wind and studio lights with a quick, calm touch on set.",
+    "services": [
+      "Editorial hairstyling",
+      "Photoshoot and film styling",
+      "Hair extension styling",
+      "Sleek and glam looks",
+      "Event hairstyling"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "hairstylist-devika-suresh",
+    "category": "hairstylist",
+    "name": "Devika Suresh",
+    "profile_photo": "images/creative/hairstylist/devika-suresh.jpg",
+    "location": "Bengaluru, Karnataka",
+    "experience": "2 years",
+    "biography": "Devika is a fresh voice in the IDFR network, known for playful updos, accessorised looks and fast, tidy quick changes backstage.",
+    "services": [
+      "Updos and buns",
+      "Accessorised hairstyles",
+      "Backstage quick changes",
+      "Party hairstyling",
+      "Bridesmaid hairstyling"
+    ],
+    "portfolio_images": []
+  },
+  {
+    "id_code": "photographer-arjun-das",
+    "category": "photographer",
+    "name": "Arjun Das",
+    "profile_photo": "images/creative/photographer/arjun-das.jpg",
+    "location": "Kochi, Kerala",
+    "experience": "8 years",
+    "biography": "Arjun leads wedding and destination shoots for ASDreams Studio, capturing candid emotion in natural light, from Kerala's backwaters to windswept coastlines.",
+    "services": [
+      "Wedding photography",
+      "Destination shoots",
+      "Pre-wedding shoots",
+      "Portrait sessions",
+      "Album design"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/portrait-01.jpg",
+        "caption": "Portrait session"
+      },
+      {
+        "image": "images/asdreams/gallery/wedding-01.jpg",
+        "caption": "Beach wedding"
+      },
+      {
+        "image": "images/asdreams/gallery/destination-01.jpg",
+        "caption": "Destination shoot"
+      }
+    ]
+  },
+  {
+    "id_code": "photographer-nikhil-varma",
+    "category": "photographer",
+    "name": "Nikhil Varma",
+    "profile_photo": "images/creative/photographer/nikhil-varma.jpg",
+    "location": "Kozhikode, Kerala",
+    "experience": "5 years",
+    "biography": "Nikhil photographs fashion editorials and model portfolios, and shoots the IDFR runway from the photographers' pit every season.",
+    "services": [
+      "Fashion and editorial photography",
+      "Model portfolios",
+      "Runway photography",
+      "Couple shoots",
+      "Lookbook photography"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/portrait-02.jpg",
+        "caption": "Model portfolio"
+      },
+      {
+        "image": "images/asdreams/gallery/engagement-02.jpg",
+        "caption": "Engagement shoot"
+      },
+      {
+        "image": "images/asdreams/gallery/destination-02.jpg",
+        "caption": "Pre-wedding shoot"
+      }
+    ]
+  },
+  {
+    "id_code": "photographer-rahul-menon",
+    "category": "photographer",
+    "name": "Rahul Menon",
+    "profile_photo": "images/creative/photographer/rahul-menon.jpg",
+    "location": "Kannur, Kerala",
+    "experience": "6 years",
+    "biography": "Rahul's warm, documentary-style coverage tells the full story of a wedding day, from quiet moments with family to the energy of the reception.",
+    "services": [
+      "Candid wedding photography",
+      "Engagement shoots",
+      "Portrait photography",
+      "Family sessions",
+      "Photo editing and retouching"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/portrait-03.jpg",
+        "caption": "Portrait session"
+      },
+      {
+        "image": "images/asdreams/gallery/wedding-03.jpg",
+        "caption": "Candid wedding"
+      },
+      {
+        "image": "images/asdreams/gallery/engagement-03.jpg",
+        "caption": "Engagement details"
+      }
+    ]
+  },
+  {
+    "id_code": "photographer-akhil-joseph",
+    "category": "photographer",
+    "name": "Akhil Joseph",
+    "profile_photo": "images/creative/photographer/akhil-joseph.jpg",
+    "location": "Thrissur, Kerala",
+    "experience": "4 years",
+    "biography": "Akhil loves big landscapes and bold light, pairing couples and models with dramatic locations for travel, outdoor and destination stories.",
+    "services": [
+      "Destination and travel shoots",
+      "Outdoor portraits",
+      "Wedding photography",
+      "Drone photography",
+      "Pre-wedding shoots"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/portrait-04.jpg",
+        "caption": "Outdoor portrait"
+      },
+      {
+        "image": "images/asdreams/gallery/wedding-04.jpg",
+        "caption": "Wedding celebration"
+      },
+      {
+        "image": "images/asdreams/gallery/destination-03.jpg",
+        "caption": "Travel shoot"
+      }
+    ]
+  },
+  {
+    "id_code": "photographer-vivek-nair",
+    "category": "photographer",
+    "name": "Vivek Nair",
+    "profile_photo": "images/creative/photographer/vivek-nair.jpg",
+    "location": "Bengaluru, Karnataka",
+    "experience": "7 years",
+    "biography": "Vivek brings a studio photographer's eye for detail to portraits, jewellery and wedding details, with clean lighting and carefully styled frames.",
+    "services": [
+      "Studio portraits",
+      "Product and jewellery photography",
+      "Wedding detail shots",
+      "Commercial photography",
+      "Professional headshots"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/portrait-05.jpg",
+        "caption": "Studio portrait"
+      },
+      {
+        "image": "images/asdreams/gallery/wedding-02.jpg",
+        "caption": "Wedding details"
+      },
+      {
+        "image": "images/asdreams/gallery/engagement-04.jpg",
+        "caption": "Jewellery detail"
+      }
+    ]
+  },
+  {
+    "id_code": "photographer-adithya-raj",
+    "category": "photographer",
+    "name": "Adithya Raj",
+    "profile_photo": "images/creative/photographer/adithya-raj.jpg",
+    "location": "Kasaragod, Kerala",
+    "experience": "3 years",
+    "biography": "Adithya covers concerts, festivals and celebrations, moving quickly through crowds to catch the moments that define an event.",
+    "services": [
+      "Event photography",
+      "Concert and stage photography",
+      "Wedding photography",
+      "Corporate events",
+      "Same-day highlights"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/event-03.jpg",
+        "caption": "Concert coverage"
+      },
+      {
+        "image": "images/asdreams/gallery/wedding-05.jpg",
+        "caption": "Wedding coverage"
+      },
+      {
+        "image": "images/asdreams/gallery/destination-04.jpg",
+        "caption": "Evening location shoot"
+      }
+    ]
+  },
+  {
+    "id_code": "videographer-kevin-thomas",
+    "category": "videographer",
+    "name": "Kevin Thomas",
+    "profile_photo": "images/creative/videographer/kevin-thomas.jpg",
+    "location": "Kochi, Kerala",
+    "experience": "7 years",
+    "biography": "Kevin directs and shoots cinematic wedding films and fashion features for ASDreams Studio, with an eye for movement, music and colour.",
+    "services": [
+      "Cinematic wedding films",
+      "Fashion films",
+      "Highlight reels",
+      "Colour grading",
+      "Drone videography"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/video-stage-rig.jpg",
+        "caption": "Behind the scenes"
+      },
+      {
+        "image": "images/asdreams/gallery/wedding-06.jpg",
+        "caption": "Wedding film still"
+      },
+      {
+        "image": "images/asdreams/gallery/film-01.jpg",
+        "caption": "Fashion film edit"
+      }
+    ]
+  },
+  {
+    "id_code": "videographer-alan-mathew",
+    "category": "videographer",
+    "name": "Alan Mathew",
+    "profile_photo": "images/creative/videographer/alan-mathew.jpg",
+    "location": "Kozhikode, Kerala",
+    "experience": "5 years",
+    "biography": "Alan produces brand films, interviews and corporate videos, turning a client's message into a clear story with clean sound and steady visuals.",
+    "services": [
+      "Brand and promotional videos",
+      "Interviews and documentaries",
+      "Corporate event coverage",
+      "Script and storyboard support",
+      "Video editing"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/video-interview-set.jpg",
+        "caption": "Interview set-up"
+      },
+      {
+        "image": "images/asdreams/gallery/event-05.jpg",
+        "caption": "Corporate event film"
+      },
+      {
+        "image": "images/asdreams/gallery/film-02.jpg",
+        "caption": "Brand film screening"
+      }
+    ]
+  },
+  {
+    "id_code": "videographer-rohit-krishna",
+    "category": "videographer",
+    "name": "Rohit Krishna",
+    "profile_photo": "images/creative/videographer/rohit-krishna.jpg",
+    "location": "Kannur, Kerala",
+    "experience": "4 years",
+    "biography": "Rohit films concerts, fashion shows and live events with multi-camera set-ups, and has covered the IDFR runway for the last two seasons.",
+    "services": [
+      "Fashion-show coverage",
+      "Live event filming",
+      "Multi-camera production",
+      "Behind-the-scenes films",
+      "Social media reels"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/video-concert-crew.jpg",
+        "caption": "Live concert coverage"
+      },
+      {
+        "image": "images/asdreams/gallery/event-02.jpg",
+        "caption": "Event highlight film"
+      },
+      {
+        "image": "images/asdreams/gallery/event-04.jpg",
+        "caption": "Live show"
+      }
+    ]
+  },
+  {
+    "id_code": "videographer-basil-george",
+    "category": "videographer",
+    "name": "Basil George",
+    "profile_photo": "images/creative/videographer/basil-george.jpg",
+    "location": "Thrissur, Kerala",
+    "experience": "6 years",
+    "biography": "Basil's wedding cinematography is gentle and story-led, built around vows, speeches and the small moments families want to watch again and again.",
+    "services": [
+      "Wedding cinematography",
+      "Pre-wedding films",
+      "Engagement films",
+      "Documentary edits",
+      "Same-day edits"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/video-cinema-camera.jpg",
+        "caption": "Behind the scenes"
+      },
+      {
+        "image": "images/asdreams/hero-03.jpg",
+        "caption": "Wedding film still"
+      },
+      {
+        "image": "images/asdreams/gallery/engagement-05.jpg",
+        "caption": "Ceremony film still"
+      }
+    ]
+  },
+  {
+    "id_code": "videographer-jithin-raj",
+    "category": "videographer",
+    "name": "Jithin Raj",
+    "profile_photo": "images/creative/videographer/jithin-raj.jpg",
+    "location": "Bengaluru, Karnataka",
+    "experience": "3 years",
+    "biography": "Jithin creates fast-paced reels and behind-the-scenes content for brands, models and events, shooting light and handheld so nothing slows the day down.",
+    "services": [
+      "Instagram and YouTube reels",
+      "Behind-the-scenes content",
+      "Event highlight films",
+      "Gimbal and handheld filming",
+      "Short-form editing"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/video-monitor.jpg",
+        "caption": "Event reel"
+      },
+      {
+        "image": "images/asdreams/gallery/event-01.jpg",
+        "caption": "Social media reel"
+      },
+      {
+        "image": "images/asdreams/gallery/event-06.jpg",
+        "caption": "Event highlights"
+      }
+    ]
+  },
+  {
+    "id_code": "videographer-sreehari-das",
+    "category": "videographer",
+    "name": "Sreehari Das",
+    "profile_photo": "images/creative/videographer/sreehari-das.jpg",
+    "location": "Kasaragod, Kerala",
+    "experience": "8 years",
+    "biography": "Sreehari is ASDreams Studio's senior editor and colourist, shaping raw footage into polished films with careful pacing, sound and grade.",
+    "services": [
+      "Video editing",
+      "Colour grading",
+      "Sound design and mixing",
+      "Wedding films",
+      "Promotional videos"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/video-edit-suite.jpg",
+        "caption": "Editing suite"
+      },
+      {
+        "image": "images/asdreams/gallery/film-03.jpg",
+        "caption": "Promo shoot"
+      },
+      {
+        "image": "images/asdreams/hero-06.jpg",
+        "caption": "Wedding film still"
+      }
+    ]
+  },
+  {
+    "id_code": "fashion-designer-tara-nair",
+    "category": "fashion-designer",
+    "name": "Tara Nair",
+    "profile_photo": "images/creative/fashion-designer/tara-nair.jpg",
+    "location": "Kochi, Kerala",
+    "experience": "6 years",
+    "biography": "Tara designs contemporary womenswear rooted in Kerala handloom, and has shown three collections on the IDFR runway.",
+    "services": [
+      "Bridal and occasion wear",
+      "Custom couture",
+      "Handloom collections",
+      "Styling consultations",
+      "Runway collections"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-sketches.jpg",
+        "caption": "Collection sketches"
+      },
+      {
+        "image": "images/gallery/s3-01.jpg",
+        "caption": "Summer collection"
+      },
+      {
+        "image": "images/gallery/s1-05.jpg",
+        "caption": "Handloom capsule"
+      }
+    ]
+  },
+  {
+    "id_code": "fashion-designer-isha-menon",
+    "category": "fashion-designer",
+    "name": "Isha Menon",
+    "profile_photo": "images/creative/fashion-designer/isha-menon.jpg",
+    "location": "Kozhikode, Kerala",
+    "experience": "4 years",
+    "biography": "Isha creates evening gowns and reception wear with rich colour and hand embellishment, working closely with each client through every fitting.",
+    "services": [
+      "Evening gowns",
+      "Reception and party wear",
+      "Custom fittings",
+      "Embellishment design",
+      "Fabric sourcing"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-gown-atelier.jpg",
+        "caption": "Reception gown"
+      },
+      {
+        "image": "images/gallery/s2-02.jpg",
+        "caption": "Evening wear"
+      },
+      {
+        "image": "images/gallery/s3-06.jpg",
+        "caption": "Boutique collection"
+      }
+    ]
+  },
+  {
+    "id_code": "fashion-designer-diya-varma",
+    "category": "fashion-designer",
+    "name": "Diya Varma",
+    "profile_photo": "images/creative/fashion-designer/diya-varma.jpg",
+    "location": "Bengaluru, Karnataka",
+    "experience": "5 years",
+    "biography": "Diya's label blends minimal tailoring with sustainable fabrics, creating versatile ready-to-wear pieces designed to be worn for years.",
+    "services": [
+      "Sustainable fashion design",
+      "Ready-to-wear collections",
+      "Pattern making",
+      "Capsule wardrobes",
+      "Brand collaborations"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-dress-form.jpg",
+        "caption": "Pattern development"
+      },
+      {
+        "image": "images/gallery/s1-06.jpg",
+        "caption": "Resort collection"
+      },
+      {
+        "image": "images/gallery/s2-05.jpg",
+        "caption": "Ready-to-wear line"
+      }
+    ]
+  },
+  {
+    "id_code": "fashion-designer-anjali-thomas",
+    "category": "fashion-designer",
+    "name": "Anjali Thomas",
+    "profile_photo": "images/creative/fashion-designer/anjali-thomas.jpg",
+    "location": "Thrissur, Kerala",
+    "experience": "3 years",
+    "biography": "Anjali designs relaxed occasion wear and outerwear, mixing soft colour with structured coats and jackets for every season.",
+    "services": [
+      "Occasion wear",
+      "Outerwear and jackets",
+      "Made-to-measure garments",
+      "Fashion illustration",
+      "Wardrobe styling"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-studio-forms.jpg",
+        "caption": "Studio fittings"
+      },
+      {
+        "image": "images/gallery/s3-05.jpg",
+        "caption": "Outerwear collection"
+      },
+      {
+        "image": "images/gallery/s2-01.jpg",
+        "caption": "Autumn collection"
+      }
+    ]
+  },
+  {
+    "id_code": "fashion-designer-maya-joseph",
+    "category": "fashion-designer",
+    "name": "Maya Joseph",
+    "profile_photo": "images/creative/fashion-designer/maya-joseph.jpg",
+    "location": "Kannur, Kerala",
+    "experience": "7 years",
+    "biography": "Maya is known for sharp tailoring and statement outerwear, cutting suits, blazers and coats that are made to measure for every client.",
+    "services": [
+      "Tailored suits and blazers",
+      "Statement outerwear",
+      "Wedding suits",
+      "Alterations and fittings",
+      "Corporate uniforms"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-blazer.jpg",
+        "caption": "Tailored blazer"
+      },
+      {
+        "image": "images/gallery/s3-04.jpg",
+        "caption": "Statement coat"
+      },
+      {
+        "image": "images/gallery/s1-01.jpg",
+        "caption": "Street tailoring"
+      }
+    ]
+  },
+  {
+    "id_code": "fashion-designer-neha-raj",
+    "category": "fashion-designer",
+    "name": "Neha Raj",
+    "profile_photo": "images/creative/fashion-designer/neha-raj.jpg",
+    "location": "Kasaragod, Kerala",
+    "experience": "2 years",
+    "biography": "A finalist in the IDFR new-designer showcase, Neha creates fluid, movement-led pieces that come alive on the runway.",
+    "services": [
+      "Runway and concept collections",
+      "Fluid occasion wear",
+      "Sketch-to-sample design",
+      "Custom outfits",
+      "Fashion-show styling"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-runway-spotlight.jpg",
+        "caption": "Runway debut"
+      },
+      {
+        "image": "images/creative/portfolio/design-runway-motion.jpg",
+        "caption": "Concept piece"
+      },
+      {
+        "image": "images/gallery/s3-02.jpg",
+        "caption": "Fluid knitwear"
+      }
+    ]
+  },
+  {
+    "id_code": "drone-pilot-arjun-menon",
+    "category": "drone-pilot",
+    "name": "Arjun Menon",
+    "profile_photo": "images/creative/photographer/arjun-das.jpg",
+    "location": "Kochi, Kerala",
+    "experience": "6 years",
+    "biography": "Arjun flies cinematic aerials for destination weddings and brand films, mapping safe flight paths and capturing sweeping Kerala coastlines from above.",
+    "services": [
+      "Aerial wedding films",
+      "Destination drone coverage",
+      "Real-estate flyovers",
+      "FPV accent shots",
+      "DGCA-compliant operations"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/destination-01.jpg",
+        "caption": "Coastal flyover"
+      },
+      {
+        "image": "images/asdreams/gallery/destination-03.jpg",
+        "caption": "Hill-station aerial"
+      },
+      {
+        "image": "images/asdreams/hero-07.jpg",
+        "caption": "Above the clouds"
+      }
+    ]
+  },
+  {
+    "id_code": "drone-pilot-nikhil-george",
+    "category": "drone-pilot",
+    "name": "Nikhil George",
+    "profile_photo": "images/creative/photographer/nikhil-varma.jpg",
+    "location": "Kozhikode, Kerala",
+    "experience": "4 years",
+    "biography": "Nikhil specialises in live-event aerials and fashion-show exteriors, coordinating with ground crews so the drone never interrupts the schedule.",
+    "services": [
+      "Live event aerials",
+      "Fashion-show exteriors",
+      "Multi-battery coverage",
+      "Same-day aerial edits",
+      "Safety briefings"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/destination-02.jpg",
+        "caption": "Town overview"
+      },
+      {
+        "image": "images/asdreams/gallery/event-04.jpg",
+        "caption": "Festival aerial still"
+      },
+      {
+        "image": "images/asdreams/gallery/destination-05.jpg",
+        "caption": "Beach survey"
+      }
+    ]
+  },
+  {
+    "id_code": "drone-pilot-rahul-das",
+    "category": "drone-pilot",
+    "name": "Rahul Das",
+    "profile_photo": "images/creative/photographer/rahul-menon.jpg",
+    "location": "Thrissur, Kerala",
+    "experience": "5 years",
+    "biography": "Rahul pairs stills and motion from the air, delivering both high-resolution photos and smooth cinematic moves for hotels, resorts and campaigns.",
+    "services": [
+      "Aerial photography",
+      "Cinematic drone video",
+      "Resort and hotel films",
+      "Mapping and site surveys",
+      "Twilight golden-hour flights"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/destination-04.jpg",
+        "caption": "Dusk flyover"
+      },
+      {
+        "image": "images/asdreams/gallery/wedding-03.jpg",
+        "caption": "Venue aerial"
+      },
+      {
+        "image": "images/asdreams/hero-05.jpg",
+        "caption": "Cityscape pass"
+      }
+    ]
+  },
+  {
+    "id_code": "drone-pilot-vivek-thomas",
+    "category": "drone-pilot",
+    "name": "Vivek Thomas",
+    "profile_photo": "images/creative/photographer/vivek-nair.jpg",
+    "location": "Bengaluru, Karnataka",
+    "experience": "3 years",
+    "biography": "Vivek focuses on precise, low-altitude product and jewellery set-ups outdoors, plus gentle reveal shots for luxury brands and private estates.",
+    "services": [
+      "Low-altitude product reveals",
+      "Estate and villa tours",
+      "Brand campaign aerials",
+      "Night-light drone work",
+      "Insured commercial flights"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/engagement-03.jpg",
+        "caption": "Cliffside reveal"
+      },
+      {
+        "image": "images/asdreams/gallery/portrait-04.jpg",
+        "caption": "Lifestyle aerial still"
+      },
+      {
+        "image": "images/asdreams/gallery/film-04.jpg",
+        "caption": "Production day"
+      }
+    ]
+  },
+  {
+    "id_code": "photo-video-editor-kevin-nair",
+    "category": "photo-video-editor",
+    "name": "Kevin Nair",
+    "profile_photo": "images/creative/videographer/kevin-thomas.jpg",
+    "location": "Kochi, Kerala",
+    "experience": "7 years",
+    "biography": "Kevin cuts cinematic wedding films and fashion features, shaping colour, pacing and sound so every story feels intentional from the first frame.",
+    "services": [
+      "Wedding film editing",
+      "Fashion-film edits",
+      "Colour grading",
+      "Sound design",
+      "Highlight reels"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/video-edit-suite.jpg",
+        "caption": "Editing suite"
+      },
+      {
+        "image": "images/asdreams/gallery/film-01.jpg",
+        "caption": "Timeline polish"
+      },
+      {
+        "image": "images/asdreams/gallery/wedding-06.jpg",
+        "caption": "Wedding film still"
+      }
+    ]
+  },
+  {
+    "id_code": "photo-video-editor-sreehari-menon",
+    "category": "photo-video-editor",
+    "name": "Sreehari Menon",
+    "profile_photo": "images/creative/videographer/sreehari-das.jpg",
+    "location": "Kasaragod, Kerala",
+    "experience": "8 years",
+    "biography": "Sreehari is a senior colourist and photo retoucher, balancing skin tones, product detail and cinematic grades for ASDreams Studio campaigns.",
+    "services": [
+      "Photo retouching",
+      "Colour grading",
+      "Batch culling and selects",
+      "Look development",
+      "Delivery for print and web"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/film-02.jpg",
+        "caption": "Grade review"
+      },
+      {
+        "image": "images/asdreams/gallery/portrait-02.jpg",
+        "caption": "Retouched portrait"
+      },
+      {
+        "image": "images/creative/portfolio/video-monitor.jpg",
+        "caption": "Client review"
+      }
+    ]
+  },
+  {
+    "id_code": "photo-video-editor-alan-raj",
+    "category": "photo-video-editor",
+    "name": "Alan Raj",
+    "profile_photo": "images/creative/videographer/alan-mathew.jpg",
+    "location": "Kozhikode, Kerala",
+    "experience": "5 years",
+    "biography": "Alan turns brand interviews and corporate coverage into clear, paced films with clean titles, captions and social cut-downs.",
+    "services": [
+      "Corporate video edits",
+      "Interview assembly",
+      "Social media cut-downs",
+      "Subtitles and captions",
+      "Motion titles"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/video-interview-set.jpg",
+        "caption": "Interview edit"
+      },
+      {
+        "image": "images/asdreams/gallery/event-05.jpg",
+        "caption": "Corporate cut"
+      },
+      {
+        "image": "images/asdreams/gallery/film-03.jpg",
+        "caption": "Promo still"
+      }
+    ]
+  },
+  {
+    "id_code": "photo-video-editor-jithin-das",
+    "category": "photo-video-editor",
+    "name": "Jithin Das",
+    "profile_photo": "images/creative/videographer/jithin-raj.jpg",
+    "location": "Bengaluru, Karnataka",
+    "experience": "3 years",
+    "biography": "Jithin specialises in fast turnaround reels and photo sets for models and events, keeping a scroll-stopping pace without losing clarity.",
+    "services": [
+      "Reels and short-form edits",
+      "Event highlight films",
+      "Photo set grading",
+      "Beat-synced cuts",
+      "Same-day delivery"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/asdreams/gallery/event-01.jpg",
+        "caption": "Social reel"
+      },
+      {
+        "image": "images/asdreams/gallery/event-02.jpg",
+        "caption": "Event highlight"
+      },
+      {
+        "image": "images/creative/portfolio/video-concert-crew.jpg",
+        "caption": "Live cut"
+      }
+    ]
+  },
+  {
+    "id_code": "jewellery-designer-tara-joseph",
+    "category": "jewellery-designer",
+    "name": "Tara Joseph",
+    "profile_photo": "images/creative/fashion-designer/tara-nair.jpg",
+    "location": "Kochi, Kerala",
+    "experience": "6 years",
+    "biography": "Tara designs contemporary bridal jewellery rooted in South Indian craft, pairing heirloom motifs with lighter everyday wear for the IDFR runway.",
+    "services": [
+      "Bridal jewellery sets",
+      "Custom engagement rings",
+      "Temple-inspired pieces",
+      "Runway accessories",
+      "Restyling family gold"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-sketches.jpg",
+        "caption": "Collection sketches"
+      },
+      {
+        "image": "images/gallery/s1-05.jpg",
+        "caption": "Studio lookbook"
+      },
+      {
+        "image": "images/gallery/s3-06.jpg",
+        "caption": "Boutique display"
+      }
+    ]
+  },
+  {
+    "id_code": "jewellery-designer-isha-das",
+    "category": "jewellery-designer",
+    "name": "Isha Das",
+    "profile_photo": "images/creative/fashion-designer/isha-menon.jpg",
+    "location": "Kozhikode, Kerala",
+    "experience": "4 years",
+    "biography": "Isha creates statement neckpieces and ear cuffs with rich colour stones, working through fittings so every piece sits perfectly for camera and stage.",
+    "services": [
+      "Statement neckpieces",
+      "Ear cuffs and climbers",
+      "Occasion wear sets",
+      "Stone setting",
+      "Show styling"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-gown-atelier.jpg",
+        "caption": "Runway styling"
+      },
+      {
+        "image": "images/gallery/s2-02.jpg",
+        "caption": "Editorial set"
+      },
+      {
+        "image": "images/gallery/s3-01.jpg",
+        "caption": "Lookbook still"
+      }
+    ]
+  },
+  {
+    "id_code": "jewellery-designer-diya-nair",
+    "category": "jewellery-designer",
+    "name": "Diya Nair",
+    "profile_photo": "images/creative/fashion-designer/diya-varma.jpg",
+    "location": "Bengaluru, Karnataka",
+    "experience": "5 years",
+    "biography": "Diya's minimal jewellery line focuses on clean geometry in gold and silver, designed to layer with tailored ready-to-wear and bridal looks.",
+    "services": [
+      "Minimal daily wear",
+      "Stackable rings",
+      "Silver and gold layers",
+      "Capsule collections",
+      "Brand collaborations"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-dress-form.jpg",
+        "caption": "Form studies"
+      },
+      {
+        "image": "images/gallery/s1-06.jpg",
+        "caption": "Resort lookbook"
+      },
+      {
+        "image": "images/gallery/s2-05.jpg",
+        "caption": "Capsule line"
+      }
+    ]
+  },
+  {
+    "id_code": "jewellery-designer-anjali-menon",
+    "category": "jewellery-designer",
+    "name": "Anjali Menon",
+    "profile_photo": "images/creative/fashion-designer/anjali-thomas.jpg",
+    "location": "Thrissur, Kerala",
+    "experience": "3 years",
+    "biography": "Anjali crafts playful occasion jewellery and hair ornaments for fashion shows, mixing soft colour with structured metal forms.",
+    "services": [
+      "Hair ornaments",
+      "Occasion jewellery",
+      "Made-to-order pieces",
+      "Illustration to prototype",
+      "Show accessories"
+    ],
+    "portfolio_images": [
+      {
+        "image": "images/creative/portfolio/design-studio-forms.jpg",
+        "caption": "Studio fittings"
+      },
+      {
+        "image": "images/gallery/s3-05.jpg",
+        "caption": "Editorial styling"
+      },
+      {
+        "image": "images/creative/portfolio/design-runway-spotlight.jpg",
+        "caption": "Runway accessory"
+      }
+    ]
+  }
+]

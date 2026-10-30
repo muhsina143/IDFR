@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800" role="img">
+  <rect width="600" height="800" fill="#0b0b0b"/>
+  <rect x="28" y="28" width="544" height="744" fill="none" stroke="#dfb043" stroke-opacity="0.28"/>
+  <circle cx="300" cy="262" r="108" fill="none" stroke="#dfb043" stroke-width="1.4"/>
+  <path d="M148 640c28-130 88-186 152-186s124 56 152 186" fill="none" stroke="#dfb043" stroke-width="1.4"/>
+  <text x="300" y="284" text-anchor="middle" font-family="Georgia, serif" font-size="72" fill="#dfb043">AM</text>
+</svg>

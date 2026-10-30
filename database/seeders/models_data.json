@@ -1,0 +1,709 @@
+[
+  {
+    "name": "Diya Pillai",
+    "gender": "Female",
+    "level": "New Face",
+    "is_kid": false,
+    "age": 22,
+    "height": "5'8\"",
+    "location": "Kochi",
+    "experience": "1 Year",
+    "profile_photo": "images/models/model-01.jpg",
+    "types": [
+      "Editorial",
+      "Commercial"
+    ],
+    "portfolio_images": [
+      "images/gallery/s2-03.jpg",
+      "images/hero/hero-06.jpg",
+      "images/gallery/s2-06.jpg"
+    ],
+    "measurements": {
+      "Bust": "32\"",
+      "Waist": "26\"",
+      "Hips": "35\"",
+      "Shoe": "UK 6"
+    },
+    "skills": [
+      "Posing",
+      "Expression work",
+      "Bharatanatyam",
+      "Malayalam & English"
+    ],
+    "specialities": [
+      "Beauty close-ups",
+      "Ethnic wear",
+      "Lookbooks"
+    ],
+    "availability": "Available for assignments",
+    "description": "Diya walked her first IDFR runway in Season 3 and has since shot\n          lookbooks for two Kerala handloom labels. Her calm, expressive\n          presence makes her a favourite for beauty and ethnic-wear editorials.",
+    "is_featured": true
+  },
+  {
+    "name": "Arjun Varma",
+    "gender": "Male",
+    "level": "Experienced",
+    "is_kid": false,
+    "age": 26,
+    "height": "6'1\"",
+    "location": "Bengaluru",
+    "experience": "5 Years",
+    "profile_photo": "images/models/model-02.jpg",
+    "types": [
+      "Runway",
+      "Editorial"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/men-09.jpg",
+      "images/models/portfolio/men-01.jpg",
+      "images/models/portfolio/men-05.jpg"
+    ],
+    "measurements": {
+      "Chest": "40\"",
+      "Waist": "31\"",
+      "Suit": "40R",
+      "Shoe": "UK 10"
+    },
+    "skills": [
+      "Runway walk",
+      "Fitness modelling",
+      "Acting",
+      "Kannada, Hindi & English"
+    ],
+    "specialities": [
+      "Menswear runway",
+      "Grooming campaigns",
+      "Designer showcases"
+    ],
+    "availability": "Available from 10 November 2026",
+    "description": "A seasoned runway professional who has opened shows for leading\n          menswear designers. Arjun brings a confident, structured walk and an\n          editorial edge to every collection he wears.",
+    "is_featured": true
+  },
+  {
+    "name": "Ananya Iyer",
+    "gender": "Female",
+    "level": "Experienced",
+    "is_kid": false,
+    "age": 24,
+    "height": "5'9\"",
+    "location": "Chennai",
+    "experience": "4 Years",
+    "profile_photo": "images/models/model-03.jpg",
+    "types": [
+      "Runway",
+      "Editorial"
+    ],
+    "portfolio_images": [
+      "images/hero/hero-04.jpg",
+      "images/gallery/s3-04.jpg",
+      "images/hero/hero-03.jpg"
+    ],
+    "measurements": {
+      "Bust": "33\"",
+      "Waist": "25\"",
+      "Hips": "35\"",
+      "Shoe": "UK 6"
+    },
+    "skills": [
+      "Runway walk",
+      "Editorial posing",
+      "Carnatic vocals",
+      "Tamil & English"
+    ],
+    "specialities": [
+      "Couture",
+      "Bridal runway",
+      "Magazine covers"
+    ],
+    "availability": "Available for assignments",
+    "description": "Ananya is known for her striking editorial presence and has featured\n          in national fashion publications. She closed the IDFR Season 3 finale\n          in a couture bridal ensemble.",
+    "is_featured": true
+  },
+  {
+    "name": "Meera Krishnan",
+    "gender": "Female",
+    "level": "New Face",
+    "is_kid": false,
+    "age": 21,
+    "height": "5'7\"",
+    "location": "Kozhikode",
+    "experience": "6 Months",
+    "profile_photo": "images/models/model-04.jpg",
+    "types": [
+      "Commercial"
+    ],
+    "portfolio_images": [
+      "images/gallery/s1-06.jpg",
+      "images/gallery/s3-02.jpg",
+      "images/gallery/s2-01.jpg"
+    ],
+    "measurements": {
+      "Bust": "32\"",
+      "Waist": "25\"",
+      "Hips": "34\"",
+      "Shoe": "UK 5"
+    },
+    "skills": [
+      "Natural expressions",
+      "On-camera presence",
+      "Malayalam & English"
+    ],
+    "specialities": [
+      "Lifestyle campaigns",
+      "E-commerce",
+      "Ad films"
+    ],
+    "availability": "Available for assignments",
+    "description": "A fresh face from Kozhikode discovered at the IDFR Season 4 open\n          auditions. Meera\u2019s warm, natural energy is ideal for lifestyle,\n          e-commerce and commercial campaigns.",
+    "is_featured": false
+  },
+  {
+    "name": "Rahul Menon",
+    "gender": "Male",
+    "level": "Experienced",
+    "is_kid": false,
+    "age": 28,
+    "height": "6'0\"",
+    "location": "Mumbai",
+    "experience": "6 Years",
+    "profile_photo": "images/models/model-05.jpg",
+    "types": [
+      "Commercial",
+      "Editorial"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/men-07.jpg",
+      "images/models/portfolio/men-08.jpg",
+      "images/hero/hero-05.jpg"
+    ],
+    "measurements": {
+      "Chest": "41\"",
+      "Waist": "32\"",
+      "Suit": "40L",
+      "Shoe": "UK 10"
+    },
+    "skills": [
+      "Formal wear",
+      "Acting",
+      "Voice-over",
+      "Hindi, Malayalam & English"
+    ],
+    "specialities": [
+      "Luxury menswear",
+      "Watch & jewellery campaigns",
+      "TV commercials"
+    ],
+    "availability": "Booked until 30 October 2026",
+    "description": "Rahul\u2019s polished, classic look has fronted campaigns for luxury\n          menswear, watches and premium automobiles. A dependable professional\n          on set with six years of commercial experience.",
+    "is_featured": true
+  },
+  {
+    "name": "Zara Thomas",
+    "gender": "Female",
+    "level": "Experienced",
+    "is_kid": false,
+    "age": 25,
+    "height": "5'10\"",
+    "location": "Hyderabad",
+    "experience": "3 Years",
+    "profile_photo": "images/models/model-06.jpg",
+    "types": [
+      "Runway"
+    ],
+    "portfolio_images": [
+      "images/hero/hero-01.jpg",
+      "images/hero/hero-02.jpg",
+      "images/gallery/s1-01.jpg"
+    ],
+    "measurements": {
+      "Bust": "33\"",
+      "Waist": "25\"",
+      "Hips": "36\"",
+      "Shoe": "UK 7"
+    },
+    "skills": [
+      "Runway walk",
+      "Choreography",
+      "Contemporary dance",
+      "Telugu & English"
+    ],
+    "specialities": [
+      "High-fashion runway",
+      "Avant-garde",
+      "Show openings"
+    ],
+    "availability": "Available for assignments",
+    "description": "With a commanding runway walk and a statuesque frame, Zara has become\n          one of the most requested faces for designer show openings across\n          South India.",
+    "is_featured": true
+  },
+  {
+    "name": "Kabir Malhotra",
+    "gender": "Male",
+    "level": "New Face",
+    "is_kid": false,
+    "age": 23,
+    "height": "5'11\"",
+    "location": "Delhi",
+    "experience": "1 Year",
+    "profile_photo": "images/models/model-07.jpg",
+    "types": [
+      "Commercial",
+      "Runway"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/men-06.jpg",
+      "images/models/portfolio/men-04.jpg",
+      "images/models/portfolio/men-03.jpg"
+    ],
+    "measurements": {
+      "Chest": "38\"",
+      "Waist": "30\"",
+      "Suit": "38R",
+      "Shoe": "UK 9"
+    },
+    "skills": [
+      "Streetwear styling",
+      "Skateboarding",
+      "Hindi & English"
+    ],
+    "specialities": [
+      "Streetwear",
+      "Youth campaigns",
+      "Social media content"
+    ],
+    "availability": "Available for assignments",
+    "description": "Kabir brings a relaxed, contemporary energy that suits streetwear and\n          youth campaigns. He made his runway debut at IDFR Season 3 and is\n          building a strong commercial portfolio.",
+    "is_featured": false
+  },
+  {
+    "name": "Sneha Raghavan",
+    "gender": "Female",
+    "level": "New Face",
+    "is_kid": false,
+    "age": 23,
+    "height": "5'8\"",
+    "location": "Thiruvananthapuram",
+    "experience": "1.5 Years",
+    "profile_photo": "images/models/model-08.jpg",
+    "types": [
+      "Editorial"
+    ],
+    "portfolio_images": [
+      "images/gallery/s3-05.jpg",
+      "images/gallery/s2-02.jpg",
+      "images/hero/hero-07.jpg"
+    ],
+    "measurements": {
+      "Bust": "32\"",
+      "Waist": "26\"",
+      "Hips": "35\"",
+      "Shoe": "UK 6"
+    },
+    "skills": [
+      "Editorial posing",
+      "Mohiniyattam",
+      "Malayalam, Tamil & English"
+    ],
+    "specialities": [
+      "Beauty editorials",
+      "Jewellery",
+      "Saree drapes"
+    ],
+    "availability": "Available from 1 November 2026",
+    "description": "Sneha\u2019s timeless features and classical dance training give her a\n          graceful, poised quality that photographers love \u2014 especially for\n          jewellery and heritage textile editorials.",
+    "is_featured": false
+  },
+  {
+    "name": "Vikram Bose",
+    "gender": "Male",
+    "level": "Experienced",
+    "is_kid": false,
+    "age": 27,
+    "height": "6'2\"",
+    "location": "Pune",
+    "experience": "5 Years",
+    "profile_photo": "images/models/model-09.jpg",
+    "types": [
+      "Runway",
+      "Commercial"
+    ],
+    "portfolio_images": [
+      "images/hero/hero-05.jpg",
+      "images/models/portfolio/men-02.jpg",
+      "images/models/portfolio/men-07.jpg"
+    ],
+    "measurements": {
+      "Chest": "42\"",
+      "Waist": "32\"",
+      "Suit": "42L",
+      "Shoe": "UK 11"
+    },
+    "skills": [
+      "Runway walk",
+      "Formal wear",
+      "Swimming",
+      "Hindi, Bengali & English"
+    ],
+    "specialities": [
+      "Suiting",
+      "Wedding menswear",
+      "Corporate campaigns"
+    ],
+    "availability": "Available for assignments",
+    "description": "At 6'2\", Vikram is a natural fit for tailored menswear and wedding\n          collections. He has walked for over forty designers and fronted\n          several corporate brand campaigns.",
+    "is_featured": true
+  },
+  {
+    "name": "Ishaani Rao",
+    "gender": "Female",
+    "level": "Experienced",
+    "is_kid": false,
+    "age": 26,
+    "height": "5'9\"",
+    "location": "Kochi",
+    "experience": "4 Years",
+    "profile_photo": "images/models/model-10.jpg",
+    "types": [
+      "Editorial",
+      "Commercial"
+    ],
+    "portfolio_images": [
+      "images/gallery/s1-02.jpg",
+      "images/gallery/s1-04.jpg",
+      "images/gallery/s2-03.jpg"
+    ],
+    "measurements": {
+      "Bust": "34\"",
+      "Waist": "26\"",
+      "Hips": "36\"",
+      "Shoe": "UK 7"
+    },
+    "skills": [
+      "Beauty modelling",
+      "Hand modelling",
+      "Yoga",
+      "Kannada, Malayalam & English"
+    ],
+    "specialities": [
+      "Cosmetics",
+      "Haircare",
+      "Skincare campaigns"
+    ],
+    "availability": "Available for assignments",
+    "description": "Ishaani is one of IDFR\u2019s most booked beauty models, with campaigns\n          spanning cosmetics, haircare and skincare. Her versatility moves\n          easily between editorial and commercial briefs.",
+    "is_featured": true
+  },
+  {
+    "name": "Aditya KK",
+    "gender": "Male",
+    "level": "New Face",
+    "is_kid": false,
+    "age": 22,
+    "height": "6'0\"",
+    "location": "Kozhikode",
+    "experience": "8 Months",
+    "profile_photo": "images/models/model-11.jpg",
+    "types": [
+      "Editorial",
+      "Runway"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/men-03.jpg",
+      "images/models/portfolio/men-08.jpg",
+      "images/models/portfolio/men-01.jpg"
+    ],
+    "measurements": {
+      "Chest": "39\"",
+      "Waist": "30\"",
+      "Suit": "40R",
+      "Shoe": "UK 10"
+    },
+    "skills": [
+      "Runway walk",
+      "Guitar",
+      "Malayalam & English"
+    ],
+    "specialities": [
+      "Casual menswear",
+      "Lookbooks",
+      "Editorial stories"
+    ],
+    "availability": "Available for assignments",
+    "description": "A graduate of the IDFR Modelling Academy, Aditya pairs an easy smile\n          with a strong editorial look. He is currently preparing to walk in the\n          Season 4 runway shows.",
+    "is_featured": false
+  },
+  {
+    "name": "Tara Fernandes",
+    "gender": "Female",
+    "level": "Experienced",
+    "is_kid": false,
+    "age": 24,
+    "height": "5'8\"",
+    "location": "Goa",
+    "experience": "3 Years",
+    "profile_photo": "images/models/model-12.jpg",
+    "types": [
+      "Runway",
+      "Commercial"
+    ],
+    "portfolio_images": [
+      "images/hero/hero-09.jpg",
+      "images/gallery/s3-01.jpg",
+      "images/hero/hero-07.jpg"
+    ],
+    "measurements": {
+      "Bust": "33\"",
+      "Waist": "25\"",
+      "Hips": "35\"",
+      "Shoe": "UK 6"
+    },
+    "skills": [
+      "Runway walk",
+      "Resort-wear styling",
+      "Konkani, Hindi & English"
+    ],
+    "specialities": [
+      "Resort wear",
+      "Swimwear",
+      "Festival fashion"
+    ],
+    "availability": "Available from 15 November 2026",
+    "description": "Tara\u2019s vibrant, sun-kissed energy has made her the face of several\n          resort and festival collections. A reliable runway professional with\n          three seasons at IDFR.",
+    "is_featured": true
+  },
+  {
+    "name": "Aarav Nambiar",
+    "gender": "Male",
+    "level": "Experienced",
+    "is_kid": true,
+    "age": 9,
+    "height": "4'4\"",
+    "location": "Kozhikode",
+    "experience": "3 Years",
+    "profile_photo": "images/models/kid-01.jpg",
+    "types": [
+      "Kids Fashion",
+      "Runway"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/kids-01.jpg",
+      "images/models/portfolio/kids-08.jpg",
+      "images/models/portfolio/kids-07.jpg"
+    ],
+    "measurements": {
+      "Chest": "26\"",
+      "Waist": "23\"",
+      "Clothing": "Age 9\u201310",
+      "Shoe": "UK 2 (Kids)"
+    },
+    "skills": [
+      "Runway walk",
+      "Posing",
+      "Keyboard",
+      "Malayalam & English"
+    ],
+    "specialities": [
+      "Kids formal wear",
+      "Festive collections",
+      "Runway"
+    ],
+    "availability": "Weekends &amp; school holidays \u00b7 with guardian",
+    "description": "Aarav has walked the kids\u2019 segment of three IDFR seasons and is a\n          natural in front of the camera. His confident walk makes him a\n          favourite for festive and formal kidswear collections.",
+    "is_featured": true
+  },
+  {
+    "name": "Anika Joseph",
+    "gender": "Female",
+    "level": "New Face",
+    "is_kid": true,
+    "age": 7,
+    "height": "3'11\"",
+    "location": "Kochi",
+    "experience": "1 Year",
+    "profile_photo": "images/models/kid-02.jpg",
+    "types": [
+      "Kids Fashion",
+      "Commercial"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/kids-03.jpg",
+      "images/models/portfolio/kids-05.jpg",
+      "images/models/portfolio/kids-06.jpg"
+    ],
+    "measurements": {
+      "Chest": "23\"",
+      "Waist": "21\"",
+      "Clothing": "Age 7\u20138",
+      "Shoe": "UK 12 (Kids)"
+    },
+    "skills": [
+      "Natural expressions",
+      "Ballet",
+      "Malayalam & English"
+    ],
+    "specialities": [
+      "Partywear",
+      "E-commerce",
+      "Catalogue shoots"
+    ],
+    "availability": "Weekends &amp; school holidays \u00b7 with guardian",
+    "description": "A cheerful new face discovered at the IDFR Kids auditions. Anika\u2019s\n          easy smile and ballet training bring a light, graceful touch to\n          partywear and catalogue shoots.",
+    "is_featured": false
+  },
+  {
+    "name": "Ryan Mathew",
+    "gender": "Male",
+    "level": "New Face",
+    "is_kid": true,
+    "age": 6,
+    "height": "3'9\"",
+    "location": "Thrissur",
+    "experience": "6 Months",
+    "profile_photo": "images/models/kid-03.jpg",
+    "types": [
+      "Kids Fashion",
+      "Commercial"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/kids-02.jpg",
+      "images/models/portfolio/kids-06.jpg",
+      "images/models/portfolio/kids-07.jpg"
+    ],
+    "measurements": {
+      "Chest": "22\"",
+      "Waist": "21\"",
+      "Clothing": "Age 6\u20137",
+      "Shoe": "UK 11 (Kids)"
+    },
+    "skills": [
+      "Expressive poses",
+      "Football",
+      "Malayalam & English"
+    ],
+    "specialities": [
+      "Casual wear",
+      "Toy & snack campaigns",
+      "Ad films"
+    ],
+    "availability": "Weekends &amp; school holidays \u00b7 with guardian",
+    "description": "Ryan\u2019s boundless energy and big grin light up every set. Still new to\n          modelling, he has already featured in a regional ad film and a\n          casual-wear catalogue.",
+    "is_featured": false
+  },
+  {
+    "name": "Ira Suresh",
+    "gender": "Female",
+    "level": "Experienced",
+    "is_kid": true,
+    "age": 8,
+    "height": "4'2\"",
+    "location": "Bengaluru",
+    "experience": "3 Years",
+    "profile_photo": "images/models/kid-04.jpg",
+    "types": [
+      "Kids Fashion",
+      "Editorial"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/kids-04.jpg",
+      "images/models/portfolio/kids-03.jpg",
+      "images/models/portfolio/kids-05.jpg"
+    ],
+    "measurements": {
+      "Chest": "24\"",
+      "Waist": "22\"",
+      "Clothing": "Age 8\u20139",
+      "Shoe": "UK 1 (Kids)"
+    },
+    "skills": [
+      "Editorial posing",
+      "Bharatanatyam",
+      "Kannada, Malayalam & English"
+    ],
+    "specialities": [
+      "Ethnic kidswear",
+      "Magazine features",
+      "Brand campaigns"
+    ],
+    "availability": "Weekends &amp; school holidays \u00b7 with guardian",
+    "description": "Ira has fronted kidswear campaigns for two national labels and\n          featured in a parenting magazine cover story. Her classical dance\n          training gives her poise beyond her years.",
+    "is_featured": true
+  },
+  {
+    "name": "Vihaan Kapoor",
+    "gender": "Male",
+    "level": "Experienced",
+    "is_kid": true,
+    "age": 11,
+    "height": "4'8\"",
+    "location": "Mumbai",
+    "experience": "4 Years",
+    "profile_photo": "images/models/kid-05.jpg",
+    "types": [
+      "Kids Fashion",
+      "Commercial"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/kids-08.jpg",
+      "images/models/portfolio/kids-01.jpg",
+      "images/models/portfolio/kids-02.jpg"
+    ],
+    "measurements": {
+      "Chest": "28\"",
+      "Waist": "24\"",
+      "Clothing": "Age 11\u201312",
+      "Shoe": "UK 4"
+    },
+    "skills": [
+      "Skateboarding",
+      "Acting",
+      "Hindi & English"
+    ],
+    "specialities": [
+      "Streetwear",
+      "Sports brands",
+      "TV commercials"
+    ],
+    "availability": "Weekends &amp; school holidays \u00b7 with guardian",
+    "description": "Vihaan\u2019s cool, sporty style suits streetwear and sports brands. With\n          four years of commercial work and two TV spots, he is comfortable and\n          professional on set.",
+    "is_featured": true
+  },
+  {
+    "name": "Myra Gupta",
+    "gender": "Female",
+    "level": "New Face",
+    "is_kid": true,
+    "age": 10,
+    "height": "4'6\"",
+    "location": "Kozhikode",
+    "experience": "1 Year",
+    "profile_photo": "images/models/kid-06.jpg",
+    "types": [
+      "Kids Fashion",
+      "Editorial"
+    ],
+    "portfolio_images": [
+      "images/models/portfolio/kids-05.jpg",
+      "images/models/portfolio/kids-04.jpg",
+      "images/models/portfolio/kids-07.jpg"
+    ],
+    "measurements": {
+      "Chest": "26\"",
+      "Waist": "22\"",
+      "Clothing": "Age 10\u201311",
+      "Shoe": "UK 3"
+    },
+    "skills": [
+      "Storytelling poses",
+      "Photography club",
+      "Malayalam, Hindi & English"
+    ],
+    "specialities": [
+      "Back-to-school",
+      "Lifestyle",
+      "Editorial stories"
+    ],
+    "availability": "Weekends &amp; school holidays \u00b7 with guardian",
+    "description": "A curious, creative new face from Kozhikode, Myra loves telling\n          stories through her expressions \u2014 ideal for back-to-school, lifestyle\n          and editorial kidswear shoots.",
+    "is_featured": false
+  }
+]
