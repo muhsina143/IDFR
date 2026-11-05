@@ -108,7 +108,7 @@
           <ul class="footer__links">
             <li><a href="{{ route('asd.home') }}">ASDreams Studio</a></li>
             <li>
-              <a href="#season-4" data-program="season-4"
+              <a href="#season-{{ $currentSeason ? $currentSeason->number : 4 }}" data-program="season-{{ $currentSeason ? $currentSeason->number : 4 }}"
                 >Fashion Show {{ $currentSeason ? $currentSeason->title : 'Season 4' }}</a
               >
             </li>
@@ -120,6 +120,11 @@
             <li>
               <a href="#lakme-academy" data-program="lakme-academy"
                 >Lakme Academy</a
+              >
+            </li>
+            <li>
+              <a href="{{ route('idfr.home') }}#sponsor-enquiry" data-sponsor-enquiry
+                >Become a Sponsor</a
               >
             </li>
           </ul>

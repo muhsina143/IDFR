@@ -44,201 +44,43 @@
               aria-label="Creative professional categories"
               id="creativeTabs"
             >
-              <button
-                class="filter-btn is-active"
-                type="button"
-                role="tab"
-                id="creativeTab-makeup-artist"
-                aria-selected="true"
-                aria-controls="creative-makeup-artist"
-                data-category="makeup-artist"
-                data-profession="Makeup Artist"
-              >
-                Makeup Artist
-              </button>
-              <button
-                class="filter-btn"
-                type="button"
-                role="tab"
-                id="creativeTab-hairstylist"
-                aria-selected="false"
-                aria-controls="creative-hairstylist"
-                data-category="hairstylist"
-                data-profession="Hairstylist"
-                tabindex="-1"
-              >
-                Hairstylist
-              </button>
-              <button
-                class="filter-btn"
-                type="button"
-                role="tab"
-                id="creativeTab-photographer"
-                aria-selected="false"
-                aria-controls="creative-photographer"
-                data-category="photographer"
-                data-profession="Photographer"
-                tabindex="-1"
-              >
-                Photographer
-              </button>
-              <button
-                class="filter-btn"
-                type="button"
-                role="tab"
-                id="creativeTab-videographer"
-                aria-selected="false"
-                aria-controls="creative-videographer"
-                data-category="videographer"
-                data-profession="Videographer"
-                tabindex="-1"
-              >
-                Videographer
-              </button>
-              <button
-                class="filter-btn"
-                type="button"
-                role="tab"
-                id="creativeTab-fashion-designer"
-                aria-selected="false"
-                aria-controls="creative-fashion-designers"
-                data-category="fashion-designer"
-                data-profession="Fashion Designer"
-                tabindex="-1"
-              >
-                Fashion Designers
-              </button>
-              <button
-                class="filter-btn"
-                type="button"
-                role="tab"
-                id="creativeTab-drone-pilot"
-                aria-selected="false"
-                aria-controls="creative-drone-pilot"
-                data-category="drone-pilot"
-                data-profession="Drone Pilot"
-                tabindex="-1"
-              >
-                Drone Pilot
-              </button>
-              <button
-                class="filter-btn"
-                type="button"
-                role="tab"
-                id="creativeTab-photo-video-editor"
-                aria-selected="false"
-                aria-controls="creative-photo-video-editor"
-                data-category="photo-video-editor"
-                data-profession="Photo &amp; Video Editor"
-                tabindex="-1"
-              >
-                Photo &amp; Video Editor
-              </button>
-              <button
-                class="filter-btn"
-                type="button"
-                role="tab"
-                id="creativeTab-jewellery-designer"
-                aria-selected="false"
-                aria-controls="creative-jewellery-designer"
-                data-category="jewellery-designer"
-                data-profession="Jewellery Designer"
-                tabindex="-1"
-              >
-                Jewellery Designer
-              </button>
+              @foreach($categories as $cat)
+                @php
+                  $panelId = ($cat->slug === 'fashion-designer') ? 'creative-fashion-designers' : 'creative-' . $cat->slug;
+                @endphp
+                <button
+                  class="filter-btn {{ $loop->first ? 'is-active' : '' }}"
+                  type="button"
+                  role="tab"
+                  id="creativeTab-{{ $cat->slug }}"
+                  aria-selected="{{ $loop->first ? 'true' : 'false' }}"
+                  aria-controls="{{ $panelId }}"
+                  data-category="{{ $cat->slug }}"
+                  data-profession="{{ $cat->name }}"
+                  {{ !$loop->first ? 'tabindex="-1"' : '' }}
+                >
+                  {{ $cat->name }}
+                </button>
+              @endforeach
             </div>
           </div>
 
-          <!-- Cards are built from the creativeProsData template (PAGE CONTENT, end of this file) -->
-          <div
-            class="creative-pros__panel"
-            role="tabpanel"
-            id="creative-makeup-artist"
-            aria-labelledby="creativeTab-makeup-artist"
-            tabindex="0"
-          >
-            <div class="creative-pros__grid" data-category="makeup-artist"></div>
-          </div>
-          <div
-            class="creative-pros__panel"
-            role="tabpanel"
-            id="creative-hairstylist"
-            aria-labelledby="creativeTab-hairstylist"
-            tabindex="0"
-            hidden
-          >
-            <div class="creative-pros__grid" data-category="hairstylist"></div>
-          </div>
-          <div
-            class="creative-pros__panel"
-            role="tabpanel"
-            id="creative-photographer"
-            aria-labelledby="creativeTab-photographer"
-            tabindex="0"
-            hidden
-          >
-            <div class="creative-pros__grid" data-category="photographer"></div>
-          </div>
-          <div
-            class="creative-pros__panel"
-            role="tabpanel"
-            id="creative-videographer"
-            aria-labelledby="creativeTab-videographer"
-            tabindex="0"
-            hidden
-          >
-            <div class="creative-pros__grid" data-category="videographer"></div>
-          </div>
-          <div
-            class="creative-pros__panel"
-            role="tabpanel"
-            id="creative-fashion-designers"
-            aria-labelledby="creativeTab-fashion-designer"
-            tabindex="0"
-            hidden
-          >
+          <!-- Cards are built dynamically for every category from the creativeProsData template -->
+          @foreach($categories as $cat)
+            @php
+              $panelId = ($cat->slug === 'fashion-designer') ? 'creative-fashion-designers' : 'creative-' . $cat->slug;
+            @endphp
             <div
-              class="creative-pros__grid"
-              data-category="fashion-designer"
-            ></div>
-          </div>
-          <div
-            class="creative-pros__panel"
-            role="tabpanel"
-            id="creative-drone-pilot"
-            aria-labelledby="creativeTab-drone-pilot"
-            tabindex="0"
-            hidden
-          >
-            <div class="creative-pros__grid" data-category="drone-pilot"></div>
-          </div>
-          <div
-            class="creative-pros__panel"
-            role="tabpanel"
-            id="creative-photo-video-editor"
-            aria-labelledby="creativeTab-photo-video-editor"
-            tabindex="0"
-            hidden
-          >
-            <div
-              class="creative-pros__grid"
-              data-category="photo-video-editor"
-            ></div>
-          </div>
-          <div
-            class="creative-pros__panel"
-            role="tabpanel"
-            id="creative-jewellery-designer"
-            aria-labelledby="creativeTab-jewellery-designer"
-            tabindex="0"
-            hidden
-          >
-            <div
-              class="creative-pros__grid"
-              data-category="jewellery-designer"
-            ></div>
-          </div>
+              class="creative-pros__panel"
+              role="tabpanel"
+              id="{{ $panelId }}"
+              aria-labelledby="creativeTab-{{ $cat->slug }}"
+              tabindex="0"
+              {{ !$loop->first ? 'hidden' : '' }}
+            >
+              <div class="creative-pros__grid" data-category="{{ $cat->slug }}"></div>
+            </div>
+          @endforeach
         </div>
       </section>
 
@@ -261,6 +103,7 @@
           <h3>{{ $pro->name }}</h3>
           <img src="{{ $pro->photo_url }}" alt="{{ $pro->name }}" width="700" height="875" />
           <dl>
+            @if($pro->professional_title)<dt>Title</dt><dd data-profession>{{ $pro->professional_title }}</dd>@endif
             @if($pro->location)<dt>Location</dt><dd data-location>{{ $pro->location }}</dd>@endif
             @if($pro->experience)<dt>Experience</dt><dd data-experience>{{ $pro->experience }}</dd>@endif
           </dl>
@@ -272,17 +115,13 @@
             @endforeach
           </ul>
           @endif
-          @if(!empty($pro->portfolio_images) && is_array($pro->portfolio_images))
+          @php
+            $portfolioItems = method_exists($pro, 'getPortfolioItems') ? $pro->getPortfolioItems() : [];
+          @endphp
+          @if(!empty($portfolioItems))
           <ul data-portfolio>
-            @foreach($pro->portfolio_images as $pItem)
-              @php
-                $pImg = is_array($pItem) ? ($pItem['image'] ?? '') : $pItem;
-                $pCap = is_array($pItem) ? ($pItem['caption'] ?? 'Portfolio Look') : 'Portfolio Look';
-                $pUrl = str_starts_with($pImg, 'http') ? $pImg : asset(ltrim($pImg, '/'));
-              @endphp
-              @if($pImg)
-                <li><figure><img src="{{ $pUrl }}" alt="{{ $pro->name }}" width="1200" height="900" /><figcaption>{{ $pCap }}</figcaption></figure></li>
-              @endif
+            @foreach($portfolioItems as $pItem)
+              <li><figure><img src="{{ $pItem['url'] }}" alt="{{ $pro->name }} - {{ $pItem['caption'] }}" width="1200" height="900" /><figcaption>{{ $pItem['caption'] }}</figcaption></figure></li>
             @endforeach
           </ul>
           @endif
@@ -295,45 +134,10 @@
     
 
     <!-- Info modal content: one template per program, opened by links with a matching data-program. -->
-    <template id="program-season-4">
-      <p class="info__label">IDFR Fashion Show</p>
-      <h2 class="info__title" id="infoModalTitle">{{ $currentSeason ? $currentSeason->title : 'Season 4' }}</h2>
-      <p class="info__intro">
-        {{ $currentSeason && $currentSeason->description ? $currentSeason->description : 'Three runway nights celebrating emerging designers, established names and the next generation of Indian modelling talent. Season 4 brings couture, resort, menswear and handloom collections to one stage in Kozhikode.' }}
-      </p>
-      <dl class="info__facts">
-        <div>
-          <dt>Dates</dt>
-          <dd>{{ $currentSeason ? $currentSeason->dates : '18 – 20 Dec 2026' }}</dd>
-        </div>
-        <div>
-          <dt>Venue</dt>
-          <dd>{{ $currentSeason ? $currentSeason->location : 'IDFR Fashion House' }}</dd>
-        </div>
-        <div>
-          <dt>Designers</dt>
-          <dd>24 Labels</dd>
-        </div>
-        <div>
-          <dt>Models</dt>
-          <dd>60+ Talent</dd>
-        </div>
-      </dl>
-      <div class="info__schedule">
-        <article>
-          <h3>Day 1 · Opening Night</h3>
-          <p>Debut collections walked by models from the Season 4 open auditions.</p>
-        </article>
-        <article>
-          <h3>Day 2 · Designer Showcase</h3>
-          <p>Evening gowns, bridal couture and prêt lines from across South India.</p>
-        </article>
-        <article>
-          <h3>Day 3 · Grand Finale</h3>
-          <p>Couture showcases, awards and the closing walk of {{ $currentSeason ? $currentSeason->title : 'Season 4' }}.</p>
-        </article>
-      </div>
-    </template>
+    @include('partials.season-info-template', ['season' => $currentSeason ?? null, 'templateId' => 'program-season-4'])
+    @if(isset($currentSeason) && $currentSeason && $currentSeason->number != 4)
+      @include('partials.season-info-template', ['season' => $currentSeason, 'templateId' => 'program-season-' . $currentSeason->number])
+    @endif
     <template id="program-athuls-academy">
       <p class="info__label">Modelling & Grooming</p>
       <h2 class="info__title" id="infoModalTitle">Athul’s <em>Academy</em></h2>

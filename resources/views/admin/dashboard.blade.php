@@ -421,6 +421,11 @@
     <a href="{{ route('admin.gallery.create') }}" class="btn-quick-action">
       <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
       <span>Add Runway Look</span>
+    </a>
+    <a href="{{ route('admin.season-registrations.index') }}" class="btn-quick-action">
+      <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>
+      <span>Model Registrations</span>
+    </a>
     <a href="{{ route('admin.registrations.index') }}" class="btn-quick-action">
       <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
       <span>Registrations &amp; Profiles</span>
@@ -482,6 +487,64 @@
       </div>
     @endforeach
   </div>
+
+  <!-- Season Model Registration & Booking Overview -->
+  @if(isset($modelRegistrationStats))
+    <div class="admin-card" style="padding: 1.5rem; margin-bottom: 2rem; border-color: rgba(229, 184, 61, 0.35);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.75rem;">
+        <div>
+          <h3 style="margin: 0; font-family: var(--font-serif); font-size: 1.25rem; color: #fff;">
+            Runway Model Registrations <em>&amp; Booking Desk</em>
+          </h3>
+          <p style="margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--text-muted);">
+            Season-based participant casting desk, applicant verification, and payment settlement summary.
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="{{ route('admin.season-registrations.index') }}" class="btn-quick-action" style="background: rgba(229, 184, 61, 0.15); border-color: var(--gold); color: var(--gold);">
+            <span>View Registrations ({{ $modelRegistrationStats['total'] }})</span>
+          </a>
+          <a href="{{ route('admin.season-prices.index') }}" class="btn-quick-action">
+            <span>Manage Fees</span>
+          </a>
+          <a href="{{ route('admin.season-payments.index') }}" class="btn-quick-action">
+            <span>Payments Ledger</span>
+          </a>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem;">
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600;">Total Applicants</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #fff; margin-top: 0.25rem;">{{ number_format($modelRegistrationStats['total']) }}</div>
+        </div>
+        <div style="background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.25); border-radius: 8px; padding: 1rem;">
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #4ade80; font-weight: 600;">Approved Models</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #4ade80; margin-top: 0.25rem;">{{ number_format($modelRegistrationStats['approved']) }}</div>
+        </div>
+        <div style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.25); border-radius: 8px; padding: 1rem;">
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #fbbf24; font-weight: 600;">Pending Review</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #fbbf24; margin-top: 0.25rem;">{{ number_format($modelRegistrationStats['pending']) }}</div>
+        </div>
+        <div style="background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.25); border-radius: 8px; padding: 1rem;">
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #4ade80; font-weight: 600;">Paid in Full</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #4ade80; margin-top: 0.25rem;">{{ number_format($modelRegistrationStats['paid']) }}</div>
+        </div>
+        <div style="background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.25); border-radius: 8px; padding: 1rem;">
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #f87171; font-weight: 600;">Unpaid / Balance</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #f87171; margin-top: 0.25rem;">{{ number_format($modelRegistrationStats['unpaid']) }}</div>
+        </div>
+        <div style="background: rgba(229,184,61,0.06); border: 1px solid rgba(229,184,61,0.25); border-radius: 8px; padding: 1rem;">
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gold); font-weight: 600;">Collected (INR)</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: var(--gold); margin-top: 0.25rem;">₹{{ number_format($modelRegistrationStats['collected'], 0) }}</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 1rem;">
+          <div style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 600;">Outstanding</div>
+          <div style="font-size: 1.5rem; font-weight: 700; color: #cbd5e1; margin-top: 0.25rem;">₹{{ number_format($modelRegistrationStats['outstanding'], 0) }}</div>
+        </div>
+      </div>
+    </div>
+  @endif
 
   <!-- Recent Member Registrations & Profiles -->
   @if(isset($recentRegistrations) && $recentRegistrations->isNotEmpty())

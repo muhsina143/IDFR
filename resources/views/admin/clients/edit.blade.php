@@ -41,7 +41,7 @@
 
         <div class="form-group">
           <label class="form-label" for="clientQuote">Testimonial Quote</label>
-          <textarea id="clientQuote" name="testimonial_quote" rows="3" class="form-control @error('testimonial_quote') is-invalid @enderror" oninput="updatePreview()">{{ old('testimonial_quote', $client->testimonial_quote) }}</textarea>
+          <textarea id="clientQuote" name="testimonial_quote" rows="5" class="form-control @error('testimonial_quote') is-invalid @enderror" style="min-height: 120px; resize: vertical; overflow-wrap: anywhere; word-break: normal; white-space: normal;" oninput="updatePreview()">{{ old('testimonial_quote', $client->testimonial_quote) }}</textarea>
           @error('testimonial_quote') <span class="form-error">{{ $message }}</span> @enderror
         </div>
 
@@ -172,7 +172,7 @@
               <img id="previewClientLogoImg" src="{{ $client->logo_url ?? '' }}" alt="Logo" style="{{ $client->logo_url ? 'display: block;' : 'display: none;' }} max-height: 40px; max-width: 140px; object-fit: contain;">
             </div>
 
-            <blockquote id="previewQuote" style="margin: 0 0 1rem; font-size: 0.95rem; line-height: 1.5; font-style: italic; color: #333;">
+            <blockquote id="previewQuote" style="margin: 0 0 1rem; font-size: 0.95rem; line-height: 1.5; font-style: italic; color: #333; overflow-wrap: anywhere; word-break: normal; white-space: normal; max-width: 100%; max-height: 280px; overflow-y: auto;">
               “{{ $client->testimonial_quote ?: 'IDFR helped us cast our entire campaign with total professionalism.' }}”
             </blockquote>
 

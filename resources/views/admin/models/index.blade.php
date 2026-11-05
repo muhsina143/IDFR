@@ -46,7 +46,9 @@
     <div class="filter-group">
       <select name="status" class="filter-select" onchange="this.form.submit()">
         <option value="">All Statuses</option>
-        <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published</option>
+        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending Approval</option>
+        <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published / Approved</option>
+        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
         <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
         <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
       </select>
@@ -150,6 +152,10 @@
               <td>
                 @if($model->status === 'published')
                   <span class="status-pill status-pill--published">Published</span>
+                @elseif($model->status === 'pending')
+                  <span class="status-pill" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);">Pending Review</span>
+                @elseif($model->status === 'rejected')
+                  <span class="status-pill" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4);">Rejected</span>
                 @elseif($model->status === 'draft')
                   <span class="status-pill status-pill--draft">Draft</span>
                 @else
@@ -158,6 +164,9 @@
               </td>
               <td class="text-right">
                 <div class="action-buttons">
+                  <a href="{{ route('admin.models.show', $model) }}" class="action-btn" title="Review Complete Profile">
+                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </a>
                   <a href="{{ route('admin.models.edit', $model) }}" class="action-btn" title="Edit Profile">
                     <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                   </a>

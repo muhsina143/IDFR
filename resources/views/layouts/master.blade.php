@@ -55,6 +55,8 @@
     />
     @yield('preload')
     <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+    @yield('styles')
+    @stack('styles')
 
     @php
       $currentUserData = null;

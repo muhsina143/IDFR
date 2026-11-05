@@ -124,7 +124,7 @@ const DATA = {
 
             level: a.dataset?.level || 'New Face',
 
-            types: listOf(a, '[data-types]'),
+            types: listOf(a, '[data-types]').length ? listOf(a, '[data-types]') : (a.dataset?.types ? a.dataset.types.split(',').map((s) => s.trim()).filter(Boolean) : []),
 
             age: Number(textOf(a, '[data-age]')) || 0,
 
@@ -152,7 +152,7 @@ const DATA = {
 
             skills: listOf(a, '[data-skills]'),
 
-            specialities: listOf(a, '[data-specialities]'),
+            specialities: [],
 
             availability: textOf(a, '[data-availability]'),
 
@@ -281,6 +281,8 @@ const DATA = {
         brand: a.dataset?.brand || '',
 
         name: textOf(a, 'h3'),
+
+        profession: textOf(a, '[data-profession]') || textOf(a, '[data-title]') || '',
 
         image: srcOf(a),
 
@@ -663,6 +665,7 @@ const Modal = (() => {
     return { open, close, top: () => stack[stack.length - 1], isOpen: (el) => stack.includes(el) };
 
 })();
+window.Modal = Modal;
 
 
 
@@ -1362,7 +1365,12 @@ const MODEL_FILTERS = {
 
 
 
-function modelCardHTML(m, i) {
+function modelCardHTML(m, i, isHome = null) {
+
+    if (isHome === null) {
+        const grid = document.getElementById('modelGrid');
+        isHome = grid ? (!grid.closest('.models--page') && Boolean(document.querySelector('#heroStage') || document.querySelector('.hero') || window.location.pathname === '/' || window.location.pathname === '/home')) : false;
+    }
 
     const types = (m.types || []).join(' / ');
 
@@ -1371,6 +1379,10 @@ function modelCardHTML(m, i) {
         ? '<span class="model-card__badge">Premium Model</span>'
 
         : `<span class="model-card__badge model-card__badge--outline">${esc(m.level)}</span>`;
+
+    const actionsHTML = `<div class="model-card__actions" style="display: grid; grid-template-columns: 1fr; gap: 0.5rem; margin-top: 0.5rem;">
+        <button class="btn btn--outline btn--block" type="button" data-model-open="${m.id}" aria-label="View model ${esc(m.name)}" style="width: 100%;"><span>View Model</span></button>
+    </div>`;
 
     return `
 
@@ -1414,13 +1426,7 @@ function modelCardHTML(m, i) {
 
         </div>
 
-        <div class="model-card__actions" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 0.5rem;">
-
-            <button class="btn btn--outline" type="button" data-model-open="${m.id}" aria-label="View model ${esc(m.name)}"><span>View Model</span></button>
-
-            <button class="btn btn--gold" type="button" data-model-contact="${m.id}" aria-label="Contact model ${esc(m.name)}"><span>Contact</span>${icon('arrow-right')}</button>
-
-        </div>
+        ${actionsHTML}
 
     </article>`;
 
@@ -1440,6 +1446,8 @@ function initModels() {
 
     let active = 'all';
 
+    const isHome = !grid.closest('.models--page') && Boolean(document.querySelector('#heroStage') || document.querySelector('.hero') || window.location.pathname === '/' || window.location.pathname === '/home');
+
 
 
     const render = () => {
@@ -1448,7 +1456,7 @@ function initModels() {
 
         const list = DATA.models.filter((m) => Boolean(m.kid) === (active === 'kids') && MODEL_FILTERS[active](m));
 
-        grid.innerHTML = list.map(modelCardHTML).join('');
+        grid.innerHTML = list.map((m, i) => modelCardHTML(m, i, isHome)).join('');
 
         count.textContent = `Showing ${list.length} ${list.length === 1 ? 'model' : 'models'}`;
 
@@ -1614,58 +1622,70 @@ function settleProfileReturn(kind) {
 
 
 
-function modelProfileHTML(m) {
+const MODEL_TYPE_LABELS = {
+    'commercial': 'Commercial Model',
+    'commercial model': 'Commercial Model',
+    'runway': 'Runway / Ramp Model',
+    'runway / ramp model': 'Runway / Ramp Model',
+    'runway/ramp model': 'Runway / Ramp Model',
+    'editorial': 'Editorial Model',
+    'editorial model': 'Editorial Model',
+    'high-fashion': 'High Fashion Model',
+    'high fashion': 'High Fashion Model',
+    'high fashion model': 'High Fashion Model',
+    'fitness': 'Fitness Model',
+    'fitness model': 'Fitness Model',
+    'glamour': 'Glamour Model',
+    'glamour model': 'Glamour Model',
+    'print': 'Print Model',
+    'print model': 'Print Model',
+    'parts': 'Parts Model',
+    'parts model': 'Parts Model',
+    'promotional': 'Promotional Model',
+    'promotional model': 'Promotional Model',
+    'video': 'Video Shoot Model',
+    'video shoot model': 'Video Shoot Model',
+    'actor': 'Actor'
+};
 
+function formatModelType(t) {
+    if (!t) return '';
+    const clean = String(t).trim();
+    const key = clean.toLowerCase();
+    return MODEL_TYPE_LABELS[key] || clean;
+}
+
+function modelProfileHTML(m) {
     const stat = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
+    const rawTypes = Array.isArray(m.types) ? m.types : (m.types ? [m.types] : []);
+    const formattedTypes = rawTypes.map(formatModelType).filter(Boolean);
+    const typesSubtitle = formattedTypes.length ? formattedTypes.join(' / ') : '';
 
     return `
-
-        <p class="mm__label">IDFR Model Â· ID ${String(m.id).padStart(4, '0')}</p>
-
+        <p class="mm__label">IDFR Model · ID ${String(m.id).padStart(4, '0')}</p>
         <h2 class="mm__name" id="modelModalName">${esc(m.name)}</h2>
-
-        <p class="mm__types">${m.gender} Â· ${esc(m.types.join(' / '))}</p>
-
+        <p class="mm__types">${m.gender}${typesSubtitle ? ` · ${esc(typesSubtitle)}` : ''}</p>
         <dl class="mm__stats">
-
             ${stat('Gender', m.gender)}${stat('Age', `${m.age} yrs`)}${stat('Height', m.height)}
-
             ${stat('Location', m.location)}${stat('Experience', m.experience)}${stat('Category', m.level)}
-
         </dl>
-
         <div class="mm__section">
-
             <h3 class="mm__heading">Availability</h3>
-
             <p class="mm__availability">${esc(m.availability)}</p>
-
         </div>
-
         <div class="mm__section">
-
             <h3 class="mm__heading">Skills</h3>
-
-            <div class="chips">${m.skills.map((s) => `<span class="chip">${esc(s)}</span>`).join('')}</div>
-
+            <div class="chips">${(m.skills || []).map((s) => `<span class="chip">${esc(s)}</span>`).join('')}</div>
         </div>
-
+        ${formattedTypes.length ? `
         <div class="mm__section">
-
-            <h3 class="mm__heading">Specialities</h3>
-
-            <div class="chips">${m.specialities.map((s) => `<span class="chip chip--gold">${esc(s)}</span>`).join('')}</div>
-
-        </div>
-
+            <h3 class="mm__heading">Model Type</h3>
+            <div class="chips">${formattedTypes.map((t) => `<span class="chip chip--gold">${esc(t)}</span>`).join('')}</div>
+        </div>` : ''}
         <div class="mm__section">
-
             <h3 class="mm__heading">Portfolio</h3>
-
             <p class="mm__text">${esc(m.description)}</p>
-
         </div>
-
         <div class="mm__actions">
 
             <button class="btn btn--gold" type="button" data-model-contact="${m.id}"><span>Contact / Enquire</span>${icon('arrow-right')}</button>
@@ -2258,173 +2278,98 @@ function creativeCardHTML(p, i) {
 
 
 function proSliderHTML(p) {
-
     const total = p.portfolio.length;
-
+    const hasMultiple = total > 1;
     return `
-
         <div class="mm__section">
-
-            <h3 class="mm__heading" id="proPortfolioTitle">Portfolio</h3>
-
+            <h3 class="visually-hidden" id="proPortfolioTitle">Portfolio</h3>
             <div class="pro-slider" role="region" aria-roledescription="carousel" aria-labelledby="proPortfolioTitle">
-
                 <div class="pro-slider__stage">
-
                     ${p.portfolio.map((w, n) => `
-
                     <figure class="pro-slider__slide${n ? '' : ' is-active'}" role="group" aria-roledescription="slide" aria-label="${n + 1} of ${total}"${n ? ' aria-hidden="true"' : ''}>
-
                         <img class="photo" src="${esc(w.src)}" alt="${esc(w.alt)}" width="${w.w}" height="${w.h}">
-
                         <figcaption>${esc(w.caption)}</figcaption>
-
                     </figure>`).join('')}
-
-                    <button class="model-modal__nav model-modal__nav--prev pro-slider__nav" type="button" data-pro-step="-1" aria-label="Previous portfolio image">${icon('arrow-left')}</button>
-
-                    <button class="model-modal__nav model-modal__nav--next pro-slider__nav" type="button" data-pro-step="1" aria-label="Next portfolio image">${icon('arrow-right')}</button>
-
+                    ${hasMultiple ? `<button class="model-modal__nav model-modal__nav--prev pro-slider__nav" type="button" data-pro-step="-1" aria-label="Previous portfolio image">${icon('arrow-left')}</button>` : ''}
+                    ${hasMultiple ? `<button class="model-modal__nav model-modal__nav--next pro-slider__nav" type="button" data-pro-step="1" aria-label="Next portfolio image">${icon('arrow-right')}</button>` : ''}
                     <p class="pro-slider__count" aria-hidden="true"><span data-pro-current>01</span> / ${pad(total)}</p>
-
                 </div>
-
                 <div class="pro-slider__thumbs">
-
                     ${p.portfolio.map((w, n) => `<button class="pro-slider__thumb" type="button" data-pro-thumb="${n}" aria-label="Show portfolio image ${n + 1}: ${esc(w.caption)}" aria-current="${n === 0}"><img class="photo" src="${esc(w.src)}" alt="" width="${w.w}" height="${w.h}"></button>`).join('')}
-
                 </div>
-
                 <p class="visually-hidden" aria-live="polite" data-pro-status></p>
-
             </div>
-
         </div>`;
-
 }
-
-
 
 function proProfileHTML(p) {
-
-    const stat = (k, v) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`;
+    const stat = (k, v) => v ? `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>` : '';
+    const portfolio = Array.isArray(p.portfolio) && p.portfolio.length ? p.portfolio : (p.image ? [{ src: p.image, alt: p.alt || p.name, caption: p.name, w: 700, h: 875 }] : []);
+    p.portfolio = portfolio;
 
     return `
-
-        <p class="mm__label">${esc(p.brand)} Â· Creative Professional</p>
-
+        <p class="mm__label">${esc(p.brand || 'IDFR')} · Creative Professional</p>
         <h2 class="mm__name" id="modelModalName">${esc(p.name)}</h2>
-
-        <p class="mm__types">${esc(p.profession)} Â· ${esc(p.location)}</p>
-
+        <p class="mm__types">${esc(p.profession)} · ${esc(p.location)}</p>
         <dl class="mm__stats creative-modal__stats">
-
             ${stat('Profession', p.profession)}${stat('Location', p.location)}${stat('Experience', p.experience)}
-
         </dl>
-
         <div class="mm__section">
-
             <h3 class="mm__heading">About</h3>
-
-            <p class="mm__text">${esc(p.bio)}</p>
-
+            <p class="mm__text">${esc(p.bio || 'Passionate fashion and creative talent represented by IDFR.')}</p>
         </div>
-
+        ${Array.isArray(p.services) && p.services.length ? `
         <div class="mm__section">
-
             <h3 class="mm__heading">Services Offered</h3>
-
             <div class="chips">${p.services.map((s) => `<span class="chip chip--gold">${esc(s)}</span>`).join('')}</div>
-
-        </div>
-
-        ${PRO_PORTFOLIO.has(p.category) && p.portfolio.length ? proSliderHTML(p) : ''}
-
-
-
+        </div>` : ''}
+        ${portfolio.length ? proSliderHTML(p) : ''}
         <div class="mm__actions">
-
             <button class="btn btn--gold" type="button" data-pro-enquire><span>Contact / Enquire</span>${icon('arrow-right')}</button>
-
             <button class="btn btn--ghost" type="button" data-pro-share>${icon('share')}<span>Share Profile</span></button>
-
         </div>`;
-
 }
-
-
 
 function openPro(id, trigger) {
-
     const p = DATA.creativePros.find((x) => x.id === id);
-
     if (!p) return;
-
     const modal = $('#modelModal');
-
     currentModel = null;
-
     useModelModalFor(p);
-
     const tab = $(`#creative-professionals [role="tab"][data-category="${p.category}"]`);
-
     const panelId = tab?.getAttribute('aria-controls');
-
     const returnHash = panelId ? `#${panelId}` : '#creative-professionals';
-
     rememberProfileReturn('pro', { proId: p.id, category: p.category, hash: returnHash });
-
-    $('#modelModalSlides').innerHTML = `<img class="photo model-modal__slide" src="${esc(p.image)}" alt="${esc(p.alt)}" width="700" height="875">`;
-
+    $('#modelModalSlides').innerHTML = `<img class="photo model-modal__slide is-active" src="${esc(p.image)}" alt="${esc(p.alt || p.name)}" width="700" height="875">`;
     $$('.model-modal__nav, .model-modal__counter', modal).forEach((el) => { el.hidden = true; });
-
     showModelSlide(0, false);
-
-    $('#modelModalBadge').textContent = p.profession;
-
+    $('#modelModalBadge').textContent = p.profession || p.category;
     const body = $('#modelModalBody');
-
     body.innerHTML = proProfileHTML(p);
-
     proSlide = 0;
-
+    showProSlide(0);
     body.scrollTop = 0;
-
     $('.model-modal__panel', modal).scrollTop = 0;
-
     Modal.open(modal, trigger);
-
 }
 
-
-
 function showProSlide(i) {
-
     const slider = $('#modelModalBody .pro-slider');
-
     if (!slider) return;
-
     const slides = $$('.pro-slider__slide', slider);
-
+    if (!slides.length) return;
     proSlide = (i + slides.length) % slides.length;
-
     slides.forEach((s, n) => {
-
         const on = n === proSlide;
-
         s.classList.toggle('is-active', on);
-
         if (on) s.removeAttribute('aria-hidden'); else s.setAttribute('aria-hidden', 'true');
-
     });
-
     $$('.pro-slider__thumb', slider).forEach((t, n) => t.setAttribute('aria-current', String(n === proSlide)));
-
-    $('[data-pro-current]', slider).textContent = pad(proSlide + 1);
-
-    $('[data-pro-status]', slider).textContent = `Portfolio image ${proSlide + 1} of ${slides.length}: ${$('figcaption', slides[proSlide]).textContent}`;
-
+    const currentEl = $('[data-pro-current]', slider);
+    if (currentEl) currentEl.textContent = pad(proSlide + 1);
+    const captionEl = $('figcaption', slides[proSlide]);
+    const statusEl = $('[data-pro-status]', slider);
+    if (statusEl) statusEl.textContent = `Portfolio image ${proSlide + 1} of ${slides.length}: ${captionEl ? captionEl.textContent : ''}`;
 }
 
 
@@ -2497,7 +2442,7 @@ function initCreativePros() {
 
     const professions = Object.fromEntries(tabs.map((t) => [t.dataset.category, t.dataset.profession]));
 
-    DATA.creativePros.forEach((p) => { p.profession = professions[p.category]; });
+    DATA.creativePros.forEach((p) => { p.profession = p.profession || professions[p.category]; });
 
     panels.forEach((panel) => {
 
@@ -3251,6 +3196,33 @@ function initClients() {
 
 
 
+    
+    const renderFeaturedQuote = (quoteEl, text) => {
+        const rawQuote = (text || '').trim();
+        const MAX_CHARS = 240;
+        if (rawQuote.length <= MAX_CHARS) {
+            quoteEl.textContent = rawQuote;
+            return;
+        }
+        let isExpanded = false;
+        const truncated = rawQuote.slice(0, MAX_CHARS).replace(/\s+\S*$/, '') + '…';
+        const renderState = () => {
+            quoteEl.textContent = isExpanded ? rawQuote : truncated;
+            const toggleBtn = document.createElement('button');
+            toggleBtn.type = 'button';
+            toggleBtn.className = 'client-feature__toggle';
+            toggleBtn.textContent = isExpanded ? 'Show Less' : 'Read More';
+            toggleBtn.setAttribute('aria-expanded', String(isExpanded));
+            toggleBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isExpanded = !isExpanded;
+                renderState();
+            });
+            quoteEl.appendChild(toggleBtn);
+        };
+        renderState();
+    };
+
     const fill = (c) => {
 
         if (!c) return;
@@ -3269,7 +3241,7 @@ function initClients() {
 
         const quoteEl = $('#clientFeatureQuote');
 
-        if (quoteEl) quoteEl.textContent = c.quote || '';
+        if (quoteEl) renderFeaturedQuote(quoteEl, c.quote || '');
 
         const personEl = $('#clientFeaturePerson');
 
@@ -3525,7 +3497,10 @@ const Auth = (() => {
 
         switchTab(tab);
 
-        if (role && $(`#regRole option[value="${role}"]`)) $('#regRole').value = role;
+                if (role && $(`#regRole option[value="${role}"]`)) {
+            $('#regRole').value = role;
+        }
+        if (typeof updateModelTypeVisibility === 'function') updateModelTypeVisibility();
 
         Modal.open(modal, trigger);
 
@@ -3748,10 +3723,10 @@ const Auth = (() => {
 
 
         if (user && user.name) {
-
-            if (loginBtn) loginBtn.hidden = true;
-
-            if (regBtn) regBtn.hidden = true;
+            document.body.classList.add('is-authenticated');
+            if (loginBtn) loginBtn.remove();
+            if (regBtn) regBtn.remove();
+            $$('#siteHeader .nav__register, #siteHeader .nav__login, .nav__actions .nav__register, .nav__actions .nav__login').forEach(el => el.remove());
 
 
 
@@ -3996,56 +3971,72 @@ const Auth = (() => {
 
 
             // Update any dynamic register buttons on the page so authenticated users navigate to their profile
-
             $$('[data-auth="register"]').forEach((btn) => {
-
-                btn.removeAttribute('data-auth');
-
-                btn.removeAttribute('data-role');
-
-                if (btn.tagName.toLowerCase() === 'button') {
-
-                    const a = document.createElement('a');
-
-                    a.className = btn.className;
-
-                    a.id = btn.id || '';
-
-                    a.href = profileUrl;
-
-                    a.innerHTML = btn.innerHTML;
-
-                    if (user.role !== 'model') {
-
-                        const span = a.querySelector('span');
-
-                        if (span && span.textContent.toLowerCase().includes('model')) {
-
-                            span.textContent = 'My Profile';
-
-                        }
-
-                    }
-
-                    btn.replaceWith(a);
-
-                } else if (btn.tagName.toLowerCase() === 'a') {
-
-                    btn.href = profileUrl;
-
+                if (btn.closest('#siteHeader') || btn.closest('.nav__actions') || btn.classList.contains('nav__register')) {
+                    btn.remove();
+                    return;
                 }
+                btn.removeAttribute('data-auth');
+                btn.removeAttribute('data-role');
+                if (btn.tagName.toLowerCase() === 'button') {
+                    const a = document.createElement('a');
+                    a.className = btn.className;
+                    a.id = btn.id || '';
+                    a.href = profileUrl;
+                    a.innerHTML = btn.innerHTML;
+                    const span = a.querySelector('span');
+                    if (span) {
+                        span.textContent = 'My Profile';
+                    }
+                    btn.replaceWith(a);
+                } else if (btn.tagName.toLowerCase() === 'a') {
+                    btn.href = profileUrl;
+                    const span = btn.querySelector('span');
+                    if (span) {
+                        span.textContent = 'My Profile';
+                    }
+                }
+            });
 
+            // Remove any "Hire Talent" buttons/links on the page for authenticated users
+            $$('a, button').forEach((el) => {
+                const text = (el.textContent || '').trim().toLowerCase();
+                if (text === 'hire talent' || text.startsWith('hire talent')) {
+                    el.remove();
+                }
             });
 
         } else {
-
-            if (loginBtn) loginBtn.hidden = false;
-
-            if (regBtn) regBtn.hidden = false;
-
+            document.body.classList.remove('is-authenticated');
             const navAccount = $('#navAccount');
-
             if (navAccount) navAccount.remove();
+
+            let curLogin = $('.nav__login', navActions);
+            let curReg = $('.nav__register', navActions);
+            if (!curLogin || !curReg) {
+                const toggleBtn = $('.nav__toggle', navActions);
+                if (!curLogin) {
+                    curLogin = document.createElement('button');
+                    curLogin.className = 'nav__login';
+                    curLogin.type = 'button';
+                    curLogin.setAttribute('data-auth', 'login');
+                    curLogin.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-user" /></svg><span>Login</span>';
+                    if (toggleBtn) navActions.insertBefore(curLogin, toggleBtn);
+                    else navActions.appendChild(curLogin);
+                }
+                if (!curReg) {
+                    curReg = document.createElement('button');
+                    curReg.className = 'btn btn--gold btn--sm nav__register';
+                    curReg.type = 'button';
+                    curReg.setAttribute('data-auth', 'register');
+                    curReg.innerHTML = '<svg class="icon" aria-hidden="true"><use href="#i-user-plus" /></svg><span>Register</span>';
+                    if (toggleBtn) navActions.insertBefore(curReg, toggleBtn);
+                    else navActions.appendChild(curReg);
+                }
+            } else {
+                curLogin.hidden = false;
+                curReg.hidden = false;
+            }
 
 
 
@@ -4300,6 +4291,7 @@ const Auth = (() => {
                     phone: $('#regPhone').value.trim(),
 
                     role: $('#regRole').value,
+                    model_type: $('#regRole').value === 'model' ? ($('#regModelType')?.value || '') : '',
 
                     password: $('#regPassword').value,
 
@@ -4603,6 +4595,14 @@ const Auth = (() => {
 
         checkAuthStatus();
 
+        if (typeof window !== 'undefined' && window.location) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const authAction = urlParams.get('auth');
+            if (authAction === 'login' || authAction === 'register') {
+                setTimeout(() => open(authAction, urlParams.get('role')), 100);
+            }
+        }
+
         modal.addEventListener('modal:close', () => panels.forEach(clearFormErrors));
 
     }
@@ -4619,7 +4619,11 @@ const Auth = (() => {
 
 function openInfo(key, trigger) {
 
-    const tpl = document.getElementById(`program-${key}`);
+    let tpl = document.getElementById(`program-${key}`);
+
+    if (!tpl && key && key.startsWith('season-')) {
+        tpl = document.getElementById('program-season-current') || document.querySelector('template[id^="program-season-"]') || document.getElementById('program-season-4');
+    }
 
     if (!tpl) return;
 
@@ -5258,7 +5262,7 @@ function initProfileForm() {
 
     const place = placeEl ? initPlaceCombo(placeEl, DATA.places) : null;
 
-    const types = $$('input[name="modelType"]', form);
+    const types = $$('input[name="modelType"], input[name="modelType[]"]', form);
 
     const height = $('#pfHeight');
 
@@ -5266,27 +5270,30 @@ function initProfileForm() {
 
 
 
-    const syncTypes = () => types[0].setCustomValidity(types.some((t) => t.checked) ? '' : 'Please select at least one model type.');
+    const syncTypes = () => {
+        if (!types.length) return;
+        types[0].setCustomValidity(types.some((t) => t.checked) ? '' : 'Please select at least one model type.');
+    };
 
     const syncHeight = () => {
-
+        if (!height || !heightHint) return;
         const cm = Number(height.value);
-
-        if (!height.value || cm < 120 || cm > 215) { heightHint.textContent = 'In centimetres'; return; }
-
+        if (!height.value || cm < 100 || cm > 230) { heightHint.textContent = 'In centimetres'; return; }
         const inches = Math.round(cm / 2.54);
-
-        heightHint.textContent = `â‰ˆ ${Math.floor(inches / 12)}'${inches % 12}" (feet & inches)`;
-
+        heightHint.textContent = `≈ ${Math.floor(inches / 12)}'${inches % 12}" (feet & inches)`;
     };
 
 
 
-    types.forEach((t) => t.addEventListener('change', syncTypes));
+    if (types.length) {
+        types.forEach((t) => t.addEventListener('change', syncTypes));
+        syncTypes();
+    }
 
-    height.addEventListener('input', syncHeight);
-
-    syncTypes();
+    if (height) {
+        height.addEventListener('input', syncHeight);
+        syncHeight();
+    }
 
 
 
@@ -5352,6 +5359,19 @@ function initProfileForm() {
 
                     toast(data.message || 'Your model profile has been saved.');
 
+                    if (data.photo_url) {
+                        const mainPhoto = $('#profileGallery .pg__stage .pg__slide:first-child img.photo');
+                        if (mainPhoto) mainPhoto.src = data.photo_url;
+                        const mainThumb = $('#profileGallery .pg__thumbs .pg__thumb:first-child img.photo');
+                        if (mainThumb) mainThumb.src = data.photo_url;
+                    }
+
+                    if (data.profile_completion && typeof updateNavAuth === 'function' && typeof Auth !== 'undefined' && Auth.getUser && Auth.getUser()) {
+                        const u = Auth.getUser();
+                        u.profile_completion = data.profile_completion;
+                        updateNavAuth(u);
+                    }
+
                     if (submitBtn) submitBtn.disabled = false;
 
                     return;
@@ -5390,6 +5410,15 @@ function initProfileForm() {
 
         if (submitBtn) submitBtn.disabled = false;
 
+    });
+
+    form.addEventListener('reset', () => {
+        if (place) place.reset();
+        clearFormErrors(form);
+        setTimeout(() => {
+            syncTypes();
+            syncHeight();
+        }, 0);
     });
 
 
@@ -6134,13 +6163,181 @@ const rupees = (n) => `â‚¹${n.toLocaleString('en-IN')}`;
 
 
 
+function initModelRegistrationForm(form) {
+    const ageInput = $('#regAge', form);
+    const categorySelect = $('#regCategory', form);
+    const guardianBox = $('#guardianDetails', form);
+    const parentName = $('#regParentName', form);
+    const parentContact = $('#regParentContact', form);
+    const submitBtn = $('#btnSubmitRegistration', form) || $('button[type="submit"]', form);
+    const label = submitBtn ? $('span', submitBtn) : null;
+    const originalLabel = label ? label.textContent : 'Submit';
+    const done = $('#bookingDone');
+    const doneText = $('#bookingDoneText');
+
+    function syncMinorGuardianState() {
+        const age = ageInput ? parseInt(ageInput.value, 10) : 0;
+        const category = categorySelect ? categorySelect.value.toLowerCase() : '';
+        const isMinor = category === 'kids' || (!isNaN(age) && age > 0 && age < 18);
+
+        if (guardianBox) {
+            guardianBox.style.display = isMinor ? 'block' : 'none';
+        }
+        if (parentName) {
+            parentName.required = isMinor;
+            if (!isMinor) {
+                const f = parentName.closest('.field');
+                if (f) {
+                    f.classList.remove('has-error');
+                    const err = $('.field__error', f);
+                    if (err) err.textContent = '';
+                }
+            }
+        }
+        if (parentContact) {
+            parentContact.required = isMinor;
+            if (!isMinor) {
+                const f = parentContact.closest('.field');
+                if (f) {
+                    f.classList.remove('has-error');
+                    const err = $('.field__error', f);
+                    if (err) err.textContent = '';
+                }
+            }
+        }
+    }
+
+    if (ageInput) {
+        ageInput.addEventListener('input', () => {
+            const age = parseInt(ageInput.value, 10);
+            if (!isNaN(age) && age > 0) {
+                if (age < 18 && categorySelect && categorySelect.value !== 'kids') {
+                    categorySelect.value = 'kids';
+                } else if (age >= 18 && categorySelect && categorySelect.value === 'kids') {
+                    categorySelect.value = 'adult';
+                }
+            }
+            syncMinorGuardianState();
+        });
+    }
+
+    if (categorySelect) {
+        categorySelect.addEventListener('change', () => {
+            syncMinorGuardianState();
+        });
+    }
+
+    syncMinorGuardianState();
+
+    form.addEventListener('input', (e) => {
+        if (done) done.hidden = true;
+        const field = e.target.closest('.field');
+        if (field && field.classList.contains('has-error')) {
+            field.classList.remove('has-error');
+            const err = $('.field__error', field);
+            if (err) err.textContent = '';
+            e.target.removeAttribute('aria-invalid');
+        }
+    });
+
+    form.addEventListener('change', (e) => {
+        const field = e.target.closest('.field');
+        if (field && field.classList.contains('has-error')) {
+            field.classList.remove('has-error');
+            const err = $('.field__error', field);
+            if (err) err.textContent = '';
+            e.target.removeAttribute('aria-invalid');
+        }
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        syncMinorGuardianState();
+
+        if (typeof validateForm === 'function' && !validateForm(form)) {
+            const firstErr = $('.field.has-error', form);
+            if (firstErr) {
+                firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        if (submitBtn) submitBtn.disabled = true;
+        if (label) label.textContent = 'Submitting Registration…';
+
+        try {
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                if (done) {
+                    done.hidden = false;
+                    if (doneText) {
+                        doneText.textContent = data.message || ('Registration submitted successfully! Registration ID: ' + (data.registration?.registration_number || data.registration_number || ''));
+                    }
+                    done.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                form.reset();
+                if (typeof clearFormErrors === 'function') {
+                    clearFormErrors(form);
+                }
+                syncMinorGuardianState();
+            } else if (response.status === 422 && data.errors) {
+                Object.entries(data.errors).forEach(([fieldName, messages]) => {
+                    const input = $('[name="' + fieldName + '"]', form);
+                    if (input) {
+                        const field = input.closest('.field');
+                        if (field) {
+                            field.classList.add('has-error');
+                            const errSpan = $('.field__error', field);
+                            if (errSpan) {
+                                errSpan.textContent = Array.isArray(messages) ? messages[0] : messages;
+                            }
+                            input.setAttribute('aria-invalid', 'true');
+                        }
+                    }
+                });
+                const firstErr = $('.field.has-error', form);
+                if (firstErr) {
+                    firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                alert(data.message || 'An error occurred while submitting your registration. Please try again.');
+            }
+        } catch (err) {
+            console.error('Registration submission error:', err);
+            form.submit();
+        } finally {
+            if (submitBtn) submitBtn.disabled = false;
+            if (label) label.textContent = originalLabel;
+        }
+    });
+}
+
 function initBooking() {
 
     const form = $('#bookingForm');
+    if (!form) return;
+
+    const isModelReg = Boolean($('#regFullName', form) || $('#regAge', form) || $('#regCategory', form));
+    if (isModelReg) {
+        initModelRegistrationForm(form);
+        return;
+    }
 
     const type = $('#bkType');
 
     const seat = $('#bkSeat');
+    if (!type || !seat) return;
 
     const ticketTypes = $$('option:not([value=""])', type).map((o) => ({ id: o.value, name: o.textContent, perks: o.dataset.perks }));
 
@@ -6272,7 +6469,9 @@ function initBooking() {
 
         const to = email.value.trim();
 
-        const ref = `IDFR-S4-${Math.floor(10000 + Math.random() * 90000)}`;
+        const sNum = (form && form.dataset.seasonNumber) ? form.dataset.seasonNumber : '8';
+
+        const ref = `IDFR-S${sNum}-${Math.floor(10000 + Math.random() * 90000)}`;
 
         submit.disabled = true;
 
@@ -6889,169 +7088,248 @@ function initShootBooking() {
 /* Sponsorship enquiry: modal form â†’ validated, then mailed to info@idfr.example via mailto */
 
 function initSponsorEnquiry() {
-
     const modal = $('#sponsorEnquiryModal');
-
+    if (!modal) return;
     const form = $('#sponsorEnquiryForm', modal);
-
+    if (!form) return;
     const formView = $('[data-sponsor-form]', modal);
-
     const success = $('[data-sponsor-success]', modal);
-
     const submit = $('button[type="submit"]', form);
-
-    const label = $('span', submit);
-
+    const label = submit ? $('span', submit) : null;
     const phoneInput = $('#sponsorPhone', form);
-
-
+    const defaultLabelText = label ? label.textContent.trim() : 'Submit Sponsorship Enquiry';
 
     const resetView = () => {
-
         form.reset();
-
-        clearFormErrors(form);
-
-        phoneInput.setCustomValidity('');
-
-        formView.hidden = false;
-
-        success.hidden = true;
-
+        if (typeof clearFormErrors === 'function') {
+            clearFormErrors(form);
+        }
+        if (phoneInput) phoneInput.setCustomValidity('');
+        if (formView) formView.hidden = false;
+        if (success) success.hidden = true;
         modal.setAttribute('aria-labelledby', 'sponsorEnquiryTitle');
-
-        submit.disabled = false;
-
-        label.textContent = 'Send Me Details';
-
+        if (submit) submit.disabled = false;
+        if (label) label.textContent = defaultLabelText;
     };
-
-
 
     const applyCustomValidity = () => {
-
+        if (!phoneInput) return;
         phoneInput.setCustomValidity('');
-
         const raw = phoneInput.value.trim();
-
         const digits = raw.replace(/\D/g, '');
-
         if (raw && (!/^\+?[0-9][0-9\s().-]{6,18}$/.test(raw) || digits.length < 8 || digits.length > 15)) {
-
-            phoneInput.setCustomValidity('Please enter a valid phone number.');
-
+            phoneInput.setCustomValidity('Please enter a valid phone number (8-15 digits).');
         }
-
     };
 
-
-
-    const buildMailto = () => {
-
-        const name = $('#sponsorName', form).value.trim();
-
-        const email = $('#sponsorEmail', form).value.trim();
-
-        const phone = $('#sponsorPhone', form).value.trim();
-
-        const type = $('#sponsorType', form).value;
-
-        const message = $('#sponsorMessage', form).value.trim() || '(No additional message)';
-
-        const body = [
-
-            'Sponsorship Enquiry â€” IDFR Season 5',
-
-            '',
-
-            `Name / Company: ${name}`,
-
-            `Email: ${email}`,
-
-            `Phone: ${phone}`,
-
-            `Type of Sponsorship: ${type}`,
-
-            '',
-
-            'Message:',
-
-            message,
-
-            '',
-
-            'â€” Sent from the IDFR website sponsorship form'
-
-        ].join('\n');
-
-        return `mailto:info@idfr.example?subject=${encodeURIComponent(`Sponsorship Enquiry â€” ${type}`)}&body=${encodeURIComponent(body)}`;
-
-    };
-
-
-
-    document.addEventListener('click', (e) => {
-
-        const trigger = e.target.closest('[data-sponsor-enquiry]');
-
-        if (!trigger) return;
-
-        e.preventDefault();
-
+    const openModal = (trigger) => {
         resetView();
 
-        if (MobileMenu.isOpen) MobileMenu.close();
+        if (window.MobileMenu && typeof MobileMenu.close === 'function' && MobileMenu.isOpen) {
+            MobileMenu.close();
+        }
 
-        Modal.open(modal, trigger);
+        const modalApi = window.Modal || (typeof Modal !== 'undefined' ? Modal : null);
+        if (modalApi && typeof modalApi.open === 'function') {
+            modalApi.open(modal, trigger);
+        } else {
+            modal.hidden = false;
+            void modal.offsetWidth;
+            modal.classList.add('is-open');
+        }
 
-    });
+        // Keep URL hash updated cleanly without jumping or page scrolling
+        if (window.location.hash !== '#sponsor-enquiry') {
+            try {
+                if (window.history && window.history.pushState) {
+                    window.history.pushState(null, '', '#sponsor-enquiry');
+                } else {
+                    window.location.hash = '#sponsor-enquiry';
+                }
+            } catch (_) {}
+        }
+    };
 
+    const isSponsorTrigger = (el) => {
+        if (!el || !el.closest) return null;
 
+        // 1. Explicit data attribute
+        const byAttr = el.closest('[data-sponsor-enquiry]');
+        if (byAttr) return byAttr;
 
-    form.addEventListener('submit', (e) => {
+        // 2. Anchor or button with href / data-target pointing to sponsor enquiry
+        const link = el.closest('a, button');
+        if (link) {
+            const rawHref = (link.getAttribute('href') || link.getAttribute('data-target') || '').trim();
+            const hash = link.hash || '';
 
+            if (
+                hash === '#sponsor-enquiry' ||
+                hash === '#sponsorEnquiryModal' ||
+                rawHref === '#sponsor-enquiry' ||
+                rawHref.endsWith('#sponsor-enquiry') ||
+                rawHref.includes('#sponsor-enquiry') ||
+                rawHref === '#sponsorEnquiryModal' ||
+                rawHref.endsWith('#sponsorEnquiryModal')
+            ) {
+                return link;
+            }
+
+            // 3. Textual match for "Become a Sponsor" links
+            const text = (link.textContent || '').trim().toLowerCase();
+            if (text.includes('become a sponsor') && (rawHref.includes('sponsor') || hash.includes('sponsor') || rawHref === '#' || rawHref === '')) {
+                return link;
+            }
+        }
+
+        return null;
+    };
+
+    // Global click delegation for ALL Become a Sponsor links/buttons
+    document.addEventListener('click', (e) => {
+        const trigger = isSponsorTrigger(e.target);
+        if (!trigger) return;
+
+        // Prevent browser anchor jump, page reload, or hash scrolling
         e.preventDefault();
+        e.stopPropagation();
 
-        if (submit.disabled) return;
+        openModal(trigger);
+    }, true);
 
-        applyCustomValidity();
+    // Support direct URL hash: #sponsor-enquiry
+    const checkHashAndOpen = () => {
+        const hash = window.location.hash;
+        if (hash === '#sponsor-enquiry' || hash === '#sponsorEnquiryModal') {
+            const modalApi = window.Modal || (typeof Modal !== 'undefined' ? Modal : null);
+            if (modalApi && typeof modalApi.isOpen === 'function' && modalApi.isOpen(modal)) {
+                return;
+            }
+            openModal();
+        }
+    };
 
-        if (!validateForm(form)) return;
-
-        submit.disabled = true;
-
-        label.textContent = 'Sendingâ€¦';
-
-        const mailto = buildMailto();
-
-        setTimeout(() => {
-
-            window.location.href = mailto;
-
-            submit.disabled = false;
-
-            label.textContent = 'Send Me Details';
-
-            formView.hidden = true;
-
-            success.hidden = false;
-
-            modal.setAttribute('aria-labelledby', 'sponsorEnquirySuccessTitle');
-
-            const heading = $('#sponsorEnquirySuccessTitle', success);
-
-            if (heading) heading.focus();
-
-            toast('Opening your email app with the sponsorship enquiry for info@idfr.example.');
-
-        }, 350);
-
+    // React to browser back/forward or hash changes
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash;
+        const modalApi = window.Modal || (typeof Modal !== 'undefined' ? Modal : null);
+        if (hash === '#sponsor-enquiry' || hash === '#sponsorEnquiryModal') {
+            if (modalApi && typeof modalApi.isOpen === 'function' && !modalApi.isOpen(modal)) {
+                openModal();
+            }
+        } else if (modalApi && typeof modalApi.isOpen === 'function' && modalApi.isOpen(modal)) {
+            modalApi.close(modal);
+        }
     });
 
+    // Check hash on initialization
+    checkHashAndOpen();
 
+    // Form submission via AJAX
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (submit && submit.disabled) return;
+        applyCustomValidity();
+        if (typeof validateForm === 'function' && !validateForm(form)) return;
 
-    modal.addEventListener('modal:close', () => clearFormErrors(form));
+        if (submit) submit.disabled = true;
+        if (label) label.textContent = 'Submitting…';
 
+        try {
+            const formData = new FormData(form);
+            const tokenInput = $('input[name="_token"]', form) || $('meta[name="csrf-token"]');
+            const token = tokenInput ? (tokenInput.value || tokenInput.getAttribute('content')) : '';
+            const actionUrl = form.getAttribute('action') || '/sponsorship/enquiry';
+
+            const response = await fetch(actionUrl, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: formData
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok && data.success) {
+                form.reset();
+                if (typeof clearFormErrors === 'function') {
+                    clearFormErrors(form);
+                }
+                if (phoneInput) phoneInput.setCustomValidity('');
+
+                if (formView) formView.hidden = true;
+                if (success) success.hidden = false;
+                modal.setAttribute('aria-labelledby', 'sponsorEnquirySuccessTitle');
+
+                const successMsg = $('#sponsorSuccessMsg', success);
+                if (successMsg && data.message) {
+                    successMsg.textContent = data.message;
+                }
+
+                const heading = $('#sponsorEnquirySuccessTitle', success);
+                if (heading) heading.focus();
+
+                if (typeof toast === 'function') {
+                    toast(data.message || 'Thank you! Your sponsorship enquiry has been received.');
+                }
+            } else if (response.status === 422 && data.errors) {
+                if (typeof clearFormErrors === 'function') {
+                    clearFormErrors(form);
+                }
+                Object.entries(data.errors).forEach(([fieldName, messages]) => {
+                    const input = $('[name="' + fieldName + '"]', form);
+                    if (input) {
+                        const field = input.closest('.field');
+                        if (field) {
+                            field.classList.add('has-error');
+                            const errSpan = $('.field__error', field);
+                            if (errSpan) {
+                                errSpan.textContent = Array.isArray(messages) ? messages[0] : messages;
+                            }
+                            input.setAttribute('aria-invalid', 'true');
+                        }
+                    }
+                });
+                const firstErr = $('.field.has-error input, .field.has-error select, .field.has-error textarea', form);
+                if (firstErr) {
+                    firstErr.focus();
+                }
+                if (typeof toast === 'function') {
+                    toast(data.message || 'Please check the highlighted fields.');
+                }
+            } else {
+                const errorMsg = data.message || 'Could not submit your enquiry. Please try again.';
+                if (typeof toast === 'function') {
+                    toast(errorMsg);
+                }
+            }
+        } catch (err) {
+            console.error('Sponsorship enquiry submission error:', err);
+            if (typeof toast === 'function') {
+                toast('A network error occurred while submitting. Please check your connection and try again.');
+            }
+        } finally {
+            if (submit) submit.disabled = false;
+            if (label) label.textContent = defaultLabelText;
+        }
+    });
+
+    // Reset hash and errors when modal closes
+    modal.addEventListener('modal:close', () => {
+        if (typeof clearFormErrors === 'function') {
+            clearFormErrors(form);
+        }
+        if (window.location.hash === '#sponsor-enquiry' || window.location.hash === '#sponsorEnquiryModal') {
+            try {
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                }
+            } catch (_) {}
+        }
+    });
 }
 
 
@@ -7360,7 +7638,7 @@ document.addEventListener('error', (e) => {
 
    ------------------------------------------------------------------------- */
 
-document.addEventListener('DOMContentLoaded', () => {
+const initApp = () => {
 
     const onPage = (selector, init) => { if ($(selector)) init(); };
 
@@ -7419,5 +7697,11 @@ initGlobalActions();
 
     if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-});
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}
 

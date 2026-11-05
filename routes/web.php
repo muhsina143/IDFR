@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminClientController;
 use App\Http\Controllers\Admin\AdminCreativeProfessionalController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminDesignerController;
+use App\Http\Controllers\Admin\AdminDynamicFormController;
 use App\Http\Controllers\Admin\AdminEnquiryController;
 use App\Http\Controllers\Admin\AdminGalleryController;
 use App\Http\Controllers\Admin\AdminModelController;
@@ -15,12 +16,15 @@ use App\Http\Controllers\Admin\AdminProfileEnquiryController;
 use App\Http\Controllers\Admin\AdminRegistrationController;
 use App\Http\Controllers\Admin\AdminSeasonController;
 use App\Http\Controllers\Admin\AdminSeasonImageController;
+use App\Http\Controllers\Admin\AdminSeasonRegistrationController;
 use App\Http\Controllers\Admin\AdminSponsorController;
+use App\Http\Controllers\Admin\AdminSponsorshipEnquiryController;
 use App\Http\Controllers\AsdreamsController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileEnquiryController;
+use App\Http\Controllers\SponsorshipEnquiryController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,6 +46,8 @@ Route::post('/resend-otp', [AuthController::class, 'resendOtp'])->name('resend-o
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/auth/me', [AuthController::class, 'me'])->name('auth.me');
+Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 // ==========================================
 // Profile Booking Enquiry & Email OTP Routes
@@ -49,6 +55,9 @@ Route::get('/auth/me', [AuthController::class, 'me'])->name('auth.me');
 Route::post('/enquiry/send-otp', [ProfileEnquiryController::class, 'sendOtp'])->name('enquiry.send-otp');
 Route::post('/enquiry/verify-otp', [ProfileEnquiryController::class, 'verifyOtp'])->name('enquiry.verify-otp');
 Route::post('/enquiry/submit', [ProfileEnquiryController::class, 'store'])->name('enquiry.submit');
+
+// Sponsorship Inbound Enquiry Submission
+Route::post('/sponsorship/enquiry', [SponsorshipEnquiryController::class, 'store'])->name('sponsorship.enquiry');
 
 // ==========================================
 // 1. IDFR Brand Routes (Indian Designer Fashion Runway)
@@ -58,6 +67,7 @@ Route::name('idfr.')->group(function () {
     Route::get('/about', [PageController::class, 'about'])->name('about');
     Route::get('/models', [PageController::class, 'models'])->name('models');
     Route::get('/professionals', [PageController::class, 'professionals'])->name('professionals');
+    Route::get('/professionals/{category}', [PageController::class, 'categoryListing'])->name('professionals.category');
     Route::get('/gallery', [PageController::class, 'gallery'])->name('gallery');
     Route::get('/contact', [PageController::class, 'contact'])->name('contact');
     Route::post('/contact', [PageController::class, 'handleContact'])->name('contact.submit');
@@ -99,6 +109,10 @@ Route::middleware(['web', 'auth:web'])->prefix('profiles')->name('profile.')->gr
 
     Route::get('/jewellery-designer', [ProfileController::class, 'jewelleryDesigner'])->name('jewellery-designer');
     Route::post('/jewellery-designer', [ProfileController::class, 'saveJewelleryDesigner'])->name('jewellery-designer.save');
+
+    // Dynamic Category Profile & Save
+    Route::get('/{category}', [ProfileController::class, 'showCreativeProfile'])->name('category');
+    Route::post('/{category}', [ProfileController::class, 'handleSaveCreative'])->name('category.save');
 });
 
 Route::middleware(['web', 'auth:web'])->get('/account', function () {
@@ -138,6 +152,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/seasons', [AdminSeasonController::class, 'store'])->name('seasons.store');
         Route::put('/seasons/{season}', [AdminSeasonController::class, 'update'])->name('seasons.update');
         Route::delete('/seasons/{season}', [AdminSeasonController::class, 'destroy'])->name('seasons.destroy');
+        Route::post('/seasons/{season}/activate', [AdminSeasonController::class, 'activate'])->name('seasons.activate');
 
         // Season Hero Images Management (Multi-Image Manager)
         Route::get('/season-images', [AdminSeasonImageController::class, 'index'])->name('season-images.index');
@@ -161,9 +176,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/models', [AdminModelController::class, 'index'])->name('models');
         Route::get('/models/create', [AdminModelController::class, 'create'])->name('models.create');
         Route::post('/models', [AdminModelController::class, 'store'])->name('models.store');
+        Route::get('/models/{model}', [AdminModelController::class, 'show'])->name('models.show');
         Route::get('/models/{model}/edit', [AdminModelController::class, 'edit'])->name('models.edit');
         Route::put('/models/{model}', [AdminModelController::class, 'update'])->name('models.update');
         Route::delete('/models/{model}', [AdminModelController::class, 'destroy'])->name('models.destroy');
+        Route::post('/models/{model}/approval-status', [AdminModelController::class, 'updateApprovalStatus'])->name('models.approval-status');
 
         // Designers Management (Phase 3 Full CRUD)
         Route::get('/designers', [AdminDesignerController::class, 'index'])->name('designers');
@@ -177,9 +194,34 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/professionals', [AdminCreativeProfessionalController::class, 'index'])->name('professionals');
         Route::get('/professionals/create', [AdminCreativeProfessionalController::class, 'create'])->name('professionals.create');
         Route::post('/professionals', [AdminCreativeProfessionalController::class, 'store'])->name('professionals.store');
+        Route::get('/professionals/{professional}', [AdminCreativeProfessionalController::class, 'show'])->name('professionals.show');
         Route::get('/professionals/{professional}/edit', [AdminCreativeProfessionalController::class, 'edit'])->name('professionals.edit');
         Route::put('/professionals/{professional}', [AdminCreativeProfessionalController::class, 'update'])->name('professionals.update');
         Route::delete('/professionals/{professional}', [AdminCreativeProfessionalController::class, 'destroy'])->name('professionals.destroy');
+        Route::post('/professionals/{professional}/approval-status', [AdminDynamicFormController::class, 'toggleApproval'])->name('professionals.approval-status');
+
+        // Dynamic Form Builder & Category Field Management
+        Route::get('/dynamic-forms', [AdminDynamicFormController::class, 'index'])->name('dynamic-forms.index');
+        Route::get('/dynamic-forms/categories/create', [AdminDynamicFormController::class, 'createCategory'])->name('dynamic-forms.categories.create');
+        Route::post('/dynamic-forms/categories', [AdminDynamicFormController::class, 'storeCategory'])->name('dynamic-forms.categories.store');
+        Route::get('/dynamic-forms/categories/{category}/edit', [AdminDynamicFormController::class, 'editCategory'])->name('dynamic-forms.categories.edit');
+        Route::put('/dynamic-forms/categories/{category}', [AdminDynamicFormController::class, 'updateCategory'])->name('dynamic-forms.categories.update');
+        Route::delete('/dynamic-forms/categories/{category}', [AdminDynamicFormController::class, 'destroyCategory'])->name('dynamic-forms.categories.destroy');
+        Route::post('/dynamic-forms/categories/{category}/toggle-status', [AdminDynamicFormController::class, 'toggleCategory'])->name('dynamic-forms.categories.toggle-status');
+        Route::get('/dynamic-forms/categories/{category}/fields', [AdminDynamicFormController::class, 'categoryFields'])->name('dynamic-forms.categories.fields');
+        Route::put('/dynamic-forms/categories/{category}/fields', [AdminDynamicFormController::class, 'updateCategoryFields'])->name('dynamic-forms.categories.fields.update');
+        Route::post('/dynamic-forms/categories/{category}/fields/attach', [AdminDynamicFormController::class, 'attachFieldToCategory'])->name('dynamic-forms.categories.fields.attach');
+        Route::delete('/dynamic-forms/categories/{category}/fields/{field}', [AdminDynamicFormController::class, 'detachFieldFromCategory'])->name('dynamic-forms.categories.fields.detach');
+        Route::get('/dynamic-forms/preview/{category:slug}', [AdminDynamicFormController::class, 'preview'])->name('dynamic-forms.preview');
+
+        // Form Fields Library
+        Route::get('/dynamic-forms/fields', [AdminDynamicFormController::class, 'fields'])->name('dynamic-forms.fields.index');
+        Route::get('/dynamic-forms/fields/create', [AdminDynamicFormController::class, 'createField'])->name('dynamic-forms.fields.create');
+        Route::post('/dynamic-forms/fields', [AdminDynamicFormController::class, 'storeField'])->name('dynamic-forms.fields.store');
+        Route::get('/dynamic-forms/fields/{field}/edit', [AdminDynamicFormController::class, 'editField'])->name('dynamic-forms.fields.edit');
+        Route::put('/dynamic-forms/fields/{field}', [AdminDynamicFormController::class, 'updateField'])->name('dynamic-forms.fields.update');
+        Route::delete('/dynamic-forms/fields/{field}', [AdminDynamicFormController::class, 'destroyField'])->name('dynamic-forms.fields.destroy');
+        Route::post('/dynamic-forms/fields/{field}/toggle-status', [AdminDynamicFormController::class, 'toggleField'])->name('dynamic-forms.fields.toggle-status');
 
         // Inbound Contact & Sponsorship Enquiries (Full Management)
         Route::get('/enquiries', [AdminEnquiryController::class, 'index'])->name('enquiries');
@@ -212,6 +254,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/sponsors/{sponsor}', [AdminSponsorController::class, 'destroy'])->name('sponsors.destroy');
         Route::post('/sponsors/{sponsor}/toggle-status', [AdminSponsorController::class, 'toggleStatus'])->name('sponsors.toggle-status');
         Route::post('/sponsors/reorder', [AdminSponsorController::class, 'reorder'])->name('sponsors.reorder');
+
+        // Sponsorship Enquiries (Full Management)
+        Route::get('/sponsorship-enquiries', [AdminSponsorshipEnquiryController::class, 'index'])->name('sponsorship-enquiries.index');
+        Route::get('/sponsorship-enquiries/{enquiry}', [AdminSponsorshipEnquiryController::class, 'show'])->name('sponsorship-enquiries.show');
+        Route::put('/sponsorship-enquiries/{enquiry}', [AdminSponsorshipEnquiryController::class, 'update'])->name('sponsorship-enquiries.update');
+        Route::delete('/sponsorship-enquiries/{enquiry}', [AdminSponsorshipEnquiryController::class, 'destroy'])->name('sponsorship-enquiries.destroy');
 
         // Our Clients & Testimonials Management (Full CRUD)
         Route::get('/clients', [AdminClientController::class, 'index'])->name('clients.index');
@@ -249,9 +297,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/registrations/{user}', [AdminRegistrationController::class, 'show'])->name('registrations.show');
         Route::get('/registrations/{user}/edit', [AdminRegistrationController::class, 'edit'])->name('registrations.edit');
         Route::put('/registrations/{user}', [AdminRegistrationController::class, 'update'])->name('registrations.update');
+        Route::post('/registrations/{user}/approval-status', [AdminRegistrationController::class, 'updateApprovalStatus'])->name('registrations.approval-status');
         Route::post('/registrations/{user}/toggle-status', [AdminRegistrationController::class, 'toggleStatus'])->name('registrations.toggle-status');
         Route::delete('/registrations/{user}', [AdminRegistrationController::class, 'destroy'])->name('registrations.destroy');
         Route::get('/registrations-alias', fn () => redirect()->route('admin.registrations.index'))->name('registrations');
+
+        // Season Model Registrations Management
+        Route::get('/season-registrations', [AdminSeasonRegistrationController::class, 'index'])->name('season-registrations.index');
+        Route::get('/season-registrations/export', [AdminSeasonRegistrationController::class, 'export'])->name('season-registrations.export');
+        Route::get('/season-registrations/{registration}', [AdminSeasonRegistrationController::class, 'show'])->name('season-registrations.show');
+        Route::get('/season-registrations/{registration}/edit', [AdminSeasonRegistrationController::class, 'edit'])->name('season-registrations.edit');
+        Route::put('/season-registrations/{registration}', [AdminSeasonRegistrationController::class, 'update'])->name('season-registrations.update');
+        Route::delete('/season-registrations/{registration}', [AdminSeasonRegistrationController::class, 'destroy'])->name('season-registrations.destroy');
+        Route::post('/season-registrations/{registration}/payments', [AdminSeasonRegistrationController::class, 'storePayment'])->name('season-registrations.payments.store');
+        Route::delete('/season-registrations/payments/{payment}', [AdminSeasonRegistrationController::class, 'destroyPayment'])->name('season-registrations.payments.destroy');
+
+        // Season Registration Prices Management
+        Route::get('/season-prices', [AdminSeasonRegistrationController::class, 'pricesIndex'])->name('season-prices.index');
+        Route::post('/season-prices', [AdminSeasonRegistrationController::class, 'pricesStore'])->name('season-prices.store');
+        Route::put('/season-prices/{price}', [AdminSeasonRegistrationController::class, 'pricesUpdate'])->name('season-prices.update');
+        Route::delete('/season-prices/{price}', [AdminSeasonRegistrationController::class, 'pricesDestroy'])->name('season-prices.destroy');
+
+        // Dedicated Payment Management
+        Route::get('/season-payments', [AdminSeasonRegistrationController::class, 'paymentsIndex'])->name('season-payments.index');
 
         // Other Module routes (Placeholders)
         Route::get('/settings', fn () => app(AdminDashboardController::class)->placeholder('settings'))->name('settings');
@@ -262,6 +330,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // 5. Aliases & Legacy HTML Redirections (All 21 Original Pages)
 // ==========================================
 // IDFR Core Pages
+Route::redirect('/home', '/');
 Route::redirect('/index.html', '/');
 Route::redirect('/idfr_about.html', '/about');
 Route::redirect('/idfr_models.html', '/models');

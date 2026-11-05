@@ -33,13 +33,43 @@ class AdminSeasonController extends Controller
         $validated = $request->validate([
             'number' => ['required', 'integer', 'min:1', 'unique:seasons,number'],
             'title' => ['required', 'string', 'max:100'],
+            'hero_heading' => ['nullable', 'string', 'max:150'],
+            'hero_highlighted' => ['nullable', 'string', 'max:150'],
             'year' => ['nullable', 'string', 'max:20'],
             'location' => ['nullable', 'string', 'max:100'],
             'dates' => ['nullable', 'string', 'max:150'],
             'status' => ['required', 'string', 'in:published,draft,archived'],
+            'is_current' => ['nullable', 'boolean'],
             'description' => ['nullable', 'string'],
             'hero_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'schedule' => ['nullable', 'array'],
+            'schedule.*.number' => ['nullable', 'string', 'max:10'],
+            'schedule.*.meta' => ['nullable', 'string', 'max:100'],
+            'schedule.*.title' => ['nullable', 'string', 'max:150'],
+            'schedule.*.description' => ['nullable', 'string', 'max:500'],
         ]);
+
+        if ($request->has('schedule') && is_array($request->input('schedule'))) {
+            $scheduleData = [];
+            foreach ($request->input('schedule') as $idx => $event) {
+                if (! is_array($event)) {
+                    continue;
+                }
+                $title = trim($event['title'] ?? '');
+                $meta = trim($event['meta'] ?? '');
+                $desc = trim($event['description'] ?? '');
+                $num = trim($event['number'] ?? '');
+                if ($title !== '' || $meta !== '' || $desc !== '') {
+                    $scheduleData[] = [
+                        'number' => $num !== '' ? str_pad($num, 2, '0', STR_PAD_LEFT) : str_pad((string) ($idx + 1), 2, '0', STR_PAD_LEFT),
+                        'meta' => $meta,
+                        'title' => $title !== '' ? $title : ('Night '.($idx + 1)),
+                        'description' => $desc,
+                    ];
+                }
+            }
+            $validated['schedule'] = ! empty($scheduleData) ? $scheduleData : null;
+        }
 
         if ($request->hasFile('hero_image')) {
             $file = $request->file('hero_image');
@@ -49,6 +79,10 @@ class AdminSeasonController extends Controller
         }
 
         $season = Season::create($validated);
+
+        if ($request->boolean('is_current')) {
+            $season->makeCurrent();
+        }
 
         AdminActivity::log(
             'season_created',
@@ -70,13 +104,43 @@ class AdminSeasonController extends Controller
         $validated = $request->validate([
             'number' => ['required', 'integer', 'min:1', 'unique:seasons,number,'.$season->id],
             'title' => ['required', 'string', 'max:100'],
+            'hero_heading' => ['nullable', 'string', 'max:150'],
+            'hero_highlighted' => ['nullable', 'string', 'max:150'],
             'year' => ['nullable', 'string', 'max:20'],
             'location' => ['nullable', 'string', 'max:100'],
             'dates' => ['nullable', 'string', 'max:150'],
             'status' => ['required', 'string', 'in:published,draft,archived'],
+            'is_current' => ['nullable', 'boolean'],
             'description' => ['nullable', 'string'],
             'hero_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
+            'schedule' => ['nullable', 'array'],
+            'schedule.*.number' => ['nullable', 'string', 'max:10'],
+            'schedule.*.meta' => ['nullable', 'string', 'max:100'],
+            'schedule.*.title' => ['nullable', 'string', 'max:150'],
+            'schedule.*.description' => ['nullable', 'string', 'max:500'],
         ]);
+
+        if ($request->has('schedule') && is_array($request->input('schedule'))) {
+            $scheduleData = [];
+            foreach ($request->input('schedule') as $idx => $event) {
+                if (! is_array($event)) {
+                    continue;
+                }
+                $title = trim($event['title'] ?? '');
+                $meta = trim($event['meta'] ?? '');
+                $desc = trim($event['description'] ?? '');
+                $num = trim($event['number'] ?? '');
+                if ($title !== '' || $meta !== '' || $desc !== '') {
+                    $scheduleData[] = [
+                        'number' => $num !== '' ? str_pad($num, 2, '0', STR_PAD_LEFT) : str_pad((string) ($idx + 1), 2, '0', STR_PAD_LEFT),
+                        'meta' => $meta,
+                        'title' => $title !== '' ? $title : ('Night '.($idx + 1)),
+                        'description' => $desc,
+                    ];
+                }
+            }
+            $validated['schedule'] = ! empty($scheduleData) ? $scheduleData : null;
+        }
 
         if ($request->hasFile('hero_image')) {
             // Delete old custom hero image if stored locally
@@ -91,6 +155,14 @@ class AdminSeasonController extends Controller
 
         $season->update($validated);
 
+        if ($request->has('is_current')) {
+            if ($request->boolean('is_current')) {
+                $season->makeCurrent();
+            } else {
+                $season->update(['is_current' => false]);
+            }
+        }
+
         AdminActivity::log(
             'season_updated',
             auth()->user(),
@@ -101,6 +173,25 @@ class AdminSeasonController extends Controller
 
         return redirect()->route('admin.seasons')
             ->with('success', "Season '{$season->title}' updated successfully.");
+    }
+
+    /**
+     * Set the given season as the single active season across the entire application.
+     */
+    public function activate(Request $request, Season $season): RedirectResponse
+    {
+        $season->makeCurrent();
+
+        AdminActivity::log(
+            'season_activated',
+            auth()->user(),
+            auth()->user()->email,
+            "Activated runway season: {$season->title}",
+            $request
+        );
+
+        return redirect()->route('admin.seasons')
+            ->with('success', "Season '{$season->title}' is now set as the active runway season across the entire website.");
     }
 
     /**

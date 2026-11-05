@@ -27,13 +27,13 @@
 
           <div class="section-head">
             <div data-reveal="up">
-              <p class="section-label">Season 4 Portfolio</p>
+              <p class="section-label">IDFR Runway Talent</p>
               <h1 class="section-title" id="profileTitle">
                 Model <em>Profile</em>
               </h1>
             </div>
             <p class="section-intro" data-reveal="up" data-delay="150">
-              Showcase your best looks and share the details designers and show directors look for on IDFR.
+              Showcase your runway looks, stats and measurements so designers, casting scouts and show directors can discover you.
             </p>
           </div>
 
@@ -215,8 +215,36 @@
                 Model Details
               </h2>
               <p class="profile__lead">
-                All fields are required to publish your profile on IDFR.
+                Fill in your personal details, measurements and portfolio to publish your model profile on IDFR.
               </p>
+
+              @if($model)
+                @if($model->status === 'pending')
+                  <div class="alert" style="margin-bottom: 20px; padding: 14px 18px; border-radius: 8px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; display: flex; align-items: flex-start; gap: 12px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <div>
+                      <strong style="display:block; font-size:0.95rem; margin-bottom:2px;">Profile Submitted — Pending Admin Approval</strong>
+                      <span style="font-size:0.85rem; opacity:0.9;">Your model profile and photos have been submitted for review. Once verified and accepted by the IDFR team, your profile will be published live on the public showcase.</span>
+                    </div>
+                  </div>
+                @elseif($model->status === 'published')
+                  <div class="alert" style="margin-bottom: 20px; padding: 14px 18px; border-radius: 8px; background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35); color: #4ade80; display: flex; align-items: flex-start; gap: 12px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    <div>
+                      <strong style="display:block; font-size:0.95rem; margin-bottom:2px;">Profile Approved &amp; Live</strong>
+                      <span style="font-size:0.85rem; opacity:0.9;">Your profile is approved and currently featured live on the IDFR Models showcase.</span>
+                    </div>
+                  </div>
+                @elseif($model->status === 'rejected')
+                  <div class="alert" style="margin-bottom: 20px; padding: 14px 18px; border-radius: 8px; background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.35); color: #f87171; display: flex; align-items: flex-start; gap: 12px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0; margin-top:2px;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+                    <div>
+                      <strong style="display:block; font-size:0.95rem; margin-bottom:2px;">Profile Not Approved</strong>
+                      <span style="font-size:0.85rem; opacity:0.9;">Your profile was reviewed and not approved. Please review your details and photos below, update them as needed, and submit again for verification.</span>
+                    </div>
+                  </div>
+                @endif
+              @endif
 
               @if(session('success') || session('status'))
                 <div class="alert alert--success" style="margin-bottom: 20px; padding: 14px 18px; border-radius: 8px; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; display: flex; align-items: center; gap: 10px;">
@@ -238,15 +266,22 @@
               @endif
 
               @php
-                $savedGender = strtolower((string) old('gender', $model->gender ?? ''));
-                $savedCategory = strtolower((string) old('category', $model->level ?? ''));
-                $savedTypes = old('modelType', (array) ($model->types ?? []));
-                $savedOutstation = strtolower((string) old('outstation', $model->outstation ?? ''));
-                $savedInternational = strtolower((string) old('international', $model->international ?? ''));
-                $savedSkills = old('skills', is_array($model->skills ?? null) ? implode(', ', $model->skills) : ($model->skills ?? ''));
+                $savedGender = strtolower((string) old('gender', $model->gender ?? 'female'));
+                $savedCategory = strtolower((string) old('category', $model->level ?? 'new-face'));
+                $savedTypes = old('modelType', (array) ($model->types ?? ['commercial']));
+                $savedOutstation = strtolower((string) old('outstation', $model->outstation ?? 'yes'));
+                $savedInternational = strtolower((string) old('international', $model->international ?? 'no'));
+                $savedSkills = old('skills', is_array($model->skills ?? null) ? implode(', ', $model->skills) : ($model->skills ?? 'Runway walk, Editorial posing'));
+                $savedAbout = old('about', $model->description ?? '');
+
+                $meas = is_array($model->measurements ?? null) ? $model->measurements : [];
+                $savedBust = old('bust', $meas['Bust'] ?? ($meas['Chest'] ?? ($meas['bust'] ?? '')));
+                $savedWaist = old('waist', $meas['Waist'] ?? ($meas['waist'] ?? ''));
+                $savedHips = old('hips', $meas['Hips'] ?? ($meas['hips'] ?? ''));
+                $savedShoe = old('shoe', $meas['Shoe'] ?? ($meas['shoe'] ?? ''));
               @endphp
 
-              <form class="profile-form" id="profileForm" method="POST" action="{{ route('profile.model.save') }}" enctype="multipart/form-data" novalidate>
+              <form class="profile-form" id="profileForm" method="POST" action="{{ route('profile.model.save') }}" data-profile-kind="model" data-profile-label="model" enctype="multipart/form-data" novalidate>
                 @csrf
                 <input type="file" name="profile_photo" id="pfFile_profile_photo" class="visually-hidden" tabindex="-1" aria-hidden="true" style="display:none;" />
                 <input type="file" name="portfolio_image_1" id="pfFile_portfolio_1" class="visually-hidden" tabindex="-1" aria-hidden="true" style="display:none;" />
@@ -418,7 +453,31 @@
                   <span class="field__error" aria-live="polite"></span>
                 </div>
 
-                <div class="field profile-form__full">
+                                <fieldset class="field profile-form__full">
+                  <legend>
+                    Measurements &amp; Sizes
+                    <span class="field__note">Helps designers and stylists prepare runway fits</span>
+                  </legend>
+                  <div class="choices" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 8px;">
+                    <div>
+                      <label for="pfBust" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); display: block; margin-bottom: 4px;">Bust / Chest</label>
+                      <input type="text" id="pfBust" name="bust" placeholder='e.g. 34"' value="{{ $savedBust }}" />
+                    </div>
+                    <div>
+                      <label for="pfWaist" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); display: block; margin-bottom: 4px;">Waist</label>
+                      <input type="text" id="pfWaist" name="waist" placeholder='e.g. 26"' value="{{ $savedWaist }}" />
+                    </div>
+                    <div>
+                      <label for="pfHips" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); display: block; margin-bottom: 4px;">Hips</label>
+                      <input type="text" id="pfHips" name="hips" placeholder='e.g. 36"' value="{{ $savedHips }}" />
+                    </div>
+                    <div>
+                      <label for="pfShoe" style="font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gold); display: block; margin-bottom: 4px;">Shoe Size</label>
+                      <input type="text" id="pfShoe" name="shoe" placeholder='e.g. UK 6' value="{{ $savedShoe }}" />
+                    </div>
+                  </div>
+                </fieldset>
+<div class="field profile-form__full">
                   <label for="pfSkills">Skills</label>
                   <textarea
                     id="pfSkills"
@@ -509,6 +568,16 @@
                   </div>
                   <span class="field__error" aria-live="polite"></span>
                 </fieldset>
+                <div class="field profile-form__full">
+                  <label for="pfAbout">About / Biography</label>
+                  <textarea
+                    id="pfAbout"
+                    name="about"
+                    rows="4"
+                    placeholder="Tell designers, brands and casting directors about your style, runway experience or artistic passions..."
+                  >{{ $savedAbout }}</textarea>
+                  <span class="field__error" aria-live="polite"></span>
+                </div>
 
                 <div class="profile-form__actions profile-form__full">
                   <button class="btn btn--ghost" type="reset">

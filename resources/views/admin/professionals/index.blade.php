@@ -54,7 +54,9 @@
     <div class="filter-group">
       <select name="status" class="filter-select" onchange="this.form.submit()">
         <option value="">All Statuses</option>
-        <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published</option>
+        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending Approval</option>
+        <option value="published" {{ request('status') === 'published' ? 'selected' : '' }}>Published / Approved</option>
+        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
         <option value="draft" {{ request('status') === 'draft' ? 'selected' : '' }}>Draft</option>
         <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
       </select>
@@ -157,16 +159,22 @@
                 </div>
               </td>
               <td>
-                @if($pro->status === 'published')
-                  <span class="status-pill status-pill--published">Published</span>
-                @elseif($pro->status === 'draft')
-                  <span class="status-pill status-pill--draft">Draft</span>
-                @else
-                  <span class="status-pill status-pill--archived">Archived</span>
-                @endif
+                <form action="{{ route('admin.professionals.approval-status', $pro) }}" method="POST" style="margin: 0;">
+                  @csrf
+                  <select name="status" onchange="this.form.submit()" style="background: #111; color: {{ $pro->status === 'published' ? '#4ade80' : ($pro->status === 'rejected' ? '#f87171' : ($pro->status === 'pending' ? '#fbbf24' : '#94a3b8')) }}; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 3px 8px; font-size: 0.75rem; cursor: pointer;" title="Change approval status">
+                    <option value="published" {{ $pro->status === 'published' ? 'selected' : '' }}>● Published / Live</option>
+                    <option value="pending" {{ $pro->status === 'pending' ? 'selected' : '' }}>⏳ Pending Review</option>
+                    <option value="rejected" {{ $pro->status === 'rejected' ? 'selected' : '' }}>× Rejected</option>
+                    <option value="draft" {{ $pro->status === 'draft' ? 'selected' : '' }}>○ Draft</option>
+                    <option value="archived" {{ $pro->status === 'archived' ? 'selected' : '' }}>- Archived</option>
+                  </select>
+                </form>
               </td>
               <td class="text-right">
                 <div class="action-buttons">
+                  <a href="{{ route('admin.professionals.show', $pro) }}" class="action-btn" title="Review Complete Profile">
+                    <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  </a>
                   <a href="{{ route('admin.professionals.edit', $pro) }}" class="action-btn" title="Edit Profile">
                     <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                   </a>

@@ -286,4 +286,48 @@ class AdminModelController extends Controller
         return redirect()->route('admin.models')
             ->with('success', "Model profile '{$name}' has been deleted.");
     }
+
+    /**
+     * Show or review the model profile.
+     */
+    public function show(ModelProfile $model): RedirectResponse
+    {
+        if ($model->user_id) {
+            return redirect()->route('admin.registrations.show', $model->user_id);
+        }
+
+        return redirect()->route('admin.models.edit', $model);
+    }
+
+    /**
+     * Update approval status for the model profile.
+     */
+    public function updateApprovalStatus(Request $request, ModelProfile $model): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:published,approved,pending,rejected,draft,archived'],
+        ]);
+
+        $newStatus = ($validated['status'] === 'approved') ? 'published' : $validated['status'];
+        $model->status = $newStatus;
+        $model->save();
+
+        $adminUser = auth('admin')->user() ?? auth()->user();
+        AdminActivity::log(
+            'model_approval_updated',
+            $adminUser,
+            $adminUser?->email ?? 'admin@idfr.test',
+            "Changed status of model {$model->name} (#{$model->id}) to {$newStatus}",
+            $request
+        );
+
+        $msg = match ($newStatus) {
+            'published' => "Model '{$model->name}' has been accepted and is now published on the main website.",
+            'rejected' => "Model '{$model->name}' has been rejected and remains hidden from the main website.",
+            'pending' => "Model '{$model->name}' is now Pending Approval.",
+            default => "Model status updated to {$newStatus}.",
+        };
+
+        return redirect()->back()->with('success', $msg);
+    }
 }

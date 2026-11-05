@@ -234,6 +234,20 @@
               <use href="#i-arrow-right" />
             </svg>
           </button>
+
+          <div class="auth-divider">
+            <span>OR</span>
+          </div>
+
+          <a href="{{ route('auth.google.redirect') }}" class="btn btn--google btn--block">
+            <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.65v3h3.86c2.26-2.09 3.68-5.17 3.68-9.09z"/>
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.28v3.09C3.26 21.3 7.31 24 12 24z"/>
+              <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.28C.46 8.24 0 10.06 0 12s.46 3.76 1.28 5.38l3.99-3.09z"/>
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.28 6.62l3.99 3.09c.95-2.85 3.6-4.96 6.73-4.96z"/>
+            </svg>
+            <span>Continue with Google</span>
+          </a>
         </form>
 
         <form
@@ -287,14 +301,30 @@
             <select id="regRole" name="role" required>
               <option value="">Select your role</option>
               <option value="model">Model</option>
-              <option value="makeup-artist">Makeup Artist</option>
-              <option value="hairstylist">Hairstylist</option>
-              <option value="photographer">Photographer</option>
-              <option value="videographer">Videographer</option>
-              <option value="fashion-designer">Fashion Designer</option>
-              <option value="drone-pilot">Drone Pilot</option>
-              <option value="photo-video-editor">Photo &amp; Video Editor</option>
-              <option value="jewellery-designer">Jewellery Designer</option>
+              @php
+                $regCategories = \App\Models\ProfessionalCategory::where('is_active', true)->orderBy('display_order')->get();
+              @endphp
+              @foreach($regCategories as $rCat)
+                <option value="{{ $rCat->slug }}">{{ $rCat->name }}</option>
+              @endforeach
+            </select>
+            <span class="field__error" aria-live="polite"></span>
+          </div>
+          <div class="field" id="regModelTypeField" style="display: none;">
+            <label for="regModelType">Model Type</label>
+            <select id="regModelType" name="model_type">
+              <option value="">Select your model type</option>
+              <option value="Commercial Model">Commercial Model</option>
+              <option value="Runway / Ramp Model">Runway / Ramp Model</option>
+              <option value="Editorial Model">Editorial Model</option>
+              <option value="High Fashion Model">High Fashion Model</option>
+              <option value="Fitness Model">Fitness Model</option>
+              <option value="Glamour Model">Glamour Model</option>
+              <option value="Print Model">Print Model</option>
+              <option value="Parts Model">Parts Model</option>
+              <option value="Promotional Model">Promotional Model</option>
+              <option value="Video Shoot Model">Video Shoot Model</option>
+              <option value="Actor">Actor</option>
             </select>
             <span class="field__error" aria-live="polite"></span>
           </div>
@@ -554,9 +584,11 @@
     </div>
 
     <!-- ============ SPONSORSHIP ENQUIRY MODAL ============ -->
+    <span id="sponsor-enquiry" class="visually-hidden" style="position: absolute; top: 0; left: 0; width: 0; height: 0; pointer-events: none; opacity: 0;" aria-hidden="true"></span>
     <div
       class="modal shoot-book sponsor-enquiry"
       id="sponsorEnquiryModal"
+      data-modal-name="sponsor-enquiry"
       role="dialog"
       aria-modal="true"
       aria-labelledby="sponsorEnquiryTitle"
@@ -575,8 +607,8 @@
           </svg>
         </button>
 
-        <div data-sponsor-form>
-          <p class="info__label">IDFR · Season 5</p>
+                <div data-sponsor-form>
+          <p class="info__label">IDFR · {{ $currentSeason ? $currentSeason->title : 'Season 8' }}</p>
           <h2
             class="auth-modal__title shoot-book__title"
             id="sponsorEnquiryTitle"
@@ -584,15 +616,16 @@
             Sponsorship <em>Enquiry</em>
           </h2>
           <p class="shoot-book__lead">
-            Tell us about your interest in sponsoring an IDFR fashion show.
+            Tell us about your brand's interest in partnering with the upcoming IDFR runway season.
             Fields marked <span aria-hidden="true">*</span
             ><span class="visually-hidden">with an asterisk</span> are required.
-            We’ll follow up at
-            <a href="mailto:info@idfr.example">info@idfr.example</a>
-            with the relevant sponsorship details.
+            Our executive sponsorship desk will follow up promptly with presentation decks and package deliverables.
           </p>
 
-          <form class="profile-form" id="sponsorEnquiryForm" novalidate>
+          <form class="profile-form" id="sponsorEnquiryForm" method="POST" action="{{ route('sponsorship.enquiry') }}" novalidate>
+            @csrf
+            <input type="hidden" name="season_id" value="{{ $currentSeason?->id }}" />
+
             <div class="field">
               <label for="sponsorName"
                 >Name / Company Name <span aria-hidden="true">*</span></label
@@ -639,7 +672,7 @@
                 autocomplete="tel"
                 inputmode="tel"
                 required
-                maxlength="20"
+                maxlength="25"
                 placeholder="+91 98765 43210"
               />
               <span class="field__error" aria-live="polite"></span>
@@ -649,10 +682,14 @@
               <label for="sponsorType"
                 >Type of Sponsorship <span aria-hidden="true">*</span></label
               >
-              <select id="sponsorType" name="type" required>
+              <select id="sponsorType" name="sponsorship_type" required>
                 <option value="" selected disabled>Select a sponsorship type</option>
-                <option value="Title Sponsor">Title Sponsor</option>
-                <option value="Associate Sponsors">Associate Sponsors</option>
+                @php
+                  $availableSponsorTypes = $sponsorshipTypes ?? \App\Models\SponsorshipEnquiry::availableTypes();
+                @endphp
+                @foreach($availableSponsorTypes as $val => $lbl)
+                  <option value="{{ $val }}">{{ $lbl }}</option>
+                @endforeach
               </select>
               <span class="field__error" aria-live="polite"></span>
             </div>
@@ -666,14 +703,14 @@
                 name="message"
                 rows="4"
                 maxlength="1000"
-                placeholder="Share any additional details, goals or questions about sponsoring IDFR"
+                placeholder="Share any specific sponsorship goals, marketing initiatives or questions about partnering with IDFR"
               ></textarea>
               <span class="field__error" aria-live="polite"></span>
             </div>
 
             <div class="profile-form__actions profile-form__full">
-              <button class="btn btn--gold" type="submit">
-                <span>Send Me Details</span
+              <button class="btn btn--gold" type="submit" id="sponsorSubmitBtn">
+                <span>Submit Sponsorship Enquiry</span
                 ><svg class="icon" aria-hidden="true">
                   <use href="#i-arrow-right" />
                 </svg>
@@ -692,20 +729,13 @@
             id="sponsorEnquirySuccessTitle"
             tabindex="-1"
           >
-            Enquiry <em>sent</em>
+            Enquiry <em>Received</em>
           </h2>
-          <p class="shoot-book__message" role="status">
-            Thank you for your interest in sponsoring IDFR. Your enquiry is ready
-            to send to
-            <strong>info@idfr.example</strong>. Our team will follow up with the
-            relevant sponsorship details.
+          <p class="shoot-book__message" id="sponsorSuccessMsg" role="status">
+            Thank you for your interest in sponsoring IDFR. Your enquiry has been securely received by our executive team. We will review your proposal and get in touch with you shortly.
           </p>
           <p class="shoot-book__note">
-            If your email app did not open, please write to
-            <a href="mailto:info@idfr.example?subject=Sponsorship%20Enquiry"
-              >info@idfr.example</a
-            >
-            with your sponsorship enquiry.
+            Official IDFR Sponsorship Desk &bull; {{ $currentSeason ? $currentSeason->title : 'Season 8' }}
           </p>
           <button class="btn btn--gold" type="button" data-close>
             <span>Close</span>
@@ -713,6 +743,29 @@
         </div>
       </div>
     </div>
+
+    <script>
+      (function () {
+        function earlyOpenSponsorModal() {
+          var modal = document.getElementById("sponsorEnquiryModal");
+          if (!modal) return;
+          if (window.Modal && typeof window.Modal.open === "function") {
+            window.Modal.open(modal);
+          } else {
+            modal.hidden = false;
+            void modal.offsetWidth;
+            modal.classList.add("is-open");
+          }
+        }
+        if (window.location.hash === "#sponsor-enquiry" || window.location.hash === "#sponsorEnquiryModal") {
+          if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", earlyOpenSponsorModal);
+          } else {
+            earlyOpenSponsorModal();
+          }
+        }
+      })();
+    </script>
 
     <!-- ============ ACCOUNT MODAL ============ -->
     <div

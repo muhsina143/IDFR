@@ -6,8 +6,7 @@ use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\AdminActivity;
 use App\Models\CreativeProfessional;
-use App\Models\Designer;
-use App\Models\ModelProfile;
+use App\Models\ProfessionalCategory;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -58,7 +57,17 @@ class AdminRegistrationController extends Controller
             }
         }
 
-        // 5. Aggregate metrics for header stats
+        // 5. Filter by Profile Approval Status (Pending, Published, Rejected)
+        if ($request->filled('approval_status')) {
+            $st = $request->input('approval_status');
+            $query->where(function ($q) use ($st) {
+                $q->whereHas('modelProfile', fn ($mq) => $mq->where('status', $st))
+                    ->orWhereHas('creativeProfile', fn ($cq) => $cq->where('status', $st))
+                    ->orWhereHas('designerProfile', fn ($dq) => $dq->where('status', $st));
+            });
+        }
+
+        // 6. Aggregate metrics for header stats
         $stats = [
             'total_users' => User::where('is_admin', false)->where('role', '!=', 'admin')->count(),
             'verified_users' => User::where('is_admin', false)->where('role', '!=', 'admin')->whereNotNull('email_verified_at')->count(),
@@ -66,9 +75,14 @@ class AdminRegistrationController extends Controller
             'designers' => User::where('role', UserRole::FashionDesigner->value)->count(),
             'creative_pros' => User::where('is_admin', false)->whereNotIn('role', ['admin', 'model', 'fashion-designer'])->count(),
             'deactivated' => User::where('is_active', false)->count(),
+            'pending_approval' => User::where('is_admin', false)->where('role', '!=', 'admin')->where(function ($q) {
+                $q->whereHas('modelProfile', fn ($mq) => $mq->where('status', 'pending'))
+                    ->orWhereHas('creativeProfile', fn ($cq) => $cq->where('status', 'pending'))
+                    ->orWhereHas('designerProfile', fn ($dq) => $dq->where('status', 'pending'));
+            })->count(),
         ];
 
-        // 6. Paginate results
+        // 7. Paginate results
         $users = $query->latest()->paginate(15)->withQueryString();
 
         $roles = UserRole::cases();
@@ -85,15 +99,15 @@ class AdminRegistrationController extends Controller
         $completion = $user->profileCompletion();
 
         // 2. Load role-specific profile data
-        $roleProfile = null;
+        $roleProfile = $user->getProfileRecord();
         $roleType = $user->role;
 
-        if ($user->role === UserRole::Model->value) {
-            $roleProfile = $user->modelProfile ?: ModelProfile::where('name', $user->name)->first();
-        } elseif ($user->role === UserRole::FashionDesigner->value) {
-            $roleProfile = $user->designerProfile ?: Designer::where('name', $user->name)->first();
-        } elseif (! empty($user->role)) {
-            $roleProfile = $user->creativeProfile ?: CreativeProfessional::where('name', $user->name)->first();
+        // Load dynamic form fields if creative category
+        $categoryModel = null;
+        $formFields = collect();
+        if ($roleProfile instanceof CreativeProfessional) {
+            $categoryModel = ProfessionalCategory::where('slug', $roleProfile->category)->first();
+            $formFields = $categoryModel?->getActiveFormFields() ?? collect();
         }
 
         // 3. Load recent administrative audit telemetry for this user
@@ -108,8 +122,71 @@ class AdminRegistrationController extends Controller
             'completion',
             'roleProfile',
             'roleType',
+            'categoryModel',
+            'formFields',
             'auditActivities'
         ));
+    }
+
+    /**
+     * Update the profile approval status (Accept / Reject / Pending / Draft / Archived).
+     */
+    public function updateApprovalStatus(Request $request, User $user): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:published,approved,pending,rejected,draft,archived'],
+            'rejection_reason' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $newStatus = ($validated['status'] === 'approved') ? 'published' : $validated['status'];
+        $roleProfile = $user->getProfileRecord();
+
+        if ($roleProfile) {
+            $roleProfile->status = $newStatus;
+            $roleProfile->save();
+        }
+
+        // Also sync any sibling profiles
+        if ($user->role === 'fashion-designer') {
+            if ($user->designerProfile) {
+                $user->designerProfile->update(['status' => $newStatus]);
+            }
+            if ($user->creativeProfile) {
+                $user->creativeProfile->update(['status' => $newStatus]);
+            }
+        } elseif ($user->role === 'model') {
+            if ($user->modelProfile) {
+                $user->modelProfile->update(['status' => $newStatus]);
+            }
+        } else {
+            if ($user->creativeProfile) {
+                $user->creativeProfile->update(['status' => $newStatus]);
+            }
+        }
+
+        if ($newStatus === 'rejected' && ! empty($validated['rejection_reason'])) {
+            $user->update(['deactivation_reason' => $validated['rejection_reason']]);
+        }
+
+        $adminUser = Auth::guard('admin')->user() ?? Auth::user();
+
+        if (class_exists(AdminActivity::class)) {
+            AdminActivity::create([
+                'user_id' => $adminUser?->id,
+                'activity' => 'profile_approval_updated',
+                'description' => "Profile for member {$user->name} (#{$user->id}, role: {$user->role}) status updated to {$newStatus}".(! empty($validated['rejection_reason']) ? " (Reason: {$validated['rejection_reason']})" : ''),
+                'ip_address' => $request->ip(),
+            ]);
+        }
+
+        $msg = match ($newStatus) {
+            'published' => "Profile for {$user->name} has been accepted and is now published on the main website.",
+            'rejected' => "Profile for {$user->name} has been rejected and remains hidden from the main website.",
+            'pending' => "Profile for {$user->name} has been set to Pending Approval.",
+            default => "Profile status updated to {$newStatus}.",
+        };
+
+        return redirect()->back()->with('success', $msg);
     }
 
     /**

@@ -47,14 +47,16 @@
               aria-label="Creative Professionals categories"
             ></button>
             <ul class="nav__dropdown" id="navCreativeMenu">
-              <li><a href="{{ route('idfr.professionals') }}#creative-makeup-artist">Makeup Artist</a></li>
-              <li><a href="{{ route('idfr.professionals') }}#creative-hairstylist">Hairstylist</a></li>
-              <li><a href="{{ route('idfr.professionals') }}#creative-photographer">Photographer</a></li>
-              <li><a href="{{ route('idfr.professionals') }}#creative-videographer">Videography</a></li>
-              <li><a href="{{ route('idfr.professionals') }}#creative-fashion-designers">Fashion Designers</a></li>
-              <li><a href="{{ route('idfr.professionals') }}#creative-drone-pilot">Drone Pilot</a></li>
-              <li><a href="{{ route('idfr.professionals') }}#creative-photo-video-editor">Photo &amp; Video Editor</a></li>
-              <li><a href="{{ route('idfr.professionals') }}#creative-jewellery-designer">Jewellery Designer</a></li>
+              @php
+                $headerCategories = $navCategories ?? \App\Models\ProfessionalCategory::where('is_active', true)->orderBy('display_order')->get();
+              @endphp
+              @foreach($headerCategories as $nCat)
+                @php
+                  $anchorHash = ($nCat->slug === 'fashion-designer') ? 'creative-fashion-designers' : 'creative-' . $nCat->slug;
+                  $catUrl = request()->routeIs('idfr.home') ? (route('idfr.home') . '#' . $anchorHash) : (route('idfr.professionals') . '#' . $anchorHash);
+                @endphp
+                <li><a href="{{ $catUrl }}">{{ $nCat->name }}</a></li>
+              @endforeach
             </ul>
           </li>
           <li>
@@ -139,22 +141,6 @@
                 </ul>
               </div>
             </div>
-
-            <button class="nav__login" type="button" data-auth="login" hidden>
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-user" /></svg
-              ><span>Login</span>
-            </button>
-            <button
-              class="btn btn--gold btn--sm nav__register"
-              type="button"
-              data-auth="register"
-              hidden
-            >
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-user-plus" /></svg
-              ><span>Register</span>
-            </button>
           @else
             <button class="nav__login" type="button" data-auth="login">
               <svg class="icon" aria-hidden="true">
@@ -218,14 +204,16 @@
             class="mobile-menu__sub"
             aria-label="Creative Professionals categories"
           >
-            <li><a href="{{ route('idfr.professionals') }}#creative-makeup-artist">Makeup Artist</a></li>
-            <li><a href="{{ route('idfr.professionals') }}#creative-hairstylist">Hairstylist</a></li>
-            <li><a href="{{ route('idfr.professionals') }}#creative-photographer">Photographer</a></li>
-            <li><a href="{{ route('idfr.professionals') }}#creative-videographer">Videography</a></li>
-            <li><a href="{{ route('idfr.professionals') }}#creative-fashion-designers">Fashion Designers</a></li>
-            <li><a href="{{ route('idfr.professionals') }}#creative-drone-pilot">Drone Pilot</a></li>
-            <li><a href="{{ route('idfr.professionals') }}#creative-photo-video-editor">Photo &amp; Video Editor</a></li>
-            <li><a href="{{ route('idfr.professionals') }}#creative-jewellery-designer">Jewellery Designer</a></li>
+            @php
+              $mNavCategories = $navCategories ?? \App\Models\ProfessionalCategory::where('is_active', true)->orderBy('display_order')->get();
+            @endphp
+            @foreach($mNavCategories as $mnCat)
+              @php
+                $mHash = ($mnCat->slug === 'fashion-designer') ? 'creative-fashion-designers' : 'creative-' . $mnCat->slug;
+                $mCatUrl = request()->routeIs('idfr.home') ? (route('idfr.home') . '#' . $mHash) : (route('idfr.professionals') . '#' . $mHash);
+              @endphp
+              <li><a href="{{ $mCatUrl }}">{{ $mnCat->name }}</a></li>
+            @endforeach
           </ul>
         </li>
         <li style="--i: 4">
@@ -294,5 +282,5 @@
           </button>
         @endif
       </div>
-      <p class="mobile-menu__foot">Fashion Show — Season 4 · Kozhikode</p>
-    </div>
+      <p class="mobile-menu__foot">Fashion Show — {{ $currentSeason ? $currentSeason->title : 'Season 8' }} · {{ $currentSeason && $currentSeason->location ? $currentSeason->location : 'Kozhikode' }}</p>
+    </div>

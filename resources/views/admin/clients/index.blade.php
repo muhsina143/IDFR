@@ -116,9 +116,9 @@
                 </a>
               @endif
             </td>
-            <td>
+            <td style="max-width: 280px;">
               @if($client->testimonial_quote)
-                <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0; font-style: italic;">“{{ Str::limit($client->testimonial_quote, 110) }}”</p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0; font-style: italic; overflow-wrap: anywhere; word-break: normal;">“{{ Str::limit($client->testimonial_quote, 110) }}”</p>
               @else
                 <span style="color: var(--text-muted); font-size: 0.8rem;">No quote provided</span>
               @endif

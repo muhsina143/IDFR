@@ -18,7 +18,7 @@ function initCreativeProfileForm(form) {
     const place = placeEl ? initPlaceCombo(placeEl, DATA.places) : null;
     const profileLabel = form.dataset.profileLabel || 'creative';
 
-    const services = $$('input[name="service"], input[name="service[]"]', form);
+    const services = $$('input[name="service"], input[name="service[]"], input[name^="service_"]', form);
     const syncServices = () => {
         if (!services.length) return;
         services[0].setCustomValidity(

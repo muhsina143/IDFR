@@ -4,6 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
+use App\Models\CreativeProfessional;
+use App\Models\Designer;
+use App\Models\ModelProfile;
+use App\Models\ProfessionalCategory;
 use App\Models\User;
 use App\Services\OtpService;
 use App\Services\RegistrationPaymentPolicy;
@@ -12,10 +16,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -30,11 +36,17 @@ class AuthController extends Controller
      */
     public function register(Request $request): JsonResponse|RedirectResponse
     {
+        $allowedRoles = array_unique(array_merge(
+            UserRole::registrationValues(),
+            ProfessionalCategory::where('is_active', true)->pluck('slug')->toArray()
+        ));
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:150'],
             'email' => ['required', 'string', 'email:rfc', 'max:255'],
             'phone' => ['required', 'string', 'regex:/^[0-9+\s\-]{8,20}$/'],
-            'role' => ['required', 'string', Rule::in(UserRole::registrationValues())],
+            'role' => ['required', 'string', Rule::in($allowedRoles)],
+            'model_type' => ['nullable', 'string', 'max:100'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'terms' => ['accepted'],
         ], [
@@ -73,6 +85,12 @@ class AuthController extends Controller
                 'payment_status' => 'exempt',
             ]);
         }
+
+        if (! empty($validated['model_type'])) {
+            session(['registration_model_type' => $validated['model_type']]);
+        }
+
+        $this->ensureProfileExists($user, $validated['model_type'] ?? null);
 
         $otpResult = $this->otpService->sendOtp($user);
 
@@ -164,6 +182,11 @@ class AuthController extends Controller
         // Log public user into web guard upon successful verification
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
+        if (! empty($validated['model_type'])) {
+            session(['registration_model_type' => $validated['model_type']]);
+        }
+
+        $this->ensureProfileExists($user, $validated['model_type'] ?? null);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
@@ -330,6 +353,11 @@ class AuthController extends Controller
         RateLimiter::clear($throttleKey);
         Auth::guard('web')->login($user, (bool) $request->boolean('remember'));
         $request->session()->regenerate();
+        if (! empty($validated['model_type'])) {
+            session(['registration_model_type' => $validated['model_type']]);
+        }
+
+        $this->ensureProfileExists($user, $validated['model_type'] ?? null);
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
@@ -404,5 +432,262 @@ class AuthController extends Controller
                 'payment_status' => $user->payment_status,
             ],
         ]);
+    }
+
+    /**
+     * Redirect the user to the Google OAuth consent screen.
+     */
+    public function redirectToGoogle(): \Symfony\Component\HttpFoundation\RedirectResponse|RedirectResponse
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    /**
+     * Handle the callback from Google OAuth.
+     * Public website authentication only. Rejects administrator accounts.
+     */
+    public function handleGoogleCallback(Request $request): RedirectResponse
+    {
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (\Throwable $e) {
+            Log::warning('Google OAuth callback failed', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('idfr.home')->with('error', 'Unable to authenticate with Google. Please try again.');
+        }
+
+        $email = strtolower(trim((string) $googleUser->getEmail()));
+
+        if (empty($email)) {
+            return redirect()->route('idfr.home')->with('error', 'Google did not provide a valid email address.');
+        }
+
+        $googleId = (string) $googleUser->getId();
+        $avatar = (string) $googleUser->getAvatar();
+
+        // 1. Locate existing user by google_id or matching email
+        $user = User::where('google_id', $googleId)
+            ->orWhere('email', $email)
+            ->first();
+
+        // 2. Strict Administrator Isolation: admin accounts must never log in via public Google OAuth
+        if ($user && $user->isAdmin()) {
+            return redirect()->route('admin.login')->withErrors([
+                'email' => 'Administrator accounts must log in via the Executive Admin Portal.',
+            ]);
+        }
+
+        // 3. Deactivated accounts check
+        if ($user && ! $user->isActive()) {
+            $reason = $user->deactivation_reason ?: 'Your account has been deactivated. Please contact IDFR support.';
+
+            return redirect()->route('idfr.home')->with('error', $reason);
+        }
+
+        if ($user) {
+            // Existing user: Link Google ID and update avatar/verification
+            $needsSave = false;
+
+            if (empty($user->google_id)) {
+                $user->google_id = $googleId;
+                $needsSave = true;
+            }
+
+            if (empty($user->avatar) && ! empty($avatar)) {
+                $user->avatar = $avatar;
+                $needsSave = true;
+            }
+
+            if (! $user->isEmailVerified()) {
+                $user->email_verified_at = now();
+                $needsSave = true;
+            }
+
+            if ($needsSave) {
+                $user->save();
+            }
+
+            $this->ensureProfileExists($user);
+        } else {
+            // New user registration via Google
+            // Detect if a profile record with this email already exists in legacy/unregistered data
+            $detectedRole = 'user';
+            if (ModelProfile::where('email', $email)->exists()) {
+                $detectedRole = 'model';
+            } elseif (Designer::where('email', $email)->exists()) {
+                $detectedRole = 'fashion-designer';
+            } elseif ($cp = CreativeProfessional::where('email', $email)->first()) {
+                $detectedRole = $cp->category ?: 'user';
+            }
+
+            $name = trim((string) $googleUser->getName());
+            if (empty($name)) {
+                $name = 'IDFR Member';
+            }
+
+            $user = User::create([
+                'name' => $name,
+                'email' => $email,
+                'google_id' => $googleId,
+                'avatar' => ! empty($avatar) ? $avatar : null,
+                'role' => $detectedRole,
+                'password' => Hash::make(Str::random(32)),
+                'is_admin' => false,
+                'is_active' => true,
+                'email_verified_at' => now(),
+                'payment_status' => 'exempt',
+            ]);
+
+            $this->ensureProfileExists($user);
+        }
+
+        // Authenticate strictly into the public web guard
+        Auth::guard('web')->login($user, true);
+        $request->session()->regenerate();
+
+        $intended = $request->session()->pull('url.intended', route('idfr.home'));
+        if (str_contains($intended, '/admin')) {
+            $intended = route('idfr.home');
+        }
+
+        $greeting = $user->wasRecentlyCreated
+            ? 'Welcome to IDFR, '.$user->name.'!'
+            : 'Welcome back, '.$user->name.'!';
+
+        return redirect()->to($intended)->with('status', $greeting);
+    }
+
+    /**
+     * Ensure dedicated role profile exists for the user.
+     * All newly created member profiles default to 'pending' approval status.
+     */
+    protected function ensureProfileExists(User $user, ?string $modelType = null): void
+    {
+        if (empty($user->role) || in_array($user->role, ['admin', 'user'], true)) {
+            return;
+        }
+
+        $chosenType = $modelType ?: session('registration_model_type');
+        $initialType = ! empty($chosenType) ? [ModelProfile::formatType($chosenType)] : ['Commercial Model'];
+
+        if ($user->role === 'model') {
+            $model = ModelProfile::where('user_id', $user->id)->first();
+            if (! $model) {
+                $model = ModelProfile::where('email', $user->email)->whereNull('user_id')->first()
+                    ?? (! empty($user->name) ? ModelProfile::where('name', $user->name)->whereNull('user_id')->first() : null);
+
+                if ($model) {
+                    $model->user_id = $user->id;
+                    if (empty($model->email)) {
+                        $model->email = $user->email;
+                    }
+                    if (empty($model->phone) && ! empty($user->phone)) {
+                        $model->phone = $user->phone;
+                    }
+                    if (! empty($chosenType)) {
+                        $model->types = $initialType;
+                    }
+                    $model->save();
+                } else {
+                    ModelProfile::create([
+                        'user_id' => $user->id,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone ?? '',
+                        'gender' => 'Female',
+                        'level' => 'New Face',
+                        'age' => null,
+                        'height' => null,
+                        'location' => '',
+                        'experience' => '0',
+                        'types' => $initialType,
+                        'skills' => ['Runway walk', 'Editorial posing'],
+                        'outstation' => 'yes',
+                        'international' => 'no',
+                        'status' => 'pending',
+                    ]);
+                }
+            } elseif (! empty($chosenType) && (empty($model->types) || $model->types === ['Commercial'])) {
+                $model->types = $initialType;
+                $model->save();
+            }
+        } elseif ($user->role === 'fashion-designer') {
+            $designer = Designer::where('user_id', $user->id)->first();
+            if (! $designer) {
+                $designer = Designer::where('email', $user->email)->whereNull('user_id')->first()
+                    ?? (! empty($user->name) ? Designer::where('name', $user->name)->whereNull('user_id')->first() : null);
+
+                if ($designer) {
+                    $designer->user_id = $user->id;
+                    if (empty($designer->email)) {
+                        $designer->email = $user->email;
+                    }
+                    if (empty($designer->phone) && ! empty($user->phone)) {
+                        $designer->phone = $user->phone;
+                    }
+                    $designer->save();
+                } else {
+                    $designer = Designer::create([
+                        'user_id' => $user->id,
+                        'name' => $user->name,
+                        'brand_name' => $user->name.' Atelier',
+                        'email' => $user->email,
+                        'phone' => $user->phone ?? '',
+                        'location' => '',
+                        'experience' => '1',
+                        'biography' => '',
+                        'status' => 'pending',
+                    ]);
+                }
+            }
+
+            $creative = CreativeProfessional::where('user_id', $user->id)->where('category', 'fashion-designer')->first();
+            if (! $creative) {
+                CreativeProfessional::create([
+                    'user_id' => $user->id,
+                    'category' => 'fashion-designer',
+                    'name' => $user->name,
+                    'brand' => $designer->brand_name ?? ($user->name.' Atelier'),
+                    'professional_title' => 'Fashion Designer',
+                    'email' => $user->email,
+                    'phone' => $user->phone ?? '',
+                    'location' => $designer->location ?? '',
+                    'status' => $designer->status ?? 'pending',
+                ]);
+            }
+        } else {
+            // Other Creative Professional categories
+            $categorySlug = ($user->role === 'party-event-mnagement') ? 'party-event-management' : $user->role;
+            $creative = CreativeProfessional::where('user_id', $user->id)->where('category', $categorySlug)->first();
+
+            if (! $creative) {
+                $creative = CreativeProfessional::where('category', $categorySlug)->where('email', $user->email)->whereNull('user_id')->first()
+                    ?? (! empty($user->name) ? CreativeProfessional::where('category', $categorySlug)->where('name', $user->name)->whereNull('user_id')->first() : null);
+
+                if ($creative) {
+                    $creative->user_id = $user->id;
+                    if (empty($creative->email)) {
+                        $creative->email = $user->email;
+                    }
+                    if (empty($creative->phone) && ! empty($user->phone)) {
+                        $creative->phone = $user->phone;
+                    }
+                    $creative->save();
+                } else {
+                    CreativeProfessional::create([
+                        'user_id' => $user->id,
+                        'category' => $categorySlug,
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'phone' => $user->phone ?? '',
+                        'professional_title' => $user->roleLabel(),
+                        'location' => '',
+                        'status' => 'pending',
+                    ]);
+                }
+            }
+        }
     }
 }

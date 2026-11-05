@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AdminActivity;
+use App\Models\SeasonModelRegistration;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -81,6 +82,13 @@ class AdminDashboardController extends Controller
                 'description' => ($this->safeCount('sponsors', ['is_active' => true]) ?? 0).' Active Sponsors',
                 'icon' => 'star',
             ],
+            'total_sponsorship_enquiries' => [
+                'count' => $this->safeCount('sponsorship_enquiries'),
+                'exists' => Schema::hasTable('sponsorship_enquiries'),
+                'label' => 'Sponsorship Enquiries',
+                'description' => ($this->safeCount('sponsorship_enquiries', ['status' => 'new']) ?? 0).' New Inbound Enquiries',
+                'icon' => 'mail',
+            ],
             'total_clients' => [
                 'count' => $this->safeCount('clients'),
                 'exists' => Schema::hasTable('clients'),
@@ -95,6 +103,30 @@ class AdminDashboardController extends Controller
                 'description' => 'Registered Portal Members',
                 'icon' => 'user-check',
             ],
+            'model_registrations' => [
+                'count' => Schema::hasTable('season_model_registrations') ? SeasonModelRegistration::count() : 0,
+                'exists' => Schema::hasTable('season_model_registrations'),
+                'label' => 'Runway Model Applications',
+                'description' => Schema::hasTable('season_model_registrations') ? (SeasonModelRegistration::where('registration_status', 'approved')->count().' Approved · '.SeasonModelRegistration::where('payment_status', 'paid')->count().' Paid') : 'Model registrations',
+                'icon' => 'users',
+            ],
+            'model_registration_revenue' => [
+                'count' => Schema::hasTable('season_model_registrations') ? (float) SeasonModelRegistration::sum('amount_paid') : 0,
+                'exists' => Schema::hasTable('season_model_registrations'),
+                'label' => 'Registration Revenue (INR)',
+                'description' => Schema::hasTable('season_model_registrations') ? ('₹'.number_format(max(0.0, (float) SeasonModelRegistration::sum('registration_fee') - (float) SeasonModelRegistration::sum('amount_paid')), 0).' Outstanding') : 'Collected fees',
+                'icon' => 'star',
+            ],
+        ];
+
+        $modelRegistrationStats = [
+            'total' => Schema::hasTable('season_model_registrations') ? SeasonModelRegistration::count() : 0,
+            'approved' => Schema::hasTable('season_model_registrations') ? SeasonModelRegistration::where('registration_status', 'approved')->count() : 0,
+            'pending' => Schema::hasTable('season_model_registrations') ? SeasonModelRegistration::where('registration_status', 'pending')->count() : 0,
+            'paid' => Schema::hasTable('season_model_registrations') ? SeasonModelRegistration::where('payment_status', 'paid')->count() : 0,
+            'unpaid' => Schema::hasTable('season_model_registrations') ? SeasonModelRegistration::where('payment_status', 'unpaid')->count() : 0,
+            'collected' => Schema::hasTable('season_model_registrations') ? (float) SeasonModelRegistration::sum('amount_paid') : 0.0,
+            'outstanding' => Schema::hasTable('season_model_registrations') ? max(0.0, (float) SeasonModelRegistration::sum('registration_fee') - (float) SeasonModelRegistration::sum('amount_paid')) : 0.0,
         ];
 
         // 2. Fetch Recent Admin Activities
@@ -119,7 +151,7 @@ class AdminDashboardController extends Controller
             'server_environment' => app()->environment(),
         ];
 
-        return view('admin.dashboard', compact('metrics', 'activities', 'recentRegistrations', 'systemInfo'));
+        return view('admin.dashboard', compact('metrics', 'modelRegistrationStats', 'activities', 'recentRegistrations', 'systemInfo'));
     }
 
     /**

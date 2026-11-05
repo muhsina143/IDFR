@@ -94,23 +94,112 @@ class ModelProfile extends Model
     }
 
     /**
-     * Helper to get full image URL.
+     * Map of standard model types to display labels.
+     *
+     * @return array<string, string>
+     */
+    public static function typeLabels(): array
+    {
+        return [
+            'commercial' => 'Commercial Model',
+            'commercial model' => 'Commercial Model',
+            'runway' => 'Runway / Ramp Model',
+            'runway / ramp model' => 'Runway / Ramp Model',
+            'runway/ramp model' => 'Runway / Ramp Model',
+            'editorial' => 'Editorial Model',
+            'editorial model' => 'Editorial Model',
+            'high-fashion' => 'High Fashion Model',
+            'high fashion' => 'High Fashion Model',
+            'high fashion model' => 'High Fashion Model',
+            'fitness' => 'Fitness Model',
+            'fitness model' => 'Fitness Model',
+            'glamour' => 'Glamour Model',
+            'glamour model' => 'Glamour Model',
+            'print' => 'Print Model',
+            'print model' => 'Print Model',
+            'parts' => 'Parts Model',
+            'parts model' => 'Parts Model',
+            'promotional' => 'Promotional Model',
+            'promotional model' => 'Promotional Model',
+            'video' => 'Video Shoot Model',
+            'video shoot model' => 'Video Shoot Model',
+            'actor' => 'Actor',
+        ];
+    }
+
+    /**
+     * Format a model type string or key to human-readable label.
+     */
+    public static function formatType(?string $type): string
+    {
+        if (empty($type)) {
+            return '';
+        }
+        $key = strtolower(trim($type));
+        $labels = self::typeLabels();
+
+        return $labels[$key] ?? trim($type);
+    }
+
+    /**
+     * Get the formatted model types.
+     *
+     * @return array<int, string>
+     */
+    public function getFormattedTypesAttribute(): array
+    {
+        $types = (array) ($this->types ?? []);
+        if (empty($types)) {
+            return [];
+        }
+
+        $formatted = [];
+        foreach ($types as $t) {
+            $formatted[] = self::formatType((string) $t);
+        }
+
+        return array_values(array_filter($formatted));
+    }
+
+    /**
+     * Resolve any image path (relative, upload, storage, or external) to a fully qualified asset URL.
+     */
+    public static function resolveImageUrl(?string $path, string $fallback = ''): string
+    {
+        if (empty($path)) {
+            return $fallback ? asset(ltrim($fallback, '/')) : '';
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $clean = ltrim(preg_replace('#^public/#', '', ltrim($path, '/')), '/');
+
+        if (file_exists(public_path($clean))) {
+            return asset($clean);
+        }
+
+        if (str_starts_with($clean, 'storage/')) {
+            $storageRel = preg_replace('#^storage/#', '', $clean);
+            if (file_exists(storage_path('app/public/'.$storageRel))) {
+                return asset('storage/'.$storageRel);
+            }
+        }
+
+        if (str_starts_with($clean, 'uploads/') || str_starts_with($clean, 'images/')) {
+            return asset($clean);
+        }
+
+        return $fallback ? asset(ltrim($fallback, '/')) : asset($clean);
+    }
+
+    /**
+     * Helper to get full profile photo URL.
      */
     public function getPhotoUrlAttribute(): string
     {
-        if (empty($this->profile_photo)) {
-            return asset('images/models/model-01.jpg');
-        }
-        if (str_starts_with($this->profile_photo, 'http://') || str_starts_with($this->profile_photo, 'https://')) {
-            return $this->profile_photo;
-        }
-
-        $relPath = ltrim($this->profile_photo, '/');
-        if (file_exists(public_path($relPath))) {
-            return asset($relPath);
-        }
-
-        return asset('images/models/model-01.jpg');
+        return self::resolveImageUrl($this->profile_photo, 'images/models/model-01.jpg');
     }
 
     /**
@@ -123,17 +212,57 @@ class ModelProfile extends Model
             $item = $images[$index];
             $path = is_array($item) ? ($item['image'] ?? '') : (string) $item;
             if (! empty($path)) {
-                if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
-                    return $path;
-                }
-
-                $relPath = ltrim($path, '/');
-                if (file_exists(public_path($relPath))) {
-                    return asset($relPath);
-                }
+                return self::resolveImageUrl($path, $fallback);
             }
         }
 
         return $fallback ? asset(ltrim($fallback, '/')) : '';
+    }
+
+    /**
+     * Get all portfolio images with resolved URLs and captions.
+     *
+     * @return array<int, array{index: int, path: string, url: string, caption: string}>
+     */
+    public function getPortfolioItems(): array
+    {
+        $images = $this->portfolio_images;
+        if (! is_array($images)) {
+            return [];
+        }
+
+        $items = [];
+        foreach ($images as $idx => $item) {
+            $path = is_array($item) ? ($item['image'] ?? '') : (string) $item;
+            $caption = is_array($item) ? ($item['caption'] ?? '') : '';
+            if (! empty($path)) {
+                $items[] = [
+                    'index' => $idx,
+                    'path' => $path,
+                    'url' => self::resolveImageUrl($path),
+                    'caption' => $caption ?: 'Portfolio Image '.($idx + 1),
+                ];
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Status check helpers.
+     */
+    public function isApproved(): bool
+    {
+        return in_array($this->status, ['published', 'approved'], true);
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isRejected(): bool
+    {
+        return $this->status === 'rejected';
     }
 }

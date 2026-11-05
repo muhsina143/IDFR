@@ -310,7 +310,7 @@
 
           </p>
 
-          <a class="hero__explore" href="#season-4-banner" data-program="season-4">
+          <a class="hero__explore" href="#season-{{ $currentSeason ? $currentSeason->number : 4 }}-banner" data-program="season-{{ $currentSeason ? $currentSeason->number : 4 }}">
 
             <span>Explore {{ $currentSeason ? $currentSeason->title : 'Season 4' }}</span><svg class="icon" aria-hidden="true">
 
@@ -1120,7 +1120,7 @@
 
                 >
 
-                  <span>{{ $homeUser->role === 'model' ? 'Register as Model' : 'My Profile' }}</span>
+                  <span>My Profile</span>
 
                   <svg class="icon" aria-hidden="true">
 
@@ -1130,25 +1130,7 @@
 
                 </a>
 
-                <a
-
-                  class="text-link"
-
-                  href="{{ route('idfr.models') }}"
-
-                >
-
-                  Hire Talent
-
-                  <svg class="icon" aria-hidden="true">
-
-                    <use href="#i-arrow-right" />
-
-                  </svg>
-
-                </a>
-
-              @else
+                @else
 
                 <button
 
@@ -1238,15 +1220,15 @@
 
           >
 
-            The Runway
+            {{ $currentSeason?->hero_heading_display ?? 'The Runway' }}
 
-            <em>Returns</em>
+            <em>{{ $currentSeason?->hero_highlighted_display ?? 'Returns' }}</em>
 
           </h2>
 
           <p class="season-banner__tagline" data-reveal="up" data-delay="140">
 
-            {{ $currentSeason && $currentSeason->description ? $currentSeason->description : 'Couture, heritage and new faces under the lights — three nights of glamour in Kozhikode. Claim your place on the front row.' }}
+            {{ $currentSeason?->hero_description_display ?? 'Couture, heritage and new faces under the lights — three nights of glamour in Kozhikode. Claim your place on the front row.' }}
 
           </p>
 
@@ -1607,406 +1589,54 @@
           <div class="creative-pros__tabs-wrap" data-reveal="up">
 
             <div
-
               class="filters filters--dark creative-pros__tabs"
-
               role="tablist"
-
               aria-label="Creative professional categories"
-
               id="creativeTabs"
-
             >
-
-              <button
-
-                class="filter-btn is-active"
-
-                type="button"
-
-                role="tab"
-
-                id="creativeTab-makeup-artist"
-
-                aria-selected="true"
-
-                aria-controls="creative-makeup-artist"
-
-                data-category="makeup-artist"
-
-                data-profession="Makeup Artist"
-
-              >
-
-                Makeup Artist
-
-              </button>
-
-              <button
-
-                class="filter-btn"
-
-                type="button"
-
-                role="tab"
-
-                id="creativeTab-hairstylist"
-
-                aria-selected="false"
-
-                aria-controls="creative-hairstylist"
-
-                data-category="hairstylist"
-
-                data-profession="Hairstylist"
-
-                tabindex="-1"
-
-              >
-
-                Hairstylist
-
-              </button>
-
-              <button
-
-                class="filter-btn"
-
-                type="button"
-
-                role="tab"
-
-                id="creativeTab-photographer"
-
-                aria-selected="false"
-
-                aria-controls="creative-photographer"
-
-                data-category="photographer"
-
-                data-profession="Photographer"
-
-                tabindex="-1"
-
-              >
-
-                Photographer
-
-              </button>
-
-              <button
-
-                class="filter-btn"
-
-                type="button"
-
-                role="tab"
-
-                id="creativeTab-videographer"
-
-                aria-selected="false"
-
-                aria-controls="creative-videographer"
-
-                data-category="videographer"
-
-                data-profession="Videographer"
-
-                tabindex="-1"
-
-              >
-
-                Videographer
-
-              </button>
-
-              <button
-
-                class="filter-btn"
-
-                type="button"
-
-                role="tab"
-
-                id="creativeTab-fashion-designer"
-
-                aria-selected="false"
-
-                aria-controls="creative-fashion-designers"
-
-                data-category="fashion-designer"
-
-                data-profession="Fashion Designer"
-
-                tabindex="-1"
-
-              >
-
-                Fashion Designers
-
-              </button>
-
-              <button
-
-                class="filter-btn"
-
-                type="button"
-
-                role="tab"
-
-                id="creativeTab-drone-pilot"
-
-                aria-selected="false"
-
-                aria-controls="creative-drone-pilot"
-
-                data-category="drone-pilot"
-
-                data-profession="Drone Pilot"
-
-                tabindex="-1"
-
-              >
-
-                Drone Pilot
-
-              </button>
-
-              <button
-
-                class="filter-btn"
-
-                type="button"
-
-                role="tab"
-
-                id="creativeTab-photo-video-editor"
-
-                aria-selected="false"
-
-                aria-controls="creative-photo-video-editor"
-
-                data-category="photo-video-editor"
-
-                data-profession="Photo &amp; Video Editor"
-
-                tabindex="-1"
-
-              >
-
-                Photo &amp; Video Editor
-
-              </button>
-
-              <button
-
-                class="filter-btn"
-
-                type="button"
-
-                role="tab"
-
-                id="creativeTab-jewellery-designer"
-
-                aria-selected="false"
-
-                aria-controls="creative-jewellery-designer"
-
-                data-category="jewellery-designer"
-
-                data-profession="Jewellery Designer"
-
-                tabindex="-1"
-
-              >
-
-                Jewellery Designer
-
-              </button>
-
+              @php
+                $displayCategories = $categories ?? $navCategories ?? \App\Models\ProfessionalCategory::where('is_active', true)->orderBy('display_order')->get();
+              @endphp
+              @foreach($displayCategories as $cat)
+                @php
+                  $panelId = ($cat->slug === 'fashion-designer') ? 'creative-fashion-designers' : 'creative-' . $cat->slug;
+                @endphp
+                <button
+                  class="filter-btn {{ $loop->first ? 'is-active' : '' }}"
+                  type="button"
+                  role="tab"
+                  id="creativeTab-{{ $cat->slug }}"
+                  aria-selected="{{ $loop->first ? 'true' : 'false' }}"
+                  aria-controls="{{ $panelId }}"
+                  data-category="{{ $cat->slug }}"
+                  data-profession="{{ $cat->name }}"
+                  {{ !$loop->first ? 'tabindex="-1"' : '' }}
+                >
+                  {{ $cat->name }}
+                </button>
+              @endforeach
             </div>
 
           </div>
 
 
 
-          <!-- Cards are built from the creativeProsData template (PAGE CONTENT, end of this file) -->
-
-          <div
-
-            class="creative-pros__panel"
-
-            role="tabpanel"
-
-            id="creative-makeup-artist"
-
-            aria-labelledby="creativeTab-makeup-artist"
-
-            tabindex="0"
-
-          >
-
-            <div class="creative-pros__grid" data-category="makeup-artist"></div>
-
-          </div>
-
-          <div
-
-            class="creative-pros__panel"
-
-            role="tabpanel"
-
-            id="creative-hairstylist"
-
-            aria-labelledby="creativeTab-hairstylist"
-
-            tabindex="0"
-
-            hidden
-
-          >
-
-            <div class="creative-pros__grid" data-category="hairstylist"></div>
-
-          </div>
-
-          <div
-
-            class="creative-pros__panel"
-
-            role="tabpanel"
-
-            id="creative-photographer"
-
-            aria-labelledby="creativeTab-photographer"
-
-            tabindex="0"
-
-            hidden
-
-          >
-
-            <div class="creative-pros__grid" data-category="photographer"></div>
-
-          </div>
-
-          <div
-
-            class="creative-pros__panel"
-
-            role="tabpanel"
-
-            id="creative-videographer"
-
-            aria-labelledby="creativeTab-videographer"
-
-            tabindex="0"
-
-            hidden
-
-          >
-
-            <div class="creative-pros__grid" data-category="videographer"></div>
-
-          </div>
-
-          <div
-
-            class="creative-pros__panel"
-
-            role="tabpanel"
-
-            id="creative-fashion-designers"
-
-            aria-labelledby="creativeTab-fashion-designer"
-
-            tabindex="0"
-
-            hidden
-
-          >
-
+          <!-- Cards are built dynamically for every category from the creativeProsData template (PAGE CONTENT, end of this file) -->
+          @foreach($displayCategories as $cat)
+            @php
+              $panelId = ($cat->slug === 'fashion-designer') ? 'creative-fashion-designers' : 'creative-' . $cat->slug;
+            @endphp
             <div
-
-              class="creative-pros__grid"
-
-              data-category="fashion-designer"
-
-            ></div>
-
-          </div>
-
-          <div
-
-            class="creative-pros__panel"
-
-            role="tabpanel"
-
-            id="creative-drone-pilot"
-
-            aria-labelledby="creativeTab-drone-pilot"
-
-            tabindex="0"
-
-            hidden
-
-          >
-
-            <div class="creative-pros__grid" data-category="drone-pilot"></div>
-
-          </div>
-
-          <div
-
-            class="creative-pros__panel"
-
-            role="tabpanel"
-
-            id="creative-photo-video-editor"
-
-            aria-labelledby="creativeTab-photo-video-editor"
-
-            tabindex="0"
-
-            hidden
-
-          >
-
-            <div
-
-              class="creative-pros__grid"
-
-              data-category="photo-video-editor"
-
-            ></div>
-
-          </div>
-
-          <div
-
-            class="creative-pros__panel"
-
-            role="tabpanel"
-
-            id="creative-jewellery-designer"
-
-            aria-labelledby="creativeTab-jewellery-designer"
-
-            tabindex="0"
-
-            hidden
-
-          >
-
-            <div
-
-              class="creative-pros__grid"
-
-              data-category="jewellery-designer"
-
-            ></div>
-
-          </div>
+              class="creative-pros__panel"
+              role="tabpanel"
+              id="{{ $panelId }}"
+              aria-labelledby="creativeTab-{{ $cat->slug }}"
+              tabindex="0"
+              {{ !$loop->first ? 'hidden' : '' }}
+            >
+              <div class="creative-pros__grid" data-category="{{ $cat->slug }}"></div>
+            </div>
+          @endforeach
 
 
 
@@ -2424,7 +2054,7 @@
 
           <div class="sponsors__cta" data-reveal="up">
 
-            <p>Interested in sponsoring Season 5?</p>
+            <p>Interested in sponsoring {{ $currentSeason ? $currentSeason->title : "Season 8" }}?</p>
 
             <a
 
@@ -2586,330 +2216,6 @@
 
 
 
-@section('extra_modals')
-
-<div
-
-      class="modal shoot-book sponsor-enquiry"
-
-      id="sponsorEnquiryModal"
-
-      role="dialog"
-
-      aria-modal="true"
-
-      aria-labelledby="sponsorEnquiryTitle"
-
-      hidden
-
-    >
-
-      <div class="modal__backdrop" data-close></div>
-
-      <div class="modal__panel auth-modal__panel shoot-book__panel">
-
-        <button
-
-          class="modal__close"
-
-          type="button"
-
-          data-close
-
-          aria-label="Close sponsorship enquiry"
-
-        >
-
-          <svg class="icon" aria-hidden="true">
-
-            <use href="#i-close" />
-
-          </svg>
-
-        </button>
-
-
-
-        <div data-sponsor-form>
-
-          <p class="info__label">IDFR · Season 5</p>
-
-          <h2
-
-            class="auth-modal__title shoot-book__title"
-
-            id="sponsorEnquiryTitle"
-
-          >
-
-            Sponsorship <em>Enquiry</em>
-
-          </h2>
-
-          <p class="shoot-book__lead">
-
-            Tell us about your interest in sponsoring an IDFR fashion show.
-
-            Fields marked <span aria-hidden="true">*</span
-
-            ><span class="visually-hidden">with an asterisk</span> are required.
-
-            We’ll follow up at
-
-            <a href="mailto:info@idfr.example">info@idfr.example</a>
-
-            with the relevant sponsorship details.
-
-          </p>
-
-
-
-          <form class="profile-form" id="sponsorEnquiryForm" novalidate>
-
-            <div class="field">
-
-              <label for="sponsorName"
-
-                >Name / Company Name <span aria-hidden="true">*</span></label
-
-              >
-
-              <input
-
-                type="text"
-
-                id="sponsorName"
-
-                name="name"
-
-                autocomplete="organization"
-
-                required
-
-                minlength="2"
-
-                maxlength="120"
-
-                placeholder="Your name or company"
-
-                data-autofocus
-
-              />
-
-              <span class="field__error" aria-live="polite"></span>
-
-            </div>
-
-
-
-            <div class="field">
-
-              <label for="sponsorEmail"
-
-                >Email Address <span aria-hidden="true">*</span></label
-
-              >
-
-              <input
-
-                type="email"
-
-                id="sponsorEmail"
-
-                name="email"
-
-                autocomplete="email"
-
-                inputmode="email"
-
-                required
-
-                maxlength="120"
-
-                placeholder="you@company.com"
-
-              />
-
-              <span class="field__error" aria-live="polite"></span>
-
-            </div>
-
-
-
-            <div class="field">
-
-              <label for="sponsorPhone"
-
-                >Phone Number <span aria-hidden="true">*</span></label
-
-              >
-
-              <input
-
-                type="tel"
-
-                id="sponsorPhone"
-
-                name="phone"
-
-                autocomplete="tel"
-
-                inputmode="tel"
-
-                required
-
-                maxlength="20"
-
-                placeholder="+91 98765 43210"
-
-              />
-
-              <span class="field__error" aria-live="polite"></span>
-
-            </div>
-
-
-
-            <div class="field">
-
-              <label for="sponsorType"
-
-                >Type of Sponsorship <span aria-hidden="true">*</span></label
-
-              >
-
-              <select id="sponsorType" name="type" required>
-
-                <option value="" selected disabled>Select a sponsorship type</option>
-
-                <option value="Title Sponsor">Title Sponsor</option>
-
-                <option value="Associate Sponsors">Associate Sponsors</option>
-
-              </select>
-
-              <span class="field__error" aria-live="polite"></span>
-
-            </div>
-
-
-
-            <div class="field profile-form__full">
-
-              <label for="sponsorMessage"
-
-                >Message <span class="field__note">Optional</span></label
-
-              >
-
-              <textarea
-
-                id="sponsorMessage"
-
-                name="message"
-
-                rows="4"
-
-                maxlength="1000"
-
-                placeholder="Share any additional details, goals or questions about sponsoring IDFR"
-
-              ></textarea>
-
-              <span class="field__error" aria-live="polite"></span>
-
-            </div>
-
-
-
-            <div class="profile-form__actions profile-form__full">
-
-              <button class="btn btn--gold" type="submit">
-
-                <span>Send Me Details</span
-
-                ><svg class="icon" aria-hidden="true">
-
-                  <use href="#i-arrow-right" />
-
-                </svg>
-
-              </button>
-
-            </div>
-
-          </form>
-
-        </div>
-
-
-
-        <div class="shoot-book__success" data-sponsor-success hidden>
-
-          <span class="shoot-book__mark" aria-hidden="true"
-
-            ><svg class="icon">
-
-              <use href="#i-check" /></svg
-
-          ></span>
-
-          <h2
-
-            class="shoot-book__success-title"
-
-            id="sponsorEnquirySuccessTitle"
-
-            tabindex="-1"
-
-          >
-
-            Enquiry <em>sent</em>
-
-          </h2>
-
-          <p class="shoot-book__message" role="status">
-
-            Thank you for your interest in sponsoring IDFR. Your enquiry is ready
-
-            to send to
-
-            <strong>info@idfr.example</strong>. Our team will follow up with the
-
-            relevant sponsorship details.
-
-          </p>
-
-          <p class="shoot-book__note">
-
-            If your email app did not open, please write to
-
-            <a href="mailto:info@idfr.example?subject=Sponsorship%20Enquiry"
-
-              >info@idfr.example</a
-
-            >
-
-            with your sponsorship enquiry.
-
-          </p>
-
-          <button class="btn btn--gold" type="button" data-close>
-
-            <span>Close</span>
-
-          </button>
-
-        </div>
-
-      </div>
-
-    </div>
-
-@endsection
-
-
-
 @section('page_content_templates')
 
 <!-- ============ PAGE CONTENT ============
@@ -2983,17 +2289,12 @@
         @foreach($models as $m)
 
         <article
-
           data-id="{{ $m->id }}"
-
           data-gender="{{ $m->gender }}"
-
           data-level="{{ $m->level }}"
-
           data-premium="{{ $m->is_featured ? 'true' : 'false' }}"
-
+          data-types="{{ implode(',', (array) (!empty($m->formatted_types) ? $m->formatted_types : ($m->types ?? []))) }}"
           @if($m->is_kid) data-kid="true" @endif
-
         >
 
           <h3>{{ $m->name }}</h3>
@@ -3012,18 +2313,15 @@
 
           </dl>
 
-          @if(!empty($m->types) && is_array($m->types))
-
+          @php
+            $displayTypes = !empty($m->formatted_types) ? $m->formatted_types : ((array) ($m->types ?? []));
+          @endphp
+          @if(!empty($displayTypes))
           <ul data-types>
-
-            @foreach($m->types as $t)
-
+            @foreach($displayTypes as $t)
               <li>{{ $t }}</li>
-
             @endforeach
-
           </ul>
-
           @endif
 
           @if(!empty($m->portfolio_images) && is_array($m->portfolio_images))
@@ -3072,19 +2370,7 @@
 
           @endif
 
-          @if(!empty($m->specialities) && is_array($m->specialities))
 
-          <ul data-specialities>
-
-            @foreach($m->specialities as $spec)
-
-              <li>{{ $spec }}</li>
-
-            @endforeach
-
-          </ul>
-
-          @endif
 
           <p data-availability>{{ $m->availability }}</p>
 
@@ -3130,6 +2416,8 @@
 
           <dl>
 
+            @if($pro->professional_title)<dt>Title</dt><dd data-profession>{{ $pro->professional_title }}</dd>@endif
+
             <dt>Location</dt>
 
             <dd data-location>{{ $pro->location ?: 'Kerala, India' }}</dd>
@@ -3156,28 +2444,15 @@
 
           @endif
 
-          @if(!empty($pro->portfolio_images) && is_array($pro->portfolio_images))
-
+          @php
+            $portfolioItems = method_exists($pro, 'getPortfolioItems') ? $pro->getPortfolioItems() : [];
+          @endphp
+          @if(!empty($portfolioItems))
           <ul data-portfolio>
-
-            @foreach($pro->portfolio_images as $pImg)
-
-              @php 
-
-                $pSrc = is_array($pImg) ? ($pImg['image'] ?? '') : $pImg;
-
-                $pCap = is_array($pImg) ? ($pImg['caption'] ?? 'Runway Portfolio') : 'Runway Portfolio';
-
-                $pUrl = str_starts_with($pSrc, 'http') ? $pSrc : asset(ltrim($pSrc, '/'));
-
-              @endphp
-
-              <li><figure><img src="{{ $pUrl }}" alt="{{ $pCap }}" width="1200" height="900" /><figcaption>{{ $pCap }}</figcaption></figure></li>
-
+            @foreach($portfolioItems as $pItem)
+              <li><figure><img src="{{ $pItem['url'] }}" alt="{{ $pro->name }} - {{ $pItem['caption'] }}" width="1200" height="900" /><figcaption>{{ $pItem['caption'] }}</figcaption></figure></li>
             @endforeach
-
           </ul>
-
           @endif
 
         </article>
@@ -3404,83 +2679,21 @@
 
     <!-- Info modal content: one template per program, opened by links with a matching data-program. -->
 
-    <template id="program-season-4">
+    @if(isset($seasons) && $seasons->count() > 0)
+      @foreach($seasons as $s)
+        @include('partials.season-info-template', ['season' => $s, 'templateId' => 'program-season-' . $s->number])
+      @endforeach
+    @endif
 
-      <p class="info__label">IDFR Fashion Show</p>
-
-      <h2 class="info__title" id="infoModalTitle">{{ $currentSeason ? $currentSeason->title : 'Season 4' }}</h2>
-
-      <p class="info__intro">
-
-        {{ $currentSeason && $currentSeason->description ? $currentSeason->description : 'Three runway nights celebrating emerging designers, established names and the next generation of Indian modelling talent. Season 4 brings couture, resort, menswear and handloom collections to one stage in Kozhikode.' }}
-
-      </p>
-
-      <dl class="info__facts">
-
-        <div>
-
-          <dt>Dates</dt>
-
-          <dd>{{ $currentSeason ? $currentSeason->dates : '18 – 20 Dec 2026' }}</dd>
-
-        </div>
-
-        <div>
-
-          <dt>Venue</dt>
-
-          <dd>{{ $currentSeason ? $currentSeason->location : 'IDFR Fashion House' }}</dd>
-
-        </div>
-
-        <div>
-
-          <dt>Designers</dt>
-
-          <dd>{{ isset($designers) && $designers->count() > 0 ? $designers->count() . ' Labels' : '24 Labels' }}</dd>
-
-        </div>
-
-        <div>
-
-          <dt>Models</dt>
-
-          <dd>{{ isset($models) && $models->count() > 0 ? $models->count() . ' Talent' : '60+ Talent' }}</dd>
-
-        </div>
-
-      </dl>
-
-      <div class="info__schedule">
-
-        <article>
-
-          <h3>Day 1 · Opening Night</h3>
-
-          <p>Debut collections walked by models from the Season 4 open auditions.</p>
-
-        </article>
-
-        <article>
-
-          <h3>Day 2 · Designer Showcase</h3>
-
-          <p>Evening gowns, bridal couture and prêt lines from across South India.</p>
-
-        </article>
-
-        <article>
-
-          <h3>Day 3 · Grand Finale</h3>
-
-          <p>Couture showcases, awards and the closing walk of {{ $currentSeason ? $currentSeason->title : 'Season 4' }}.</p>
-
-        </article>
-
-      </div>
-
-    </template>
+    {{-- Fallback / active season alias and season-4 compatibility --}}
+    @if(isset($currentSeason) && $currentSeason)
+      @include('partials.season-info-template', ['season' => $currentSeason, 'templateId' => 'program-season-current'])
+      @if($currentSeason->number != 4 && (!isset($seasons) || !$seasons->contains('number', 4)))
+        @include('partials.season-info-template', ['season' => $currentSeason, 'templateId' => 'program-season-4'])
+      @endif
+    @else
+      @include('partials.season-info-template', ['season' => null, 'templateId' => 'program-season-4'])
+    @endif
 
     <template id="program-athuls-academy">
 

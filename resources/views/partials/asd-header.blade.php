@@ -79,7 +79,7 @@
       aria-label="Site menu"
       hidden
     >
-      <span class="mobile-menu__word" aria-hidden="true">IDFR</span>
+      <!-- <span class="mobile-menu__word" aria-hidden="true">IDFR</span> -->
       <ul class="mobile-menu__links">
         <li style="--i: 0">
           <a href="{{ route('asd.home') }}#home" data-nav="home"
@@ -124,7 +124,7 @@
           ><span>Register</span>
         </button>
       </div>
-      <p class="mobile-menu__foot">
+      <!-- <p class="mobile-menu__foot">
         ASDreamStudio · Photography &amp; Videography Partner of IDFR
-      </p>
+      </p> -->
     </div>

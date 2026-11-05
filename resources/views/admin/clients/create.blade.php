@@ -40,7 +40,7 @@
 
         <div class="form-group">
           <label class="form-label" for="clientQuote">Testimonial Quote</label>
-          <textarea id="clientQuote" name="testimonial_quote" rows="3" class="form-control @error('testimonial_quote') is-invalid @enderror" placeholder="Share the client's testimonial about IDFR models..." oninput="updatePreview()">{{ old('testimonial_quote') }}</textarea>
+          <textarea id="clientQuote" name="testimonial_quote" rows="5" class="form-control @error('testimonial_quote') is-invalid @enderror" style="min-height: 120px; resize: vertical; overflow-wrap: anywhere; word-break: normal; white-space: normal;" placeholder="Share the client's testimonial about IDFR models..." oninput="updatePreview()">{{ old('testimonial_quote') }}</textarea>
           @error('testimonial_quote') <span class="form-error">{{ $message }}</span> @enderror
         </div>
 
@@ -171,7 +171,7 @@
               <img id="previewClientLogoImg" src="" alt="Logo" style="display: none; max-height: 40px; max-width: 140px; object-fit: contain;">
             </div>
 
-            <blockquote id="previewQuote" style="margin: 0 0 1rem; font-size: 0.95rem; line-height: 1.5; font-style: italic; color: #333;">
+            <blockquote id="previewQuote" style="margin: 0 0 1rem; font-size: 0.95rem; line-height: 1.5; font-style: italic; color: #333; overflow-wrap: anywhere; word-break: normal; white-space: normal; max-width: 100%; max-height: 280px; overflow-y: auto;">
               “IDFR helped us cast our entire festive campaign in a single week. The talent was professional, prepared and camera-ready.”
             </blockquote>
 

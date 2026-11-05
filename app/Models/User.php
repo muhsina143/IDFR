@@ -12,10 +12,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Route;
 
 #[Fillable([
     'name',
     'email',
+    'google_id',
+    'avatar',
     'phone',
     'password',
     'is_admin',
@@ -84,7 +87,11 @@ class User extends Authenticatable
      */
     public function roleLabel(): string
     {
-        return UserRole::tryFrom($this->role)?->label() ?? ucfirst($this->role);
+        $roleSlug = ($this->role === 'party-event-mnagement') ? 'party-event-management' : (string) $this->role;
+
+        return UserRole::tryFrom($roleSlug)?->label()
+            ?? ProfessionalCategory::where('slug', $roleSlug)->value('name')
+            ?? ucwords(str_replace('-', ' ', $roleSlug));
     }
 
     /**
@@ -112,6 +119,16 @@ class User extends Authenticatable
         $roleEnum = $this->roleEnum();
         if ($roleEnum) {
             return route($roleEnum->profileRouteName());
+        }
+
+        $roleSlug = ($this->role === 'party-event-mnagement') ? 'party-event-management' : $this->role;
+
+        if (Route::has('profile.'.$roleSlug)) {
+            return route('profile.'.$roleSlug);
+        }
+
+        if (Route::has('profile.category')) {
+            return route('profile.category', ['category' => $roleSlug]);
         }
 
         return route('idfr.home');
@@ -154,8 +171,7 @@ class User extends Authenticatable
         $hasExtendedProfile = false;
         if (! empty($this->role)) {
             if ($this->role === 'model') {
-                $hasExtendedProfile = ModelProfile::where('user_id', $this->id)->exists()
-                    || ModelProfile::where('name', $this->name)->exists();
+                $hasExtendedProfile = ModelProfile::where('user_id', $this->id)->exists();
             } elseif ($this->role === 'fashion-designer') {
                 $hasExtendedProfile = Designer::where('user_id', $this->id)->exists()
                     || Designer::where('name', $this->name)->exists();
@@ -210,6 +226,49 @@ class User extends Authenticatable
     public function creativeProfile(): HasOne
     {
         return $this->hasOne(CreativeProfessional::class, 'user_id');
+    }
+
+    /**
+     * Get the associated profile model instance for this user.
+     */
+    public function getProfileRecord(): ModelProfile|Designer|CreativeProfessional|null
+    {
+        if ($this->role === 'model') {
+            return $this->modelProfile ?: ModelProfile::where('user_id', $this->id)->first()
+                ?? ModelProfile::where('email', $this->email)->first()
+                ?? (! empty($this->name) ? ModelProfile::where('name', $this->name)->first() : null);
+        }
+
+        if ($this->role === 'fashion-designer') {
+            return $this->designerProfile ?: Designer::where('user_id', $this->id)->first()
+                ?? $this->creativeProfile
+                ?? Designer::where('email', $this->email)->first()
+                ?? (! empty($this->name) ? Designer::where('name', $this->name)->first() : null);
+        }
+
+        $categorySlug = ($this->role === 'party-event-mnagement') ? 'party-event-management' : $this->role;
+
+        return $this->creativeProfile ?: CreativeProfessional::where('user_id', $this->id)->first()
+            ?? CreativeProfessional::where('category', $categorySlug)->where('email', $this->email)->first()
+            ?? (! empty($this->name) ? CreativeProfessional::where('category', $categorySlug)->where('name', $this->name)->first() : null);
+    }
+
+    /**
+     * Get current profile approval status ('pending', 'published', 'rejected', etc.).
+     */
+    public function getProfileStatusAttribute(): string
+    {
+        $profile = $this->getProfileRecord();
+
+        return $profile?->status ?? 'pending';
+    }
+
+    /**
+     * Check if user profile is approved/published.
+     */
+    public function isProfileApproved(): bool
+    {
+        return in_array($this->profile_status, ['published', 'approved'], true);
     }
 
     /**

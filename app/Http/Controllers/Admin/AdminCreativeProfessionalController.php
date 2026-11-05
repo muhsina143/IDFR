@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AdminActivity;
 use App\Models\CreativeProfessional;
+use App\Models\Designer;
 use App\Models\Season;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -261,5 +262,53 @@ class AdminCreativeProfessionalController extends Controller
 
         return redirect()->route('admin.professionals')
             ->with('success', "Creative Professional '{$name}' has been deleted.");
+    }
+
+    /**
+     * Show or review the creative professional profile.
+     */
+    public function show(CreativeProfessional $professional): RedirectResponse
+    {
+        if ($professional->user_id) {
+            return redirect()->route('admin.registrations.show', $professional->user_id);
+        }
+
+        return redirect()->route('admin.professionals.edit', $professional);
+    }
+
+    /**
+     * Update approval status for the creative professional profile.
+     */
+    public function updateApprovalStatus(Request $request, CreativeProfessional $professional): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => ['required', 'string', 'in:published,approved,pending,rejected,draft,archived'],
+        ]);
+
+        $newStatus = ($validated['status'] === 'approved') ? 'published' : $validated['status'];
+        $professional->status = $newStatus;
+        $professional->save();
+
+        if ($professional->category === 'fashion-designer' && $professional->user_id) {
+            Designer::where('user_id', $professional->user_id)->update(['status' => $newStatus]);
+        }
+
+        $adminUser = auth('admin')->user() ?? auth()->user();
+        AdminActivity::log(
+            'professional_approval_updated',
+            $adminUser,
+            $adminUser?->email ?? 'admin@idfr.test',
+            "Changed status of {$professional->name} to {$newStatus}",
+            $request
+        );
+
+        $msg = match ($newStatus) {
+            'published' => "Professional '{$professional->name}' has been accepted and is now published on the main website.",
+            'rejected' => "Professional '{$professional->name}' has been rejected and remains hidden from the main website.",
+            'pending' => "Professional '{$professional->name}' is now Pending Approval.",
+            default => "Professional status updated to {$newStatus}.",
+        };
+
+        return redirect()->back()->with('success', $msg);
     }
 }

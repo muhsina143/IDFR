@@ -299,17 +299,12 @@
         @foreach($models as $m)
 
         <article
-
           data-id="{{ $m->id }}"
-
           data-gender="{{ $m->gender }}"
-
           data-level="{{ $m->level }}"
-
           data-premium="{{ $m->is_featured ? 'true' : 'false' }}"
-
+          data-types="{{ implode(',', (array) (!empty($m->formatted_types) ? $m->formatted_types : ($m->types ?? []))) }}"
           @if($m->is_kid) data-kid="true" @endif
-
         >
 
           <h3>{{ $m->name }}</h3>
@@ -328,18 +323,15 @@
 
           </dl>
 
-          @if(!empty($m->types) && is_array($m->types))
-
+          @php
+            $displayTypes = !empty($m->formatted_types) ? $m->formatted_types : ((array) ($m->types ?? []));
+          @endphp
+          @if(!empty($displayTypes))
           <ul data-types>
-
-            @foreach($m->types as $t)
-
+            @foreach($displayTypes as $t)
               <li>{{ $t }}</li>
-
             @endforeach
-
           </ul>
-
           @endif
 
           @if(!empty($m->portfolio_images) && is_array($m->portfolio_images))
@@ -388,19 +380,7 @@
 
           @endif
 
-          @if(!empty($m->specialities) && is_array($m->specialities))
 
-          <ul data-specialities>
-
-            @foreach($m->specialities as $spec)
-
-              <li>{{ $spec }}</li>
-
-            @endforeach
-
-          </ul>
-
-          @endif
 
           <p data-availability>{{ $m->availability }}</p>
 
@@ -424,83 +404,10 @@
 
     <!-- Info modal content: one template per program, opened by links with a matching data-program. -->
 
-    <template id="program-season-4">
-
-      <p class="info__label">IDFR Fashion Show</p>
-
-      <h2 class="info__title" id="infoModalTitle">{{ $currentSeason ? $currentSeason->title : 'Season 4' }}</h2>
-
-      <p class="info__intro">
-
-        {{ $currentSeason && $currentSeason->description ? $currentSeason->description : 'Three runway nights celebrating emerging designers, established names and the next generation of Indian modelling talent. Season 4 brings couture, resort, menswear and handloom collections to one stage in Kozhikode.' }}
-
-      </p>
-
-      <dl class="info__facts">
-
-        <div>
-
-          <dt>Dates</dt>
-
-          <dd>{{ $currentSeason ? $currentSeason->dates : '18 – 20 Dec 2026' }}</dd>
-
-        </div>
-
-        <div>
-
-          <dt>Venue</dt>
-
-          <dd>{{ $currentSeason ? $currentSeason->location : 'IDFR Fashion House' }}</dd>
-
-        </div>
-
-        <div>
-
-          <dt>Designers</dt>
-
-          <dd>24 Labels</dd>
-
-        </div>
-
-        <div>
-
-          <dt>Models</dt>
-
-          <dd>60+ Talent</dd>
-
-        </div>
-
-      </dl>
-
-      <div class="info__schedule">
-
-        <article>
-
-          <h3>Day 1 · Opening Night</h3>
-
-          <p>Debut collections walked by models from the Season 4 open auditions.</p>
-
-        </article>
-
-        <article>
-
-          <h3>Day 2 · Designer Showcase</h3>
-
-          <p>Evening gowns, bridal couture and prêt lines from across South India.</p>
-
-        </article>
-
-        <article>
-
-          <h3>Day 3 · Grand Finale</h3>
-
-          <p>Couture showcases, awards and the closing walk of {{ $currentSeason ? $currentSeason->title : 'Season 4' }}.</p>
-
-        </article>
-
-      </div>
-
-    </template>
+    @include('partials.season-info-template', ['season' => $currentSeason ?? null, 'templateId' => 'program-season-4'])
+    @if(isset($currentSeason) && $currentSeason && $currentSeason->number != 4)
+      @include('partials.season-info-template', ['season' => $currentSeason, 'templateId' => 'program-season-' . $currentSeason->number])
+    @endif
 
     <template id="program-athuls-academy">
 

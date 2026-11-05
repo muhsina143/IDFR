@@ -130,6 +130,10 @@
     <span class="stat-pill__val" style="color: #c084fc;">{{ number_format($stats['creative_pros']) }}</span>
   </div>
   <div class="stat-pill">
+    <span class="stat-pill__label">Pending Approval</span>
+    <span class="stat-pill__val" style="color: #fbbf24;">{{ number_format($stats['pending_approval'] ?? 0) }}</span>
+  </div>
+  <div class="stat-pill">
     <span class="stat-pill__label">Deactivated</span>
     <span class="stat-pill__val" style="color: #f87171;">{{ number_format($stats['deactivated']) }}</span>
   </div>
@@ -148,6 +152,10 @@
   <a href="{{ route('admin.registrations.index', array_merge(request()->except('page'), ['role' => 'fashion-designer'])) }}"
      class="category-tab {{ request('role') === 'fashion-designer' ? 'is-active' : '' }}">
     Designers ({{ $stats['designers'] }})
+  </a>
+  <a href="{{ route('admin.registrations.index', array_merge(request()->except('page', 'approval_status'), ['approval_status' => 'pending'])) }}"
+     class="category-tab {{ request('approval_status') === 'pending' ? 'is-active' : '' }}" style="{{ request('approval_status') === 'pending' ? 'border-color: #fbbf24; color: #fbbf24;' : '' }}">
+    Pending Approval ({{ $stats['pending_approval'] ?? 0 }})
   </a>
   <a href="{{ route('admin.registrations.index', array_merge(request()->except('page'), ['verified' => '0'])) }}"
      class="category-tab {{ request('verified') === '0' ? 'is-active' : '' }}">
@@ -184,6 +192,15 @@
       </select>
     </div>
 
+    <div class="filter-group" style="min-width: 160px;">
+      <select name="approval_status" class="filter-input" onchange="this.form.submit()">
+        <option value="">Approval Status</option>
+        <option value="pending" {{ request('approval_status') === 'pending' ? 'selected' : '' }}>Pending Approval</option>
+        <option value="published" {{ request('approval_status') === 'published' ? 'selected' : '' }}>Approved / Live</option>
+        <option value="rejected" {{ request('approval_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+      </select>
+    </div>
+
     <div class="filter-group" style="min-width: 150px;">
       <select name="status" class="filter-input" onchange="this.form.submit()">
         <option value="">Account Status</option>
@@ -194,7 +211,7 @@
 
     <div class="filter-actions">
       <button type="submit" class="btn-subtle">Search</button>
-      @if(request()->hasAny(['search', 'role', 'verified', 'status']))
+      @if(request()->hasAny(['search', 'role', 'verified', 'status', 'approval_status']))
         <a href="{{ route('admin.registrations.index') }}" class="btn-reset">Reset</a>
       @endif
     </div>
@@ -212,7 +229,8 @@
           <th>Email Verification</th>
           <th>Phone</th>
           <th>Profile Completion</th>
-          <th>Status</th>
+          <th>Approval</th>
+          <th>Account</th>
           <th>Registered</th>
           <th style="text-align: right;">Actions</th>
         </tr>
@@ -285,6 +303,27 @@
               </div>
             </td>
             <td>
+              @php
+                $approvalStatus = $user->profile_status;
+              @endphp
+              @if($approvalStatus === 'published' || $approvalStatus === 'approved')
+                <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.55rem; border-radius: 4px; background: rgba(34, 197, 94, 0.12); color: #4ade80; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 0.72rem; font-weight: 600;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Approved
+                </span>
+              @elseif($approvalStatus === 'rejected')
+                <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.55rem; border-radius: 4px; background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.72rem; font-weight: 600;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  Rejected
+                </span>
+              @else
+                <span style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.55rem; border-radius: 4px; background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); font-size: 0.72rem; font-weight: 600;">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                  Pending
+                </span>
+              @endif
+            </td>
+            <td>
               @if($user->isActive())
                 <span style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; color: #4ade80; font-weight: 500;">
                   <span class="status-dot status-dot--active"></span>
@@ -323,7 +362,7 @@
           </tr>
         @empty
           <tr>
-            <td colspan="8" style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+            <td colspan="9" style="text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
               <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 0.75rem; opacity: 0.5;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
               <div style="font-size: 1rem; color: var(--text-primary); margin-bottom: 0.25rem;">No registered members found</div>
               <div style="font-size: 0.85rem;">Try adjusting your search criteria, role filters, or verification filters.</div>

@@ -1,12 +1,141 @@
 @extends('layouts.idfr')
 
-@section('title', 'Book Tickets | IDFR Fashion Show — Season 4, Kozhikode')
-@section('description', 'Book tickets for the IDFR Fashion Show Season 4, 18 – 20 December 2026 at IDFR Fashion House, Kozhikode. Choose Standard, Premium or VIP tickets and seating.')
+@php
+    $seasonTitle = $currentSeason ? $currentSeason->title : '';
+    $seasonNum = $currentSeason ? $currentSeason->number : null;
+    $seasonLocation = ($currentSeason && $currentSeason->location) ? $currentSeason->location : '';
+    $seasonDates = ($currentSeason && $currentSeason->dates) ? $currentSeason->dates : '';
+    $seasonYear = ($currentSeason && $currentSeason->year) ? $currentSeason->year : '';
+    $seasonDesc = ($currentSeason && $currentSeason->description)
+        ? $currentSeason->description
+        : ($currentSeason ? 'Register as an official runway model for ' . $seasonTitle . ($seasonLocation ? ' in ' . $seasonLocation : '') . '. Showcase on premier fashion runways, connect with leading designers, and gain national modelling exposure.' : 'Model registration is currently unavailable.');
+    $seasonHeroImage = ($currentSeason && $currentSeason->hero_image)
+        ? $currentSeason->hero_image_url
+        : asset('images/hero/hero-03.jpg');
+    $feeFormatted = $formattedFee ?? ($currentSeason ? $currentSeason->formattedRegistrationFee() : '₹9,999');
+@endphp
+
+@section('title', $currentSeason ? 'Model Registration | IDFR Fashion Show — ' . $seasonTitle . ($seasonLocation ? ', ' . $seasonLocation : '') : 'Model Registration | IDFR Fashion Show')
+@section('description', $currentSeason ? 'Official model registration for the IDFR Fashion Show ' . $seasonTitle . ($seasonDates ? ', ' . $seasonDates : '') . ($seasonLocation ? ' at ' . $seasonLocation : '') . '. Register now to participate.' : 'Official model registration for the IDFR Fashion Show.')
 @section('canonical', route('idfr.tickets'))
+
+@section('styles')
+<style>
+  .reg-price-card {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.12) 0%, rgba(20, 20, 24, 0.85) 100%);
+    border: 1px solid var(--gold, #d4af37);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+  .reg-price-card__tag {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold, #d4af37);
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+    display: block;
+  }
+  .reg-price-card__amount {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+  .reg-price-card__amount span {
+    font-size: 0.9rem;
+    font-family: var(--font-sans, system-ui, sans-serif);
+    color: #a0a0a0;
+    font-weight: 400;
+    margin-left: 0.35rem;
+  }
+  .reg-price-card__note {
+    font-size: 0.85rem;
+    color: #c0c0c0;
+    line-height: 1.45;
+    margin-bottom: 1rem;
+  }
+  .reg-price-perks {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+  .reg-price-perks li {
+    font-size: 0.84rem;
+    color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .reg-price-perks li svg {
+    width: 14px;
+    height: 14px;
+    color: var(--gold, #d4af37);
+    flex-shrink: 0;
+  }
+  .reg-price-card__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    background: rgba(212, 175, 55, 0.15);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: var(--gold, #d4af37);
+  }
+  .guardian-box {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px dashed rgba(212, 175, 55, 0.4);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .guardian-box__title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--gold, #d4af37);
+    margin-bottom: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .guardian-box__desc {
+    font-size: 0.8rem;
+    color: #999;
+    margin-bottom: 1rem;
+  }
+  .fee-inline-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    padding: 0.4rem 0.85rem;
+    border-radius: 6px;
+    margin-bottom: 1.25rem;
+  }
+  .fee-inline-pill strong {
+    color: var(--gold, #d4af37);
+    font-size: 1.05rem;
+  }
+</style>
+@endsection
 
 @section('content')
 <main id="main">
-      <!-- ============ TICKET BOOKING ============ -->
+      <!-- ============ MODEL REGISTRATION ============ -->
       <section
         class="section booking"
         id="booking"
@@ -16,233 +145,279 @@
           <nav class="breadcrumb" aria-label="Breadcrumb">
             <ol>
               <li><a href="{{ route('idfr.home') }}">Home</a></li>
-              <li aria-current="page">Book Tickets</li>
+              <li aria-current="page">Model Registration</li>
             </ol>
           </nav>
 
           <div class="section-head">
             <div data-reveal="up">
-              <p class="section-label">IDFR Fashion Show · Season 4</p>
+              @if($currentSeason)
+                <p class="section-label">IDFR Fashion Show · {{ $seasonTitle }}</p>
+              @endif
               <h1 class="section-title" id="bookingTitle">
-                Book your <em>seat</em>
+                Model <em>Registration</em>
               </h1>
             </div>
-            <p class="section-intro" data-reveal="up" data-delay="150">
-              Three runway nights of couture, handloom and new faces in
-              Kozhikode. Choose your ticket and seating, tell us who is coming
-              and we will hold your seats.
-            </p>
+            @if($currentSeason && $seasonDesc)
+              <p class="section-intro" data-reveal="up" data-delay="150">
+                {{ $seasonDesc }}
+              </p>
+            @endif
           </div>
 
+          @if(!$currentSeason)
+            <div class="alert alert--info" style="padding: 3rem 1.5rem; text-align: center; background: rgba(20,20,24,0.85); border: 1px solid var(--border-gold, #d4af37); border-radius: 10px; margin-top: 2rem;">
+              <svg viewBox="0 0 24 24" width="48" height="48" stroke="var(--gold, #d4af37)" stroke-width="1.8" fill="none" style="margin-bottom: 1rem; display:inline-block;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <h2 style="font-family: var(--font-serif); font-size: 1.65rem; color: #fff; margin-bottom: 0.5rem;">Model registration is currently unavailable.</h2>
+              <p style="color: #a0a0a0; max-width: 520px; margin: 0 auto 1.5rem;">There are currently no active runway editions open for model registration. Please check back soon or follow our official announcements.</p>
+              <a href="{{ route('idfr.home') }}" class="btn btn--gold"><span>Return to Home</span></a>
+            </div>
+          @else
           <div class="booking__layout">
             <section
               class="profile__details booking__card"
               aria-labelledby="bookingFormTitle"
-              data-reveal="up"
             >
-              <h2 class="profile__heading" id="bookingFormTitle">
-                Ticket <em>Details</em>
-              </h2>
-              <p class="profile__lead">
-                Fields marked <span aria-hidden="true">*</span
-                ><span class="visually-hidden">with an asterisk</span> are
-                required.
-              </p>
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem; margin-bottom: 0.5rem;">
+                <div>
+                  <h2 class="profile__heading" id="bookingFormTitle" style="margin-bottom:0.25rem;">
+                    Participant <em>Details</em>
+                  </h2>
+                  <p class="profile__lead" style="margin-bottom:0;">
+                    Fields marked <span aria-hidden="true">*</span><span class="visually-hidden">with an asterisk</span> are required.
+                  </p>
+                </div>
+                <div class="fee-inline-pill">
+                  <span style="font-size:0.8rem; color:#b0b0b0;">Registration Fee:</span>
+                  <strong>{{ $feeFormatted }}</strong>
+                </div>
+              </div>
+
+              @if(session('success'))
+                <div class="alert alert--success" style="padding:1rem 1.25rem; background:rgba(34,197,94,0.15); border:1px solid #22c55e; border-radius:6px; color:#22c55e; margin-bottom:1.5rem;">
+                  {{ session('success') }}
+                </div>
+              @endif
+
+              @if(session('info'))
+                <div class="alert alert--info" style="padding:1rem 1.25rem; background:rgba(212,175,55,0.15); border:1px solid #d4af37; border-radius:6px; color:#d4af37; margin-bottom:1.5rem;">
+                  {{ session('info') }}
+                </div>
+              @endif
+
+              @if($errors->any())
+                <div class="alert alert--danger" style="padding:1rem 1.25rem; background:rgba(239,68,68,0.15); border:1px solid #ef4444; border-radius:6px; color:#ef4444; margin-bottom:1.5rem;">
+                  <ul style="margin:0; padding-left:1.25rem;">
+                    @foreach($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+              @endif
 
               <form
                 class="profile-form booking__form"
                 id="bookingForm"
+                data-season-number="{{ $seasonNum }}"
+                data-season-title="{{ $seasonTitle }}"
+                action="{{ route('idfr.tickets.submit') }}"
+                method="POST"
                 novalidate
               >
+                @csrf
+                <input type="hidden" name="season_id" id="regSeasonId" value="{{ $currentSeason ? $currentSeason->id : '' }}">
+                <input type="hidden" name="season_number" value="{{ $seasonNum }}">
+
+                <!-- Full Name -->
                 <div class="field profile-form__full">
-                  <label for="bkName"
+                  <label for="regFullName"
                     >Full Name <span aria-hidden="true">*</span></label
                   >
                   <input
                     type="text"
-                    id="bkName"
-                    name="name"
+                    id="regFullName"
+                    name="full_name"
                     autocomplete="name"
                     required
                     minlength="2"
-                    maxlength="60"
+                    maxlength="150"
                     placeholder="e.g. Ananya Menon"
+                    value="{{ old('full_name') }}"
                   />
                   <span class="field__error" aria-live="polite"></span>
                 </div>
 
+                <!-- WhatsApp Number -->
                 <div class="field">
-                  <label for="bkEmail"
-                    >Email Address <span aria-hidden="true">*</span></label
-                  >
-                  <input
-                    type="email"
-                    id="bkEmail"
-                    name="email"
-                    autocomplete="email"
-                    required
-                    maxlength="80"
-                    placeholder="you@example.com"
-                  />
-                  <span class="field__error" aria-live="polite"></span>
-                </div>
-
-                <div class="field">
-                  <label for="bkPhone"
-                    >Phone Number <span aria-hidden="true">*</span></label
+                  <label for="regWhatsapp"
+                    >WhatsApp Number (with country code) <span aria-hidden="true">*</span></label
                   >
                   <input
                     type="tel"
-                    id="bkPhone"
-                    name="phone"
+                    id="regWhatsapp"
+                    name="whatsapp_number"
                     autocomplete="tel"
                     inputmode="tel"
                     required
-                    pattern="\+?[0-9][0-9\s\-]{7,15}"
-                    placeholder="+91 98765 43210"
+                    pattern="\+?[0-9\s\-]{8,20}"
+                    placeholder="e.g. +91 98765 43210"
+                    value="{{ old('whatsapp_number') }}"
+                  />
+                  <span class="field__hint">Include country code (e.g. +91 for India). Official updates will be sent here.</span>
+                  <span class="field__error" aria-live="polite"></span>
+                </div>
+
+                <!-- Email Address (Optional) -->
+                <div class="field">
+                  <label for="regEmail">Email Address (Optional)</label>
+                  <input
+                    type="email"
+                    id="regEmail"
+                    name="email"
+                    autocomplete="email"
+                    maxlength="150"
+                    placeholder="you@example.com"
+                    value="{{ old('email') }}"
                   />
                   <span class="field__error" aria-live="polite"></span>
                 </div>
 
+                <!-- Age -->
                 <div class="field">
-                  <label for="bkType"
-                    >Ticket Type <span aria-hidden="true">*</span></label
+                  <label for="regAge"
+                    >Age <span aria-hidden="true">*</span></label
                   >
-                  <select
-                    id="bkType"
-                    name="ticketType"
+                  <input
+                    type="number"
+                    id="regAge"
+                    name="age"
                     required
-                    aria-describedby="bkTypeHint"
-                  >
-                    <option value="" disabled selected>
-                      Select a ticket type
-                    </option>
-                    <option
-                      value="standard"
-                      data-perks="General entry to all three show nights."
-                    >
-                      Standard
-                    </option>
-                    <option
-                      value="premium"
-                      data-perks="Priority entry, welcome drink and a Season 4 lookbook."
-                    >
-                      Premium
-                    </option>
-                    <option
-                      value="vip"
-                      data-perks="Backstage tour, lounge access and the closing-night after-party."
-                    >
-                      VIP
-                    </option>
-                  </select>
-                  <span class="field__hint" id="bkTypeHint"
-                    >Every ticket type includes all three show nights.</span
-                  >
+                    min="3"
+                    max="99"
+                    step="1"
+                    placeholder="e.g. 21"
+                    value="{{ old('age', 21) }}"
+                  />
+                  <span class="field__hint">Applicants under 18 require parent or legal guardian details below.</span>
                   <span class="field__error" aria-live="polite"></span>
                 </div>
 
+                <!-- Gender -->
                 <div class="field">
-                  <label for="bkQty"
-                    >Number of Attendees
-                    <span aria-hidden="true">*</span></label
+                  <label for="regGender"
+                    >Gender <span aria-hidden="true">*</span></label
                   >
-                  <div class="qty">
-                    <button
-                      class="qty__btn"
-                      type="button"
-                      data-qty="-1"
-                      aria-controls="bkQty"
-                      aria-label="Remove one attendee"
-                    >
-                      <span aria-hidden="true">&minus;</span>
-                    </button>
-                    <input
-                      type="number"
-                      id="bkQty"
-                      name="attendees"
-                      required
-                      min="1"
-                      max="10"
-                      step="1"
-                      value="1"
-                      inputmode="numeric"
-                      aria-describedby="bkQtyHint"
-                    />
-                    <button
-                      class="qty__btn"
-                      type="button"
-                      data-qty="1"
-                      aria-controls="bkQty"
-                      aria-label="Add one attendee"
-                    >
-                      <span aria-hidden="true">+</span>
-                    </button>
-                  </div>
-                  <span class="field__hint" id="bkQtyHint"
-                    >Up to 10 tickets per booking.</span
-                  >
-                  <span class="field__error" aria-live="polite"></span>
-                </div>
-
-                <div class="field profile-form__full">
-                  <label for="bkSeat"
-                    >Preferred Seating Type
-                    <span aria-hidden="true">*</span></label
-                  >
-                  <select
-                    id="bkSeat"
-                    name="seating"
-                    required
-                    aria-describedby="bkSeatHint"
-                  >
-                    <option value="" disabled selected>
-                      Select a seating category
-                    </option>
-                    <option
-                      value="standard"
-                      data-name="Standard Seating"
-                      data-price="500"
-                      data-note="Tiered rows"
-                    >
-                      Standard Seating – ₹500
-                    </option>
-                    <option
-                      value="premium"
-                      data-name="Premium Seating"
-                      data-price="1000"
-                      data-note="Second &amp; third row"
-                    >
-                      Premium Seating – ₹1,000
-                    </option>
-                    <option
-                      value="vip"
-                      data-name="VIP Seating"
-                      data-price="2000"
-                      data-note="Front row, runway side"
-                    >
-                      VIP Seating – ₹2,000
-                    </option>
+                  <select id="regGender" name="gender" required>
+                    <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Select gender</option>
+                    <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
+                    <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>Male</option>
+                    <option value="other" {{ old('gender') === 'other' ? 'selected' : '' }}>Other</option>
                   </select>
-                  <span class="field__hint" id="bkSeatHint"
-                    >Prices are per person, inclusive of taxes.</span
-                  >
                   <span class="field__error" aria-live="polite"></span>
                 </div>
 
-                <div
-                  class="profile-form__actions profile-form__full booking__actions"
-                >
-                  <p class="booking__secure">
-                    <svg class="icon" aria-hidden="true">
-                      <use href="#i-check" /></svg
-                    ><span>No payment now — seats are held for 48 hours.</span>
+                <!-- Category -->
+                <div class="field">
+                  <label for="regCategory"
+                    >Registration Category <span aria-hidden="true">*</span></label
+                  >
+                  <select id="regCategory" name="category" required>
+                    <option value="adult" {{ old('category') === 'adult' ? 'selected' : 'selected' }}>Adult (18+ Years)</option>
+                    <option value="kids" {{ old('category') === 'kids' ? 'selected' : '' }}>Kids / Minor (&lt; 18 Years)</option>
+                  </select>
+                  <span class="field__error" aria-live="polite"></span>
+                </div>
+
+                <!-- Citizenship / Nationality -->
+                <div class="field">
+                  <label for="regCitizenship"
+                    >Citizenship / Nationality <span aria-hidden="true">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="regCitizenship"
+                    name="citizenship"
+                    required
+                    maxlength="100"
+                    placeholder="e.g. Indian"
+                    value="{{ old('citizenship', 'Indian') }}"
+                  />
+                  <span class="field__error" aria-live="polite"></span>
+                </div>
+
+                <!-- Conditional Parent / Guardian Details for Kids / Minors (< 18) -->
+                <div class="profile-form__full guardian-box" id="guardianDetails" style="display:none;">
+                  <h3 class="guardian-box__title">
+                    <svg class="icon" style="width:16px;height:16px;"><use href="#i-user"/></svg>
+                    <span>Parent or Legal Guardian Information</span>
+                  </h3>
+                  <p class="guardian-box__desc">
+                    Required for participants under 18 years of age. All casting coordination will be conducted with the designated guardian.
                   </p>
-                  <button class="btn btn--gold" type="submit">
-                    <span>Submit</span
-                    ><svg class="icon" aria-hidden="true">
-                      <use href="#i-arrow-right" />
-                    </svg>
+
+                  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                    <div class="field">
+                      <label for="regParentName">Parent / Guardian Name <span aria-hidden="true">*</span></label>
+                      <input
+                        type="text"
+                        id="regParentName"
+                        name="parent_name"
+                        maxlength="150"
+                        placeholder="e.g. Rajesh Menon"
+                        value="{{ old('parent_name') }}"
+                      />
+                      <span class="field__error" aria-live="polite"></span>
+                    </div>
+
+                    <div class="field">
+                      <label for="regParentContact">Guardian Contact / WhatsApp <span aria-hidden="true">*</span></label>
+                      <input
+                        type="tel"
+                        id="regParentContact"
+                        name="parent_contact"
+                        maxlength="50"
+                        placeholder="e.g. +91 98765 11223"
+                        value="{{ old('parent_contact') }}"
+                      />
+                      <span class="field__error" aria-live="polite"></span>
+                    </div>
+
+                    <div class="field" style="grid-column: 1 / -1;">
+                      <label for="regParentRelationship">Relationship to Participant</label>
+                      <input
+                        type="text"
+                        id="regParentRelationship"
+                        name="parent_relationship"
+                        maxlength="50"
+                        placeholder="e.g. Mother, Father, Legal Guardian"
+                        value="{{ old('parent_relationship') }}"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Additional Information / Portfolio Link -->
+                <div class="field profile-form__full">
+                  <label for="regAdditionalInfo">Additional Information / Portfolio Link (Optional)</label>
+                  <textarea
+                    id="regAdditionalInfo"
+                    name="additional_info"
+                    rows="3"
+                    maxlength="2000"
+                    placeholder="Include height, previous runway or shoot experience, Instagram handle, or portfolio links."
+                  >{{ old('additional_info') }}</textarea>
+                  <span class="field__hint">Optional details to assist our casting panel review.</span>
+                </div>
+
+                <!-- Actions and Submit -->
+                <div class="profile-form__actions profile-form__full booking__actions">
+                  <p class="booking__secure">
+                    <svg class="icon" aria-hidden="true"><use href="#i-check" /></svg>
+                    <span>Zero payment required today. Registration fee ({{ $feeFormatted }}) will be verified and collected by the IDFR casting desk.</span>
+                  </p>
+                  <button class="btn btn--gold" type="submit" id="btnSubmitRegistration">
+                    <span>Register for {{ $seasonTitle }} &mdash; {{ $feeFormatted }}</span>
+                    <svg class="icon" aria-hidden="true"><use href="#i-arrow-right" /></svg>
                   </button>
                 </div>
 
@@ -253,330 +428,96 @@
                   tabindex="-1"
                   hidden
                 >
-                  <span class="booking__done-icon" aria-hidden="true"
-                    ><svg class="icon">
-                      <use href="#i-check" /></svg
-                  ></span>
+                  <span class="booking__done-icon" aria-hidden="true">
+                    <svg class="icon"><use href="#i-check" /></svg>
+                  </span>
                   <div>
-                    <p class="booking__done-title">Booking request received</p>
+                    <p class="booking__done-title">Registration Successfully Submitted</p>
                     <p class="booking__done-text" id="bookingDoneText"></p>
                   </div>
                 </div>
               </form>
             </section>
 
+            <!-- Right Column: Season Showcase & Official Fee Card -->
             <aside
               class="booking__summary"
               aria-labelledby="bookingSummaryTitle"
-              data-reveal="up"
-              data-delay="100"
             >
               <figure class="booking__poster">
                 <img
                   class="photo"
-                  src="{{ asset('images/hero/hero-03.jpg') }}"
-                  alt="Model on the IDFR runway"
+                  src="{{ $seasonHeroImage }}"
+                  alt="IDFR {{ $seasonTitle }} lookbook"
                   width="1100"
                   height="1650"
                   loading="lazy"
                 />
                 <figcaption>
-                  <span class="booking__poster-label">Season 4</span>
-                  <span class="booking__poster-title"
-                    >IDFR Fashion <em>Show</em></span
-                  >
+                  <span class="booking__poster-label">{{ $seasonTitle }}</span>
+                  <span class="booking__poster-title">IDFR Fashion <em>Show</em></span>
                 </figcaption>
               </figure>
 
               <div class="booking__summary-body">
                 <ul class="booking__event">
                   <li>
-                    <svg class="icon" aria-hidden="true">
-                      <use href="#i-calendar" /></svg
-                    ><span>18 – 20 Dec 2026 · 7:00 PM</span>
+                    <svg class="icon" aria-hidden="true"><use href="#i-calendar" /></svg>
+                    <span>{{ $seasonDates }} · 7:00 PM</span>
                   </li>
                   <li>
-                    <svg class="icon" aria-hidden="true">
-                      <use href="#i-pin" /></svg
-                    ><span>IDFR Fashion House, Kozhikode</span>
+                    <svg class="icon" aria-hidden="true"><use href="#i-pin" /></svg>
+                    <span>{{ $seasonLocation }}</span>
                   </li>
                 </ul>
 
-                <h2 class="booking__summary-title" id="bookingSummaryTitle">
-                  Order Summary
-                </h2>
-                <dl class="booking__lines">
-                  <div>
-                    <dt>Ticket Type</dt>
-                    <dd id="sumType">—</dd>
+                <!-- Official Registration Fee Card -->
+                <div class="reg-price-card">
+                  <span class="reg-price-card__tag">Official Model Registration</span>
+                  <div class="reg-price-card__amount">
+                    {{ $feeFormatted }}
+                    <span>/ participant</span>
                   </div>
-                  <div>
-                    <dt>Seating</dt>
-                    <dd id="sumSeat">—</dd>
-                  </div>
-                  <div>
-                    <dt>Price per Seat</dt>
-                    <dd id="sumPrice">—</dd>
-                  </div>
-                  <div>
-                    <dt>Attendees</dt>
-                    <dd id="sumQty">1</dd>
-                  </div>
-                </dl>
-                <p class="booking__total">
-                  <span>Total</span><strong id="sumTotal">₹0</strong>
-                </p>
+                  <p class="reg-price-card__note">
+                    Covers complete participation in the {{ $seasonTitle }} runway auditions, training sessions, and official showcases.
+                  </p>
 
-                <h3 class="booking__prices-title">Seating Prices</h3>
-                <ul class="booking__prices" id="bookingPrices"></ul>
+                  <ul class="reg-price-perks">
+                    <li>
+                      <svg class="icon reg-price-perks__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" style="width:16px;height:16px;min-width:16px;color:var(--gold,#d4af37);flex-shrink:0;"><use href="#i-check"/></svg>
+                      <span>Runway Audition &amp; Model Evaluation</span>
+                    </li>
+                    <li>
+                      <svg class="icon reg-price-perks__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" style="width:16px;height:16px;min-width:16px;color:var(--gold,#d4af37);flex-shrink:0;"><use href="#i-check"/></svg>
+                      <span>Professional Grooming &amp; Ramp Walk Sessions</span>
+                    </li>
+                    <li>
+                      <svg class="icon reg-price-perks__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" style="width:16px;height:16px;min-width:16px;color:var(--gold,#d4af37);flex-shrink:0;"><use href="#i-check"/></svg>
+                      <span>Official {{ $seasonTitle }} Lookbook &amp; Media Feature</span>
+                    </li>
+                    <li>
+                      <svg class="icon reg-price-perks__icon" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" style="width:16px;height:16px;min-width:16px;color:var(--gold,#d4af37);flex-shrink:0;"><use href="#i-check"/></svg>
+                      <span>VIP Backstage Pass &amp; Designer Casting Access</span>
+                    </li>
+                  </ul>
+
+                  <div class="reg-price-card__badge">
+                    <svg class="icon" style="width:13px;height:13px;"><use href="#i-check"/></svg>
+                    <span>Status: Unpaid upon initial registration</span>
+                  </div>
+                </div>
               </div>
             </aside>
           </div>
+          @endif
         </div>
       </section>
     </main>
 @endsection
-@section('page_content_templates')
-<!-- ============ PAGE CONTENT ============
-         Content for the sections built by js/script.js. <template> content is not displayed;
-         the script reads it and renders each section. Edit text, images and options here. -->
 
-    <!-- Info modal content: one template per program, opened by links with a matching data-program. -->
-    <template id="program-season-4">
-      <p class="info__label">IDFR Fashion Show</p>
-      <h2 class="info__title" id="infoModalTitle">{{ $currentSeason ? $currentSeason->title : 'Season 4' }}</h2>
-      <p class="info__intro">
-        {{ $currentSeason && $currentSeason->description ? $currentSeason->description : 'Three runway nights celebrating emerging designers, established names and the next generation of Indian modelling talent. Season 4 brings couture, resort, menswear and handloom collections to one stage in Kozhikode.' }}
-      </p>
-      <dl class="info__facts">
-        <div>
-          <dt>Dates</dt>
-          <dd>{{ $currentSeason ? $currentSeason->dates : '18 – 20 Dec 2026' }}</dd>
-        </div>
-        <div>
-          <dt>Venue</dt>
-          <dd>{{ $currentSeason ? $currentSeason->location : 'IDFR Fashion House' }}</dd>
-        </div>
-        <div>
-          <dt>Designers</dt>
-          <dd>24 Labels</dd>
-        </div>
-        <div>
-          <dt>Models</dt>
-          <dd>60+ Talent</dd>
-        </div>
-      </dl>
-      <div class="info__schedule">
-        <article>
-          <h3>Day 1 · Opening Night</h3>
-          <p>Debut collections walked by models from the Season 4 open auditions.</p>
-        </article>
-        <article>
-          <h3>Day 2 · Designer Showcase</h3>
-          <p>Evening gowns, bridal couture and prêt lines from across South India.</p>
-        </article>
-        <article>
-          <h3>Day 3 · Grand Finale</h3>
-          <p>Couture showcases, awards and the closing walk of {{ $currentSeason ? $currentSeason->title : 'Season 4' }}.</p>
-        </article>
-      </div>
-    </template>
-    <template id="program-athuls-academy">
-      <p class="info__label">Modelling & Grooming</p>
-      <h2 class="info__title" id="infoModalTitle">Athul’s <em>Academy</em></h2>
-      <p class="info__intro">
-        A finishing school for models — from first walk to first casting. Small
-        batches, working industry mentors and a direct pathway to IDFR runways
-        and ASDreamStudio portfolio shoots.
-      </p>
-      <dl class="info__facts">
-        <div>
-          <dt>Batches</dt>
-          <dd>Weekend & Evening</dd>
-        </div>
-        <div>
-          <dt>Mentors</dt>
-          <dd>Runway & Casting</dd>
-        </div>
-        <div>
-          <dt>Next Intake</dt>
-          <dd>19 Jan 2027</dd>
-        </div>
-      </dl>
-      <div class="info__list">
-        <div class="info__item">
-          <span class="info__item-num">01</span>
-          <p class="info__item-meta">10 Weeks · Beginners</p>
-          <h3 class="info__item-name">Model Training</h3>
-          <p class="info__item-desc">
-            Runway walk, posture, turns, posing and camera confidence.
-          </p>
-        </div>
-        <div class="info__item">
-          <span class="info__item-num">02</span>
-          <p class="info__item-meta">6 Weeks · All levels</p>
-          <h3 class="info__item-name">Grooming &amp; Etiquette</h3>
-          <p class="info__item-desc">
-            Skincare, fitness, wardrobe, communication and interview skills.
-          </p>
-        </div>
-        <div class="info__item">
-          <span class="info__item-num">03</span>
-          <p class="info__item-meta">1 Day · With ASDreamStudio</p>
-          <h3 class="info__item-name">Portfolio Shoot</h3>
-          <p class="info__item-desc">
-            Studio and outdoor looks, retouched and ready for agencies.
-          </p>
-        </div>
-        <div class="info__item">
-          <span class="info__item-num">04</span>
-          <p class="info__item-meta">Ongoing</p>
-          <h3 class="info__item-name">Casting &amp; Industry Opportunities</h3>
-          <p class="info__item-desc">
-            Audition preparation, casting calls and placement with IDFR
-            partners.
-          </p>
-        </div>
-      </div>
-      <div class="info__actions">
-        <button
-          class="btn btn--gold"
-          type="button"
-          data-auth="register"
-          data-role="fresher"
-        >
-          <span>Apply Now</span
-          ><svg class="icon" aria-hidden="true">
-            <use href="#i-arrow-right" />
-          </svg>
-        </button>
-      </div>
-    </template>
-    <template id="program-lakme-academy">
-      <p class="info__label">Beauty & Styling</p>
-      <h2 class="info__title" id="infoModalTitle">Lakme <em>Academy</em></h2>
-      <p class="info__intro">
-        Industry-led beauty and styling courses for aspiring makeup artists,
-        hair stylists and fashion stylists — with live backstage experience at
-        IDFR fashion shows.
-      </p>
-      <dl class="info__facts">
-        <div>
-          <dt>Format</dt>
-          <dd>Classroom + Backstage</dd>
-        </div>
-        <div>
-          <dt>Certification</dt>
-          <dd>Professional</dd>
-        </div>
-        <div>
-          <dt>Next Intake</dt>
-          <dd>12 Jan 2027</dd>
-        </div>
-      </dl>
-      <div class="info__list">
-        <div class="info__item">
-          <span class="info__item-num">01</span>
-          <p class="info__item-meta">16 Weeks</p>
-          <h3 class="info__item-name">Professional Makeup Artistry</h3>
-          <p class="info__item-desc">
-            Bridal, editorial, runway and camera makeup techniques.
-          </p>
-        </div>
-        <div class="info__item">
-          <span class="info__item-num">02</span>
-          <p class="info__item-meta">12 Weeks</p>
-          <h3 class="info__item-name">Hair Styling &amp; Design</h3>
-          <p class="info__item-desc">
-            Cutting, colour theory, runway hair and bridal styling.
-          </p>
-        </div>
-        <div class="info__item">
-          <span class="info__item-num">03</span>
-          <p class="info__item-meta">8 Weeks</p>
-          <h3 class="info__item-name">Fashion Styling</h3>
-          <p class="info__item-desc">
-            Wardrobe styling for shoots, campaigns and runway shows.
-          </p>
-        </div>
-        <div class="info__item">
-          <span class="info__item-num">04</span>
-          <p class="info__item-meta">6 Weeks</p>
-          <h3 class="info__item-name">Skin &amp; Beauty Essentials</h3>
-          <p class="info__item-desc">
-            Skincare science, consultation and beauty treatments.
-          </p>
-        </div>
-      </div>
-      <div class="info__actions">
-        <button
-          class="btn btn--gold"
-          type="button"
-          data-auth="register"
-          data-role="fresher"
-        >
-          <span>Enquire Now</span
-          ><svg class="icon" aria-hidden="true">
-            <use href="#i-arrow-right" />
-          </svg>
-        </button>
-      </div>
-    </template>
-    <template id="program-privacy">
-      <p class="info__label">Legal</p>
-      <h2 class="info__title" id="infoModalTitle">Privacy <em>Policy</em></h2>
-      <div class="info__text">
-        <h3>Information we collect</h3>
-        <p>
-          When you create an IDFR profile we collect the details you provide —
-          such as your name, contact information, measurements and portfolio
-          images — to present your profile to verified industry partners and clients.
-        </p>
-        <h3>How we use it</h3>
-        <p>
-          Your information is used to match you with relevant assignments,
-          communicate about fashion shows and improve our platform. We never
-          sell personal data to third parties.
-        </p>
-        <h3>Your choices</h3>
-        <p>
-          You can edit, hide or delete your profile at any time from your
-          account settings, or by writing to info@idfr.example.
-        </p>
-      </div>
-      <div class="info__actions">
-        <button class="btn btn--gold" type="button" data-close>
-          <span>Close</span>
-        </button>
-      </div>
-    </template>
-    <template id="program-terms">
-      <p class="info__label">Legal</p>
-      <h2 class="info__title" id="infoModalTitle">
-        Terms &amp; <em>Conditions</em>
-      </h2>
-      <div class="info__text">
-        <h3>Using IDFR</h3>
-        <p>
-          IDFR is a marketplace that connects models with
-          brands and fashion shows. Members agree to provide accurate
-          information and to conduct themselves professionally.
-        </p>
-        <h3>Profiles & content</h3>
-        <p>
-          Models retain ownership of their portfolio images and grant IDFR
-          permission to display them on the platform for the purpose of
-          discovery and casting.
-        </p>
-        <h3>Assignments</h3>
-        <p>
-          Assignments are agreed directly between models and clients. IDFR is not party to individual contracts.
-        </p>
-      </div>
-      <div class="info__actions">
-        <button class="btn btn--gold" type="button" data-close>
-          <span>Close</span>
-        </button>
-      </div>
-    </template>
+@section('page_content_templates')
+    @include('partials.season-info-template', ['season' => $season ?? ($currentSeason ?? null), 'templateId' => 'program-season-4'])
+    @if(isset($season) && $season && $season->number != 4)
+      @include('partials.season-info-template', ['season' => $season, 'templateId' => 'program-season-' . $season->number])
+    @endif
 @endsection
