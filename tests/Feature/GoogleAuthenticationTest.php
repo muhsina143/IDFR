@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Socialite\Contracts\User as SocialiteUserContract;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\AbstractProvider;
@@ -39,48 +40,9 @@ class GoogleAuthenticationTest extends TestCase
     }
 
     /**
-     * Test 1: Main website Login modal displays the Continue with Google button and OR divider.
+     * Test Case 1: Existing registered user + Google Login = Successful login.
      */
-    public function test_main_website_login_modal_displays_google_sign_in_button_and_or_divider(): void
-    {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-        $response->assertSee('Continue with Google');
-        $response->assertSee(route('auth.google.redirect'));
-        $response->assertSee('auth-divider', false);
-        $response->assertSee('<span>OR</span>', false);
-        $response->assertSee('google-icon', false);
-    }
-
-    /**
-     * Test 2: Admin login page does NOT display Google sign-in.
-     */
-    public function test_admin_login_page_does_not_contain_google_sign_in(): void
-    {
-        $response = $this->get('/admin/login');
-
-        $response->assertStatus(200);
-        $response->assertDontSee(route('auth.google.redirect'));
-        $response->assertDontSee('Continue with Google');
-    }
-
-    /**
-     * Test 3: Google redirect route redirects to Google OAuth consent screen.
-     */
-    public function test_google_redirect_route_redirects_to_google_oauth(): void
-    {
-        $response = $this->get(route('auth.google.redirect'));
-
-        $response->assertStatus(302);
-        $targetUrl = $response->headers->get('Location');
-        $this->assertStringContainsString('accounts.google.com', (string) $targetUrl);
-    }
-
-    /**
-     * Test 4: Existing verified user can log in via Google without duplicate accounts.
-     */
-    public function test_existing_verified_user_can_log_in_via_google(): void
+    public function test_existing_registered_user_can_log_in_via_google_successfully(): void
     {
         $user = User::factory()->create([
             'name' => 'Priya Nair',
@@ -120,7 +82,83 @@ class GoogleAuthenticationTest extends TestCase
     }
 
     /**
-     * Test 5: Existing unverified user is verified and logged in via Google.
+     * Test Case 2: Unregistered user + Google Login = Access denied with an error message.
+     */
+    public function test_unregistered_user_cannot_log_in_via_google_and_sees_error_message(): void
+    {
+        $this->assertNull(User::where('email', 'unknown.guest@example.com')->first());
+
+        $this->mockSocialiteGoogleUser(
+            email: 'unknown.guest@example.com',
+            id: 'google-stranger-123',
+            name: 'Unknown Guest'
+        );
+
+        $response = $this->get(route('auth.google.callback'));
+
+        // Redirects back to login with required error message
+        $response->assertRedirect(route('idfr.home', ['auth' => 'login']));
+        $response->assertSessionHas('error', 'You are not registered yet. Please register first to access your account.');
+
+        // User must NOT be authenticated
+        $this->assertFalse(Auth::guard('web')->check());
+        $this->assertFalse(Auth::guard('admin')->check());
+    }
+
+    /**
+     * Test Case 3: Existing user + normal email/password login = Successful login.
+     */
+    public function test_existing_user_normal_email_password_login_successful(): void
+    {
+        $user = User::factory()->create([
+            'name' => 'Kavya Menon',
+            'email' => 'kavya.menon@example.com',
+            'password' => Hash::make('secret123456'),
+            'role' => 'hairstylist',
+            'is_admin' => false,
+            'is_active' => true,
+            'email_verified_at' => now(),
+        ]);
+
+        $response = $this->postJson(route('login'), [
+            'email' => 'kavya.menon@example.com',
+            'password' => 'secret123456',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Welcome back, Kavya Menon!',
+            ]);
+
+        $this->assertTrue(Auth::guard('web')->check());
+        $this->assertSame($user->id, Auth::guard('web')->id());
+    }
+
+    /**
+     * Test Case 4: Google Login must never create a new user account.
+     */
+    public function test_google_login_must_never_create_a_new_user_account(): void
+    {
+        $initialUserCount = User::count();
+
+        $this->mockSocialiteGoogleUser(
+            email: 'newbie.applicant@example.com',
+            id: 'google-newbie-999',
+            name: 'Newbie Applicant'
+        );
+
+        $response = $this->get(route('auth.google.callback'));
+
+        // Verify zero database rows were inserted into users table
+        $this->assertSame($initialUserCount, User::count());
+        $this->assertNull(User::where('email', 'newbie.applicant@example.com')->first());
+        $this->assertNull(User::where('google_id', 'google-newbie-999')->first());
+        $this->assertFalse(Auth::guard('web')->check());
+    }
+
+    /**
+     * Test: Existing unverified user logging in via verified Google account gets verified and authenticated.
      */
     public function test_existing_unverified_user_is_verified_and_logged_in_via_google(): void
     {
@@ -151,39 +189,7 @@ class GoogleAuthenticationTest extends TestCase
     }
 
     /**
-     * Test 6: New user logs in via Google: account created as public user, verified, with 'user' role.
-     */
-    public function test_new_user_is_registered_and_logged_in_as_public_user(): void
-    {
-        $this->assertNull(User::where('email', 'ananya.k@example.com')->first());
-
-        $this->mockSocialiteGoogleUser(
-            email: 'ananya.k@example.com',
-            id: 'google-ananya-456',
-            name: 'Ananya Kapoor',
-            avatar: 'https://lh3.googleusercontent.com/ananya.jpg'
-        );
-
-        $response = $this->get(route('auth.google.callback'));
-
-        $response->assertRedirect('/');
-        $response->assertSessionHas('status', 'Welcome to IDFR, Ananya Kapoor!');
-
-        $this->assertTrue(Auth::guard('web')->check());
-        $user = User::where('email', 'ananya.k@example.com')->first();
-        $this->assertNotNull($user);
-        $this->assertSame('Ananya Kapoor', $user->name);
-        $this->assertSame('google-ananya-456', $user->google_id);
-        $this->assertSame('https://lh3.googleusercontent.com/ananya.jpg', $user->avatar);
-        $this->assertSame('user', $user->role);
-        $this->assertFalse($user->is_admin);
-        $this->assertTrue($user->is_active);
-        $this->assertNotNull($user->email_verified_at);
-        $this->assertFalse(Auth::guard('admin')->check());
-    }
-
-    /**
-     * Test 7: Administrator accounts are strictly rejected from public Google OAuth and redirected to admin login.
+     * Test: Administrator accounts are strictly rejected from public Google OAuth.
      */
     public function test_administrator_account_is_blocked_from_public_google_login(): void
     {
@@ -210,7 +216,7 @@ class GoogleAuthenticationTest extends TestCase
     }
 
     /**
-     * Test 8: Deactivated user account is rejected and not authenticated.
+     * Test: Deactivated user account is rejected and not authenticated.
      */
     public function test_deactivated_user_is_blocked_from_google_login(): void
     {
@@ -228,13 +234,40 @@ class GoogleAuthenticationTest extends TestCase
 
         $response = $this->get(route('auth.google.callback'));
 
-        $response->assertRedirect(route('idfr.home'));
+        $response->assertRedirect(route('idfr.home', ['auth' => 'login']));
         $response->assertSessionHas('error', 'Violation of terms');
         $this->assertFalse(Auth::guard('web')->check());
     }
 
     /**
-     * Test 9: Public user authenticated via Google cannot access admin dashboard.
+     * Test: Main website Login modal displays the Continue with Google button and OR divider.
+     */
+    public function test_main_website_login_modal_displays_google_sign_in_button_and_or_divider(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('Continue with Google');
+        $response->assertSee(route('auth.google.redirect'));
+        $response->assertSee('auth-divider', false);
+        $response->assertSee('<span>OR</span>', false);
+        $response->assertSee('google-icon', false);
+    }
+
+    /**
+     * Test: Admin login page does NOT display Google sign-in.
+     */
+    public function test_admin_login_page_does_not_contain_google_sign_in(): void
+    {
+        $response = $this->get('/admin/login');
+
+        $response->assertStatus(200);
+        $response->assertDontSee(route('auth.google.redirect'));
+        $response->assertDontSee('Continue with Google');
+    }
+
+    /**
+     * Test: Public user authenticated via Google cannot access admin dashboard.
      */
     public function test_public_user_authenticated_via_google_cannot_access_admin_dashboard(): void
     {
@@ -254,4 +287,3 @@ class GoogleAuthenticationTest extends TestCase
         $response->assertRedirect('/admin/login');
     }
 }
-

@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\AdminSponsorController;
 use App\Http\Controllers\Admin\AdminSponsorshipEnquiryController;
 use App\Http\Controllers\AsdreamsController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfileEnquiryController;
@@ -43,11 +44,17 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register'])->name('register');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])->name('verify-otp');
 Route::post('/resend-otp', [AuthController::class, 'resendOtp'])->name('resend-otp');
+Route::get('/login', fn () => redirect()->route('idfr.home', ['auth' => 'login']))->name('login.view');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/auth/me', [AuthController::class, 'me'])->name('auth.me');
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+// Password Reset Routes
+Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 
 // ==========================================
 // Profile Booking Enquiry & Email OTP Routes
@@ -131,6 +138,7 @@ Route::prefix('asdreams')->name('asd.')->group(function () {
     Route::get('/contact', [AsdreamsController::class, 'contact'])->name('contact');
     Route::get('/team', [AsdreamsController::class, 'team'])->name('team');
     Route::post('/shoot-booking', [AsdreamsController::class, 'handleShootBooking'])->name('shoot-booking.submit');
+    Route::post('/studio-booking', [AsdreamsController::class, 'handleStudioBooking'])->name('studio-booking.submit');
 });
 
 // ==========================================
@@ -346,6 +354,8 @@ Route::redirect('/asd_gallery.html', '/asdreams/gallery');
 Route::redirect('/asd_contact.html', '/asdreams/contact');
 Route::redirect('/team_members.html', '/asdreams/team');
 Route::redirect('/team', '/asdreams/team');
+Route::redirect('/offer_details.html', '/asdreams/contact');
+Route::redirect('/contact_brand.html', '/asdreams/contact');
 
 // Creative Profiles Pages
 Route::redirect('/model_profile.html', '/profiles/model');

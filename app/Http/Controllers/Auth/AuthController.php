@@ -467,83 +467,56 @@ class AuthController extends Controller
         $googleId = (string) $googleUser->getId();
         $avatar = (string) $googleUser->getAvatar();
 
-        // 1. Locate existing user by google_id or matching email
-        $user = User::where('google_id', $googleId)
-            ->orWhere('email', $email)
-            ->first();
+        // 1. Locate existing registered user by email or matching google_id
+        $user = User::where('email', $email)->first();
+        if (! $user && ! empty($googleId)) {
+            $user = User::where('google_id', $googleId)->first();
+        }
 
-        // 2. Strict Administrator Isolation: admin accounts must never log in via public Google OAuth
-        if ($user && $user->isAdmin()) {
+        // 2. Reject Unregistered Users: Only already registered users are allowed to log in via Google
+        if (! $user) {
+            return redirect()->route('idfr.home', ['auth' => 'login'])->with('error', 'You are not registered yet. Please register first to access your account.');
+        }
+
+        // 3. Strict Administrator Isolation: admin accounts must never log in via public Google OAuth
+        if ($user->isAdmin()) {
             return redirect()->route('admin.login')->withErrors([
                 'email' => 'Administrator accounts must log in via the Executive Admin Portal.',
             ]);
         }
 
-        // 3. Deactivated accounts check
-        if ($user && ! $user->isActive()) {
+        // 4. Deactivated accounts check
+        if (! $user->isActive()) {
             $reason = $user->deactivation_reason ?: 'Your account has been deactivated. Please contact IDFR support.';
 
-            return redirect()->route('idfr.home')->with('error', $reason);
+            return redirect()->route('idfr.home', ['auth' => 'login'])->with('error', $reason);
         }
 
-        if ($user) {
-            // Existing user: Link Google ID and update avatar/verification
-            $needsSave = false;
+        // 5. Existing user: Link Google ID and update avatar/verification
+        $needsSave = false;
 
-            if (empty($user->google_id)) {
-                $user->google_id = $googleId;
-                $needsSave = true;
-            }
-
-            if (empty($user->avatar) && ! empty($avatar)) {
-                $user->avatar = $avatar;
-                $needsSave = true;
-            }
-
-            if (! $user->isEmailVerified()) {
-                $user->email_verified_at = now();
-                $needsSave = true;
-            }
-
-            if ($needsSave) {
-                $user->save();
-            }
-
-            $this->ensureProfileExists($user);
-        } else {
-            // New user registration via Google
-            // Detect if a profile record with this email already exists in legacy/unregistered data
-            $detectedRole = 'user';
-            if (ModelProfile::where('email', $email)->exists()) {
-                $detectedRole = 'model';
-            } elseif (Designer::where('email', $email)->exists()) {
-                $detectedRole = 'fashion-designer';
-            } elseif ($cp = CreativeProfessional::where('email', $email)->first()) {
-                $detectedRole = $cp->category ?: 'user';
-            }
-
-            $name = trim((string) $googleUser->getName());
-            if (empty($name)) {
-                $name = 'IDFR Member';
-            }
-
-            $user = User::create([
-                'name' => $name,
-                'email' => $email,
-                'google_id' => $googleId,
-                'avatar' => ! empty($avatar) ? $avatar : null,
-                'role' => $detectedRole,
-                'password' => Hash::make(Str::random(32)),
-                'is_admin' => false,
-                'is_active' => true,
-                'email_verified_at' => now(),
-                'payment_status' => 'exempt',
-            ]);
-
-            $this->ensureProfileExists($user);
+        if (empty($user->google_id) && ! empty($googleId)) {
+            $user->google_id = $googleId;
+            $needsSave = true;
         }
 
-        // Authenticate strictly into the public web guard
+        if (empty($user->avatar) && ! empty($avatar)) {
+            $user->avatar = $avatar;
+            $needsSave = true;
+        }
+
+        if (! $user->isEmailVerified()) {
+            $user->email_verified_at = now();
+            $needsSave = true;
+        }
+
+        if ($needsSave) {
+            $user->save();
+        }
+
+        $this->ensureProfileExists($user);
+
+        // 6. Authenticate strictly into the public web guard
         Auth::guard('web')->login($user, true);
         $request->session()->regenerate();
 
@@ -552,11 +525,7 @@ class AuthController extends Controller
             $intended = route('idfr.home');
         }
 
-        $greeting = $user->wasRecentlyCreated
-            ? 'Welcome to IDFR, '.$user->name.'!'
-            : 'Welcome back, '.$user->name.'!';
-
-        return redirect()->to($intended)->with('status', $greeting);
+        return redirect()->to($intended)->with('status', 'Welcome back, '.$user->name.'!');
     }
 
     /**

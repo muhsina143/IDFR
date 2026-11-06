@@ -18,7 +18,7 @@
   <div class="preloader__inner">
     <img src="{{ asset('images/asdreams/asd-logo.png') }}" alt="" width="666" height="470" />
     <span class="preloader__line"></span>
-    <span class="preloader__text">Photography &amp; Videography</span>
+    <span class="preloader__text">Powered By</span>
   </div>
 </div>
 @endsection

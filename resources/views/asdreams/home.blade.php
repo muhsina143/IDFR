@@ -506,6 +506,292 @@
         </div>
       </section>
 
+      <!-- ============ STUDIO RENTAL ============ -->
+      <section
+        class="section studio-rental"
+        id="studio_rental"
+        aria-labelledby="studioRentalTitle"
+      >
+        <div class="container">
+          <div class="section-head">
+            <div data-reveal="up">
+              <p class="section-label">Studio Hire</p>
+              <h2 class="section-title" id="studioRentalTitle">
+                Book Studio for Rent at <em>ASDreamStudio</em>
+              </h2>
+            </div>
+            <p class="section-intro" data-reveal="up" data-delay="150">
+              A spacious, fully air-conditioned creative space with professional
+              lighting, makeup and changing facilities — ready for photography,
+              videography, fashion shoots and commercial productions.
+            </p>
+          </div>
+
+          <div class="studio-rental__area" data-reveal="up" data-delay="80">
+            <span class="studio-rental__area-icon" aria-hidden="true">
+              <svg class="icon"><use href="#i-area" /></svg>
+            </span>
+            <div>
+              <p class="studio-rental__area-label">Studio Area</p>
+              <p class="studio-rental__area-value">4,000 sq. ft.</p>
+            </div>
+          </div>
+
+          <div class="studio-rental__panels">
+            <div class="studio-rental__panel" data-reveal="up">
+              <div class="studio-rental__panel-head">
+                <h3 class="studio-rental__panel-title">Facilities Provided</h3>
+                <p class="studio-rental__ac">
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-snowflake" /></svg
+                  ><span>All areas are air-conditioned</span>
+                </p>
+              </div>
+              <ul class="studio-rental__facilities">
+                <li>
+                  <span class="studio-rental__fac-icon" aria-hidden="true"
+                    ><svg class="icon"><use href="#i-door" /></svg
+                  ></span>
+                  <span>Lobby</span>
+                </li>
+                <li>
+                  <span class="studio-rental__fac-icon" aria-hidden="true"
+                    ><svg class="icon"><use href="#i-sparkles" /></svg
+                  ></span>
+                  <span>Makeup Room</span>
+                </li>
+                <li>
+                  <span class="studio-rental__fac-icon" aria-hidden="true"
+                    ><svg class="icon"><use href="#i-hanger" /></svg
+                  ></span>
+                  <span>Changing Room</span>
+                </li>
+                <li>
+                  <span class="studio-rental__fac-icon" aria-hidden="true"
+                    ><svg class="icon"><use href="#i-cup" /></svg
+                  ></span>
+                  <span>Pantry</span>
+                </li>
+                <li>
+                  <span class="studio-rental__fac-icon" aria-hidden="true"
+                    ><svg class="icon"><use href="#i-camera" /></svg
+                  ></span>
+                  <span>Photography Room</span>
+                </li>
+                <li>
+                  <span class="studio-rental__fac-icon" aria-hidden="true"
+                    ><svg class="icon"><use href="#i-restroom" /></svg
+                  ></span>
+                  <span>2 Restrooms</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="studio-rental__panel" data-reveal="up" data-delay="120">
+              <div class="studio-rental__panel-head">
+                <h3 class="studio-rental__panel-title">Equipment Included</h3>
+                <p class="studio-rental__panel-note">
+                  Available with every studio rental booking
+                </p>
+              </div>
+              <ul class="studio-rental__equipment">
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-light" /></svg
+                  ><span>2 SK 400 Photo Lights</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-light" /></svg
+                  ><span>1 AD 400 Photo Light</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-light" /></svg
+                  ><span>2 SL 100 Video Lights</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-light" /></svg
+                  ><span>4 Stick Lights (Video Lights)</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-sofa" /></svg
+                  ><span>Blue Sofa</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-check" /></svg
+                  ><span>Model Stool</span>
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-check" /></svg
+                  ><span>Table and Chairs</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="studio-rental__gallery-wrap" data-reveal="up">
+            <div class="studio-rental__gallery-head">
+              <h3 class="studio-rental__panel-title" id="studioGalleryTitle">
+                Studio Gallery
+              </h3>
+              <p class="studio-rental__panel-note">
+                A look inside the space — tap any image to enlarge
+              </p>
+            </div>
+            <ul
+              class="studio-rental__gallery"
+              id="studioRentalGallery"
+              aria-labelledby="studioGalleryTitle"
+            >
+              <li>
+                <button
+                  class="studio-rental__shot"
+                  type="button"
+                  data-studio-shot
+                  data-index="0"
+                  aria-label="Open image: Main photography floor"
+                >
+                  <img
+                    class="photo"
+                    src="{{ asset('images/asdreams/hero-08.jpg') }}"
+                    alt="Photography studio set with softboxes and a white backdrop"
+                    width="1000"
+                    height="1250"
+                    loading="lazy"
+                  />
+                  <span class="studio-rental__shot-cap">Main Floor</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  class="studio-rental__shot"
+                  type="button"
+                  data-studio-shot
+                  data-index="1"
+                  aria-label="Open image: Studio interior"
+                >
+                  <img
+                    class="photo"
+                    src="{{ asset('images/asdreams/about-studio.jpg') }}"
+                    alt="ASDreamStudio interior production space"
+                    width="1000"
+                    height="1250"
+                    loading="lazy"
+                  />
+                  <span class="studio-rental__shot-cap">Studio Interior</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  class="studio-rental__shot"
+                  type="button"
+                  data-studio-shot
+                  data-index="2"
+                  aria-label="Open image: Cinema and lighting kit"
+                >
+                  <img
+                    class="photo"
+                    src="{{ asset('images/creative/portfolio/video-cinema-camera.jpg') }}"
+                    alt="Cinema camera and lighting kit on a studio set"
+                    width="1000"
+                    height="1250"
+                    loading="lazy"
+                  />
+                  <span class="studio-rental__shot-cap">Lighting Kit</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  class="studio-rental__shot"
+                  type="button"
+                  data-studio-shot
+                  data-index="3"
+                  aria-label="Open image: Makeup and prep suite"
+                >
+                  <img
+                    class="photo"
+                    src="{{ asset('images/creative/portfolio/video-edit-suite.jpg') }}"
+                    alt="Prep suite with monitors ready for production"
+                    width="1000"
+                    height="1250"
+                    loading="lazy"
+                  />
+                  <span class="studio-rental__shot-cap">Prep Suite</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  class="studio-rental__shot"
+                  type="button"
+                  data-studio-shot
+                  data-index="4"
+                  aria-label="Open image: Portrait backdrop"
+                >
+                  <img
+                    class="photo"
+                    src="{{ asset('images/asdreams/gallery/portrait-01.jpg') }}"
+                    alt="Studio portrait backdrop with soft lighting"
+                    width="1000"
+                    height="1250"
+                    loading="lazy"
+                  />
+                  <span class="studio-rental__shot-cap">Portrait Bay</span>
+                </button>
+              </li>
+              <li>
+                <button
+                  class="studio-rental__shot"
+                  type="button"
+                  data-studio-shot
+                  data-index="5"
+                  aria-label="Open image: Stage and set lighting"
+                >
+                  <img
+                    class="photo"
+                    src="{{ asset('images/creative/portfolio/video-stage-rig.jpg') }}"
+                    alt="Stage lighting rig for video production"
+                    width="1000"
+                    height="1250"
+                    loading="lazy"
+                  />
+                  <span class="studio-rental__shot-cap">Set Lighting</span>
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <div class="studio-rental__cta" data-reveal="up">
+            <div class="studio-rental__price">
+              <p class="studio-rental__price-label">Studio Rental</p>
+              <p class="studio-rental__price-value">
+                <span class="studio-rental__amount">₹1000</span>
+                <span class="studio-rental__per">/ day</span>
+              </p>
+              <p class="studio-rental__price-note">
+                Mock price — subject to change
+              </p>
+            </div>
+            <button
+              class="btn btn--gold studio-rental__book"
+              type="button"
+              data-studio-book
+              aria-haspopup="dialog"
+              aria-controls="studioBookModal"
+            >
+              <span>Book Studio</span
+              ><svg class="icon" aria-hidden="true">
+                <use href="#i-arrow-right" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
       <!-- ============ CLIENTS ============ -->
       <section
         class="section section--light clients"

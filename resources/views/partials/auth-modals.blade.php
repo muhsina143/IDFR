@@ -189,6 +189,16 @@
           aria-labelledby="tabLogin"
           novalidate
         >
+          @if(session('error'))
+            <div class="auth-alert auth-alert--error" role="alert">
+              {{ session('error') }}
+            </div>
+          @endif
+          @if(session('status'))
+            <div class="auth-alert auth-alert--success" role="status">
+              {{ session('status') }}
+            </div>
+          @endif
           <div class="field">
             <label for="loginEmail">Email address</label>
             <input
@@ -248,6 +258,50 @@
             </svg>
             <span>Continue with Google</span>
           </a>
+        </form>
+
+        <form
+          class="auth-form"
+          id="panelForgotPassword"
+          role="tabpanel"
+          aria-labelledby="forgotTitle"
+          novalidate
+          hidden
+        >
+          <div class="auth-modal__instructions">
+            <p style="font-size: 0.85rem; color: #a1a1aa; line-height: 1.55; text-align: center; margin: -0.25rem 0 1rem 0;">
+              Enter your registered email address. We will send you a password reset link.
+            </p>
+          </div>
+
+          <div class="auth-alert auth-alert--error" id="forgotErrorAlert" role="alert" style="display: none;"></div>
+          <div class="auth-alert auth-alert--success" id="forgotSuccessAlert" role="status" style="display: none;"></div>
+
+          <div class="field">
+            <label for="forgotEmail">Email address</label>
+            <input
+              type="email"
+              id="forgotEmail"
+              name="email"
+              autocomplete="email"
+              required
+              placeholder="you@example.com"
+            />
+            <span class="field__error" id="forgotEmailError" aria-live="polite"></span>
+          </div>
+
+          <button class="btn btn--gold btn--block" type="submit" id="forgotSubmitBtn">
+            <span>Send Reset Link</span>
+            <svg class="icon" aria-hidden="true">
+              <use href="#i-arrow-right" />
+            </svg>
+          </button>
+
+          <div class="auth-form__row" style="justify-content: center; margin-top: 0.75rem;">
+            <button class="text-link text-link--small" type="button" id="backToLoginFromForgotBtn">
+              &larr; Back to Login
+            </button>
+          </div>
         </form>
 
         <form
@@ -421,139 +475,6 @@
               &larr; Back to Register
             </button>
           </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- ============ FORGOT PASSWORD MODAL ============ -->
-    <div
-      class="modal auth-modal forgot-modal"
-      id="forgotModal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="forgotTitle"
-      aria-describedby="forgotLead"
-      hidden
-    >
-      <div class="modal__backdrop" data-close></div>
-      <div class="modal__panel auth-modal__panel">
-        <button
-          class="modal__close"
-          type="button"
-          data-close
-          aria-label="Close"
-        >
-          <svg class="icon" aria-hidden="true">
-            <use href="#i-close" />
-          </svg>
-        </button>
-        <img
-          class="auth-modal__logo"
-          src="{{ asset('images/logo/idfr-mark.png') }}"
-          alt=""
-          width="474"
-          height="220"
-        />
-        <p class="forgot__step" id="forgotStep">Step 1 of 3</p>
-        <h2 class="auth-modal__title" id="forgotTitle">Forgot password</h2>
-        <p class="forgot__lead" id="forgotLead"></p>
-
-        <form class="auth-form" id="forgotEmailForm" novalidate>
-          <div class="field">
-            <label for="forgotEmail">Email address</label>
-            <input
-              type="email"
-              id="forgotEmail"
-              name="email"
-              autocomplete="email"
-              required
-              placeholder="you@example.com"
-              data-autofocus
-            />
-            <span class="field__error" aria-live="polite"></span>
-          </div>
-          <button class="btn btn--gold btn--block" type="submit">
-            <span>Submit</span
-            ><svg class="icon" aria-hidden="true">
-              <use href="#i-arrow-right" />
-            </svg>
-          </button>
-        </form>
-
-        <form class="auth-form" id="forgotOtpForm" novalidate hidden>
-          <div class="field">
-            <label for="forgotOtp">Email OTP</label>
-            <input
-              type="text"
-              id="forgotOtp"
-              name="otp"
-              inputmode="numeric"
-              autocomplete="one-time-code"
-              maxlength="6"
-              required
-              placeholder="Enter 6-digit code"
-            />
-            <span class="otp__hint" id="forgotOtpHint"></span>
-            <span class="field__error" aria-live="polite"></span>
-          </div>
-          <div class="auth-form__row">
-            <button
-              class="text-link text-link--small"
-              type="button"
-              id="forgotChangeEmail"
-            >
-              Change email
-            </button>
-            <button
-              class="text-link text-link--small"
-              type="button"
-              id="forgotResend"
-            >
-              Resend code
-            </button>
-          </div>
-          <button class="btn btn--gold btn--block" type="submit">
-            <span>Submit</span
-            ><svg class="icon" aria-hidden="true">
-              <use href="#i-arrow-right" />
-            </svg>
-          </button>
-        </form>
-
-        <form class="auth-form" id="forgotResetForm" novalidate hidden>
-          <div class="field">
-            <label for="forgotNewPassword">New password</label>
-            <input
-              type="password"
-              id="forgotNewPassword"
-              name="newPassword"
-              autocomplete="new-password"
-              required
-              minlength="6"
-              placeholder="Minimum 6 characters"
-            />
-            <span class="field__error" aria-live="polite"></span>
-          </div>
-          <div class="field">
-            <label for="forgotConfirmPassword">Confirm new password</label>
-            <input
-              type="password"
-              id="forgotConfirmPassword"
-              name="confirmNewPassword"
-              autocomplete="new-password"
-              required
-              minlength="6"
-              data-match="#forgotNewPassword"
-              placeholder="Re-enter your new password"
-            />
-            <span class="field__error" aria-live="polite"></span>
-          </div>
-          <button class="btn btn--gold btn--block" type="submit">
-            <span>Save New Password</span
-            ><svg class="icon" aria-hidden="true">
-              <use href="#i-check" />
-            </svg>
-          </button>
         </form>
       </div>
     </div>

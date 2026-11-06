@@ -3455,7 +3455,19 @@ const Auth = (() => {
 
             else if (name === 'verify') p.hidden = p.id !== 'panelVerifyOtp';
 
+            else if (name === 'forgot') p.hidden = p.id !== 'panelForgotPassword';
+
         });
+
+
+
+        const authTabsEl = $('.auth-tabs', modal);
+
+        if (authTabsEl) {
+
+            authTabsEl.style.display = (name === 'login' || name === 'register') ? '' : 'none';
+
+        }
 
 
 
@@ -3464,6 +3476,8 @@ const Auth = (() => {
         else if (name === 'register') $('#authTitle').textContent = 'Join IDFR';
 
         else if (name === 'verify') $('#authTitle').textContent = 'Verify Email';
+
+        else if (name === 'forgot') $('#authTitle').textContent = 'Forgot Your Password?';
 
     }
 
@@ -4591,6 +4605,172 @@ const Auth = (() => {
 
         }
 
+        const forgotBtn = $('#forgotBtn');
+
+        if (forgotBtn) {
+
+            forgotBtn.addEventListener('click', (e) => {
+
+                e.preventDefault();
+
+                switchTab('forgot');
+
+            });
+
+        }
+
+        const backToLoginFromForgotBtn = $('#backToLoginFromForgotBtn');
+
+        if (backToLoginFromForgotBtn) {
+
+            backToLoginFromForgotBtn.addEventListener('click', (e) => {
+
+                e.preventDefault();
+
+                switchTab('login');
+
+            });
+
+        }
+
+        const forgotForm = $('#panelForgotPassword');
+
+        if (forgotForm) {
+
+            forgotForm.addEventListener('submit', async (e) => {
+
+                e.preventDefault();
+
+                clearFormErrors(e.target);
+
+                const errAlert = $('#forgotErrorAlert');
+
+                const succAlert = $('#forgotSuccessAlert');
+
+                if (errAlert) { errAlert.style.display = 'none'; errAlert.textContent = ''; }
+
+                if (succAlert) { succAlert.style.display = 'none'; succAlert.textContent = ''; }
+
+                const emailInput = $('#forgotEmail');
+
+                const emailVal = emailInput ? emailInput.value.trim() : '';
+
+                if (!emailVal) {
+
+                    if (emailInput) setFieldError(emailInput, 'Please enter your email address.');
+
+                    return;
+
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+                if (!emailRegex.test(emailVal)) {
+
+                    if (emailInput) setFieldError(emailInput, 'Please enter a valid email address.');
+
+                    return;
+
+                }
+
+                const submitBtn = $('#forgotSubmitBtn') || $('button[type="submit"]', e.target);
+
+                const originalHtml = submitBtn ? submitBtn.innerHTML : '';
+
+                if (submitBtn) {
+
+                    submitBtn.disabled = true;
+
+                    submitBtn.innerHTML = `<span>Sending Link...</span>`;
+
+                }
+
+                try {
+
+                    const csrfToken = $('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+                    const res = await fetch('/forgot-password', {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'Content-Type': 'application/json',
+
+                            'X-CSRF-TOKEN': csrfToken,
+
+                            'Accept': 'application/json',
+
+                            'X-Requested-With': 'XMLHttpRequest'
+
+                        },
+
+                        body: JSON.stringify({ email: emailVal })
+
+                    });
+
+                    const data = await res.json();
+
+                    if (res.ok && data.success) {
+
+                        if (succAlert) {
+
+                            succAlert.textContent = data.message || 'Password reset link sent to your email address.';
+
+                            succAlert.style.display = 'block';
+
+                        }
+
+                        if (typeof toast === 'function') {
+
+                            toast(data.message || 'Password reset link sent.');
+
+                        }
+
+                    } else {
+
+                        const errMsg = data.message || (data.errors?.email ? data.errors.email[0] : 'Failed to send password reset link.');
+
+                        if (errAlert) {
+
+                            errAlert.textContent = errMsg;
+
+                            errAlert.style.display = 'block';
+
+                        } else if (emailInput) {
+
+                            setFieldError(emailInput, errMsg);
+
+                        }
+
+                    }
+
+                } catch (err) {
+
+                    if (errAlert) {
+
+                        errAlert.textContent = 'Failed to deliver the password reset email. Please try again later.';
+
+                        errAlert.style.display = 'block';
+
+                    }
+
+                } finally {
+
+                    if (submitBtn) {
+
+                        submitBtn.disabled = false;
+
+                        submitBtn.innerHTML = originalHtml;
+
+                    }
+
+                }
+
+            });
+
+        }
+
 
 
         checkAuthStatus();
@@ -5531,7 +5711,7 @@ function brandsPopUrl(open) {
 
 function isAsdreamsHomeLink(href) {
 
-    return /(?:^|\/)asdreams\.html#home$/.test(href) || href === '#home';
+    return /(?:^|\/)asdreams(?:\.html)?#home$/.test(href) || href === '#home';
 
 }
 
@@ -5547,7 +5727,7 @@ function isIndexLink(href) {
 
         const path = u.pathname.replace(/\\/g, '/');
 
-        return /(^|\/)(index\.html)?$/.test(path) || path.endsWith('/index.html');
+        return /(^|\/)(index\.html)?$/.test(path) || path.endsWith('/index.html') || path === '/' || path === '';
 
     } catch (_) {
 
@@ -5628,12 +5808,12 @@ function initIndexBrandsPopBack() {
 function initBrandsPopup() {
 
     const popup = $('#brandsPopup');
-
-
+    if (!popup) return;
 
     // Banner slider: slides and dots are written in the popup's markup
 
     const banner = $('.brands-pop__banner', popup);
+    if (!banner) return;
 
     const INTERVAL = 4000;
 
@@ -5643,7 +5823,10 @@ function initBrandsPopup() {
 
     const total = slides.length;
 
-    const titleOf = (slide) => $('.brands-pop__caption', slide).textContent.replace(/\s+/g, ' ').trim();
+    const titleOf = (slide) => {
+        const cap = $('.brands-pop__caption', slide);
+        return cap ? cap.textContent.replace(/\s+/g, ' ').trim() : '';
+    };
 
     let index = 0;
 
@@ -5656,6 +5839,8 @@ function initBrandsPopup() {
 
 
     const showSlide = (n, announce = false) => {
+
+        if (!total) return;
 
         index = (n + total) % total;
 
@@ -5677,9 +5862,11 @@ function initBrandsPopup() {
 
         });
 
-        $('#brandsPopCurrent').textContent = pad(index + 1);
+        const curEl = $('#brandsPopCurrent');
+        if (curEl) curEl.textContent = pad(index + 1);
 
-        $('#brandsPopStatus').textContent = announce ? `Banner ${index + 1} of ${total}: ${titleOf(slides[index])}` : '';
+        const statusEl = $('#brandsPopStatus');
+        if (statusEl) statusEl.textContent = announce ? `Banner ${index + 1} of ${total}: ${titleOf(slides[index])}` : '';
 
     };
 
@@ -7083,6 +7270,99 @@ function initShootBooking() {
 
 }
 
+function initStudioBooking() {
+    const modal = $('#studioBookModal');
+    if (!modal) return;
+    const form = $('#studioBookForm', modal);
+    if (!form) return;
+    const formView = $('[data-studio-form]', modal);
+    const success = $('[data-studio-success]', modal);
+    const submit = $('button[type="submit"]', form);
+    const label = submit ? $('span', submit) : null;
+    const phoneInput = $('#studioPhone', form);
+    const startDateInput = $('#studioStart', form);
+    const endDateInput = $('#studioEnd', form);
+
+    const todayISO = () => {
+        const d = new Date();
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    };
+
+    const resetView = () => {
+        form.reset();
+        if (typeof clearFormErrors === 'function') clearFormErrors(form);
+        if (phoneInput) phoneInput.setCustomValidity('');
+        if (startDateInput) {
+            startDateInput.setCustomValidity('');
+            startDateInput.min = todayISO();
+        }
+        if (endDateInput) {
+            endDateInput.setCustomValidity('');
+            endDateInput.min = todayISO();
+        }
+        if (formView) formView.hidden = false;
+        if (success) success.hidden = true;
+        modal.setAttribute('aria-labelledby', 'studioBookTitle');
+        if (submit) {
+            submit.disabled = false;
+            if (label) label.textContent = 'Submit';
+        }
+    };
+
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('[data-studio-book]');
+        if (!trigger) return;
+        e.preventDefault();
+        resetView();
+        if (typeof MobileMenu !== 'undefined' && MobileMenu.isOpen) MobileMenu.close();
+        Modal.open(modal, trigger);
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (submit && submit.disabled) return;
+        if (typeof validateForm === 'function' && !validateForm(form)) return;
+        if (submit) {
+            submit.disabled = true;
+            if (label) label.textContent = 'Submitting…';
+        }
+        setTimeout(() => {
+            if (submit) {
+                submit.disabled = false;
+                if (label) label.textContent = 'Submit';
+            }
+            if (formView) formView.hidden = true;
+            if (success) success.hidden = false;
+            modal.setAttribute('aria-labelledby', 'studioBookSuccessTitle');
+            const heading = $('#studioBookSuccessTitle', success);
+            if (heading) heading.focus();
+        }, 500);
+    });
+}
+
+function initStudioGallery() {
+    const list = $$('#studioRentalGallery .studio-rental__shot').map((btn) => {
+        const img = $('img', btn);
+        const cap = $('.studio-rental__shot-cap', btn)?.textContent.trim() || '';
+        return {
+            image: img?.getAttribute('src') || '',
+            title: cap,
+            season: 'ASDreamStudio',
+            alt: img?.getAttribute('alt') || cap
+        };
+    });
+    if (!list.length) return;
+    document.addEventListener('click', (e) => {
+        const shot = e.target.closest('[data-studio-shot]');
+        if (!shot) return;
+        e.preventDefault();
+        const idx = Number(shot.dataset.index || 0);
+        if (typeof Lightbox !== 'undefined' && Lightbox.open) {
+            Lightbox.open(list, idx, shot);
+        }
+    });
+}
+
 
 
 /* Sponsorship enquiry: modal form â†’ validated, then mailed to info@idfr.example via mailto */
@@ -7675,6 +7955,10 @@ const initApp = () => {
     onPage('#asdEnquiryForm', initAsdEnquiry);
 
     onPage('#shootBookModal', initShootBooking);
+
+    onPage('#studioBookModal', initStudioBooking);
+
+    onPage('#studioRentalGallery', initStudioGallery);
 
     onPage('#sponsorEnquiryModal', initSponsorEnquiry);
 

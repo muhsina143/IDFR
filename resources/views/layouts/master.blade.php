@@ -97,6 +97,21 @@
     @yield('page_content_templates')
 
     <script src="{{ asset('js/script.js') }}" defer></script>
+    @if(session('status') || session('error'))
+      <script>
+        window.addEventListener('DOMContentLoaded', function() {
+          var toastMsg = @json(session('error') ?: session('status'));
+          if (toastMsg && typeof toast === 'function') {
+            toast(toastMsg);
+          }
+          @if(session('error'))
+            if (typeof Auth !== 'undefined' && Auth.open) {
+              Auth.open('login');
+            }
+          @endif
+        });
+      </script>
+    @endif
     @stack('scripts')
   </body>
 </html>
