@@ -509,6 +509,79 @@
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
         <span>Site Settings</span>
       </a>
+
+      <!-- ASDreamStudio Dedicated Management Module -->
+      <div style="margin: 1.25rem 0.5rem 0.75rem; border-top: 1px solid var(--border-gold); opacity: 0.35;"></div>
+      <span class="admin-nav__label" style="display: flex; align-items: center; justify-content: space-between; color: var(--gold); padding-top: 0.25rem;">
+        <span>ASDreamStudio</span>
+        <span style="font-size: 0.6rem; padding: 0.15rem 0.45rem; background: rgba(229, 184, 61, 0.15); border: 1px solid var(--border-gold); border-radius: 10px; color: var(--gold); font-weight: 700; letter-spacing: 0.08em;">STUDIO</span>
+      </span>
+
+      <a href="{{ route('admin.asdreams.dashboard') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.dashboard') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Studio Dashboard</span>
+      </a>
+      <a href="{{ route('admin.asdreams.banners.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.banners*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+        <span>Homepage Banners</span>
+      </a>
+      <a href="{{ route('admin.asdreams.brands.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.brands*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+        <span>Homepage Brands</span>
+      </a>
+      <a href="{{ route('admin.asdreams.offers.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.offers*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+        <span>Offer Management</span>
+      </a>
+      <a href="{{ route('admin.asdreams.about.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.about*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        <span>About Page</span>
+      </a>
+      <a href="{{ route('admin.asdreams.gallery.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.gallery*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+        <span>Gallery Management</span>
+      </a>
+      <a href="{{ route('admin.asdreams.team.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.team*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        <span>Team Members</span>
+      </a>
+      <a href="{{ route('admin.asdreams.clients.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.clients*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>Our Clients</span>
+      </a>
+      <a href="{{ route('admin.asdreams.moving-logos.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.moving-logos*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+        <span>Moving Client Logos</span>
+      </a>
+      <a href="{{ route('admin.asdreams.contact.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.contact*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <span>Contact Page</span>
+      </a>
+      <a href="{{ route('admin.asdreams.enquiries.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.enquiries*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        <span>Enquiry Management</span>
+        @if(isset($newAsdOfferEnquiriesCount) && ($newAsdOfferEnquiriesCount + ($newAsdContactEnquiriesCount ?? 0)) > 0)
+          <span style="margin-left: auto; background: var(--gold); color: #000; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 10px;">{{ $newAsdOfferEnquiriesCount + $newAsdContactEnquiriesCount }}</span>
+        @endif
+      </a>
+      <a href="{{ route('admin.asdreams.shoot-bookings.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.shoot-bookings*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        <span>Shoot Bookings</span>
+        @if(isset($newAsdShootBookingsCount) && $newAsdShootBookingsCount > 0)
+          <span style="margin-left: auto; background: var(--gold); color: #000; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 10px;">{{ $newAsdShootBookingsCount }}</span>
+        @endif
+      </a>
+      <a href="{{ route('admin.asdreams.studio-bookings.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.studio-bookings*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        <span>Studio Booking Enquiries</span>
+        @if(isset($newAsdStudioBookingsCount) && $newAsdStudioBookingsCount > 0)
+          <span style="margin-left: auto; background: var(--gold); color: #000; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 10px;">{{ $newAsdStudioBookingsCount }}</span>
+        @endif
+      </a>
+      <a href="{{ route('admin.asdreams.settings.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.settings*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+        <span>Studio Settings</span>
+      </a>
     </nav>
 
     <div class="admin-sidebar__footer">
@@ -535,7 +608,12 @@
       <div class="admin-header__right">
         <a href="{{ route('idfr.home') }}" target="_blank" class="admin-link-public" title="View Public Portal">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-          <span>Live Site</span>
+          <span>Live IDFR</span>
+        </a>
+
+        <a href="{{ route('asd.home') }}" target="_blank" class="admin-link-public" title="View ASDreamStudio Portal" style="border-color: rgba(229, 184, 61, 0.4); color: var(--gold);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          <span>ASDreamStudio</span>
         </a>
 
         @if(Auth::guard('admin')->check())

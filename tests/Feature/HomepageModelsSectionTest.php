@@ -45,7 +45,7 @@ class HomepageModelsSectionTest extends TestCase
      */
     public function test_homepage_models_section_structure(): void
     {
-        $response = $this->get('/');
+        $response = $this->get(route('idfr.home'));
 
         $response->assertStatus(200);
 
@@ -121,7 +121,7 @@ class HomepageModelsSectionTest extends TestCase
         $this->assertStringContainsString('data-model-contact="${m.id}"><span>Contact / Enquire</span>', $scriptContent);
 
         // Confirms enquiry modal template still exists on homepage
-        $response = $this->get('/');
+        $response = $this->get(route('idfr.home'));
         $response->assertStatus(200);
         $response->assertSee('id="modelEnquiryTemplate"', false);
     }

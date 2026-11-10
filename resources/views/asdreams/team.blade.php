@@ -34,102 +34,28 @@
           </div>
 
           <ul class="models__grid">
-            <li class="model-card" style="--i: 0">
-              <figure class="model-card__media">
-                <img
-                  src="{{ asset('images/founders/tt6.jpg') }}"
-                  alt="Placeholder portrait"
-                  width="600"
-                  height="800"
-                />
-              </figure>
-              <h2 class="model-card__name">Meera Nair</h2>
-              <p class="model-card__meta">Creative Director</p>
-            </li>
-            <li class="model-card" style="--i: 1">
-              <figure class="model-card__media">
-                <img
-                  src="{{ asset('images/founders/tt1.webp') }}"
-                  alt="Placeholder portrait"
-                  width="600"
-                  height="800"
-                />
-              </figure>
-              <h2 class="model-card__name">Arjun Menon</h2>
-              <p class="model-card__meta">Lead Photographer</p>
-            </li>
-            <li class="model-card" style="--i: 2">
-              <figure class="model-card__media">
-                <img
-                  src="{{ asset('images/founders/tt3.webp') }}"
-                  alt="Placeholder portrait"
-                  width="600"
-                  height="800"
-                />
-              </figure>
-              <h2 class="model-card__name">Sara Iqbal</h2>
-              <p class="model-card__meta">Cinematographer</p>
-            </li>
-            <li class="model-card" style="--i: 3">
-              <figure class="model-card__media">
-                <img
-                  src="{{ asset('images/founders/tt5.webp') }}"
-                  alt="Placeholder portrait"
-                  width="600"
-                  height="800"
-                />
-              </figure>
-              <h2 class="model-card__name">Rohan Das</h2>
-              <p class="model-card__meta">Photo Editor</p>
-            </li>
-            <li class="model-card" style="--i: 4">
-              <figure class="model-card__media">
-                <img
-                  src="{{ asset('images/founders/tt6.jpg') }}"
-                  alt="Placeholder portrait"
-                  width="600"
-                  height="800"
-                />
-              </figure>
-              <h2 class="model-card__name">Diya Krishnan</h2>
-              <p class="model-card__meta">Fashion Stylist</p>
-            </li>
-            <li class="model-card" style="--i: 5">
-              <figure class="model-card__media">
-                <img
-                  src="{{ asset('images/founders/tt6.jpg') }}"
-                  alt="Placeholder portrait"
-                  width="600"
-                  height="800"
-                />
-              </figure>
-              <h2 class="model-card__name">Kabir Shah</h2>
-              <p class="model-card__meta">Drone Pilot</p>
-            </li>
-            <li class="model-card" style="--i: 6">
-              <figure class="model-card__media">
-                <img
-                  src="{{ asset('images/founders/tt6.jpg') }}"
-                  alt="Placeholder portrait"
-                  width="600"
-                  height="800"
-                />
-              </figure>
-              <h2 class="model-card__name">Nila Thomas</h2>
-              <p class="model-card__meta">Makeup Artist</p>
-            </li>
-            <li class="model-card" style="--i: 7">
-              <figure class="model-card__media">
-                <img
-                  src="{{ asset('images/founders/tt6.jpg') }}"
-                  alt="Placeholder portrait"
-                  width="600"
-                  height="800"
-                />
-              </figure>
-              <h2 class="model-card__name">Vivek Rao</h2>
-              <p class="model-card__meta">Studio Manager</p>
-            </li>
+            @forelse($team as $index => $member)
+              <li class="model-card" style="--i: {{ $index }}">
+                <figure class="model-card__media">
+                  <img
+                    src="{{ $member->photo_url }}"
+                    alt="{{ $member->name }}"
+                    width="600"
+                    height="800"
+                  />
+                </figure>
+                <h2 class="model-card__name">{{ $member->name }}</h2>
+                <p class="model-card__meta">{{ $member->designation }}</p>
+                @if($member->bio)
+                  <p class="model-card__bio" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem;">{{ $member->bio }}</p>
+                @endif
+              </li>
+            @empty
+              <li class="model-card" style="--i: 0">
+                <h2 class="model-card__name">No Team Members</h2>
+                <p class="model-card__meta">Roster coming soon</p>
+              </li>
+            @endforelse
           </ul>
 
           <p class="team-page__note">

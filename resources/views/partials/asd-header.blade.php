@@ -2,7 +2,7 @@
       <nav class="nav" aria-label="Primary">
         <a
           class="nav__logo"
-          href="{{ route('asd.home') }}"
+          href="{{ url('/') }}"
           aria-label="ASDreamStudio — back to top"
         >
           <img
@@ -46,7 +46,7 @@
 
         <div class="nav__actions">
           <button
-            class="btn btn--gold btn--sm nav__register"
+            class="btn btn--gold btn--sm nav__register nav__shoot-book"
             type="button"
             data-shoot-book
             aria-haspopup="dialog"
@@ -79,7 +79,6 @@
       aria-label="Site menu"
       hidden
     >
-      <!-- <span class="mobile-menu__word" aria-hidden="true">IDFR</span> -->
       <ul class="mobile-menu__links">
         <li style="--i: 0">
           <a href="{{ route('asd.home') }}#home" data-nav="home"
@@ -87,18 +86,18 @@
           >
         </li>
         <li style="--i: 1">
-          <a href="{{ route('idfr.about') }}" data-nav="about"
+          <a href="{{ route('asd.about') }}" data-nav="about"
             ><span class="mobile-menu__num">02</span>About</a
           >
         </li>
         <li style="--i: 2">
-          <a href="{{ route('idfr.models') }}" data-nav="models"
-            ><span class="mobile-menu__num">03</span>Models</a
+          <a href="{{ route('asd.gallery') }}" data-nav="gallery"
+            ><span class="mobile-menu__num">03</span>Gallery</a
           >
         </li>
         <li style="--i: 3">
-          <a href="{{ route('idfr.gallery') }}" data-nav="gallery"
-            ><span class="mobile-menu__num">04</span>Gallery</a
+          <a href="{{ route('asd.team') }}" data-nav="team"
+            ><span class="mobile-menu__num">04</span>Team Members</a
           >
         </li>
         <li style="--i: 4">
@@ -106,25 +105,19 @@
             ><span class="mobile-menu__num">05</span>Contact</a
           >
         </li>
-        <li style="--i: 5">
-          <a href="{{ route('asd.team') }}" data-nav="team"
-            ><span class="mobile-menu__num">06</span>Team Members</a
-          >
-        </li>
       </ul>
       <div class="mobile-menu__actions">
-        <button class="btn btn--ghost" type="button" data-auth="login">
+        <button
+          class="btn btn--gold btn--full nav__register nav__shoot-book"
+          type="button"
+          data-shoot-book
+          aria-haspopup="dialog"
+          aria-controls="shootBookModal"
+          aria-label="Book a Shoot"
+        >
           <svg class="icon" aria-hidden="true">
-            <use href="#i-user" /></svg
-          ><span>Login</span>
-        </button>
-        <button class="btn btn--gold" type="button" data-auth="register">
-          <svg class="icon" aria-hidden="true">
-            <use href="#i-user-plus" /></svg
-          ><span>Register</span>
+            <use href="#i-calendar" /></svg
+          ><span>Book a Shoot</span>
         </button>
       </div>
-      <!-- <p class="mobile-menu__foot">
-        ASDreamStudio · Photography &amp; Videography Partner of IDFR
-      </p> -->
     </div>

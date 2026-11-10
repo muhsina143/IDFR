@@ -44,7 +44,7 @@ class SeasonDetailsModalDesignTest extends TestCase
             'description' => 'Couture, heritage and new faces under the lights — three nights of glamour in Kochi. Claim your place on the front row.',
         ]);
 
-        $response = $this->get('/');
+        $response = $this->get(route('idfr.home'));
 
         $response->assertStatus(200);
 
@@ -206,7 +206,7 @@ class SeasonDetailsModalDesignTest extends TestCase
         $this->assertEquals('Avant-Garde Evening', $seasonFresh->schedule_events[0]['title']);
 
         // Check homepage modal renders updated custom schedule
-        $homeResponse = $this->get('/');
+        $homeResponse = $this->get(route('idfr.home'));
         $homeResponse->assertStatus(200);
         $homeResponse->assertSee('Avant-Garde Evening', false);
         $homeResponse->assertSee('10 NOVEMBER · 6:00 PM', false);
@@ -238,7 +238,7 @@ class SeasonDetailsModalDesignTest extends TestCase
             'is_current' => true,
         ]);
 
-        $response = $this->get('/');
+        $response = $this->get(route('idfr.home'));
         $response->assertStatus(200);
 
         // Both seasons have their own template

@@ -19,6 +19,20 @@ use App\Http\Controllers\Admin\AdminSeasonImageController;
 use App\Http\Controllers\Admin\AdminSeasonRegistrationController;
 use App\Http\Controllers\Admin\AdminSponsorController;
 use App\Http\Controllers\Admin\AdminSponsorshipEnquiryController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsAboutController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsBannerController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsBrandController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsClientController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsContactController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsDashboardController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsEnquiryController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsGalleryController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsMovingLogoController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsOfferController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsSettingController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsShootBookingController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsStudioBookingController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsTeamController;
 use App\Http\Controllers\AsdreamsController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -67,9 +81,14 @@ Route::post('/enquiry/submit', [ProfileEnquiryController::class, 'store'])->name
 Route::post('/sponsorship/enquiry', [SponsorshipEnquiryController::class, 'store'])->name('sponsorship.enquiry');
 
 // ==========================================
+// Main Landing Page (ASDreamStudio Homepage)
+// ==========================================
+Route::get('/', [AsdreamsController::class, 'home'])->name('landing');
+
+// ==========================================
 // 1. IDFR Brand Routes (Indian Designer Fashion Runway)
 // ==========================================
-Route::name('idfr.')->group(function () {
+Route::prefix('idfr')->name('idfr.')->group(function () {
     Route::get('/', [PageController::class, 'home'])->name('home');
     Route::get('/about', [PageController::class, 'about'])->name('about');
     Route::get('/models', [PageController::class, 'models'])->name('models');
@@ -137,6 +156,16 @@ Route::prefix('asdreams')->name('asd.')->group(function () {
     Route::get('/gallery', [AsdreamsController::class, 'gallery'])->name('gallery');
     Route::get('/contact', [AsdreamsController::class, 'contact'])->name('contact');
     Route::get('/team', [AsdreamsController::class, 'team'])->name('team');
+
+    // Dynamic Offers
+    Route::get('/offers', [AsdreamsController::class, 'offersIndex'])->name('offers.index');
+    Route::get('/offers/{slug}', [AsdreamsController::class, 'offerShow'])->name('offers.show');
+    Route::post('/offers/enquire', [AsdreamsController::class, 'handleOfferEnquiry'])->name('offers.enquire');
+
+    // Contact Enquiry
+    Route::post('/contact/enquire', [AsdreamsController::class, 'handleContactEnquiry'])->name('contact.enquire');
+
+    // Bookings
     Route::post('/shoot-booking', [AsdreamsController::class, 'handleShootBooking'])->name('shoot-booking.submit');
     Route::post('/studio-booking', [AsdreamsController::class, 'handleStudioBooking'])->name('studio-booking.submit');
 });
@@ -331,6 +360,85 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         // Other Module routes (Placeholders)
         Route::get('/settings', fn () => app(AdminDashboardController::class)->placeholder('settings'))->name('settings');
+
+        // ==========================================
+        // ASDreamStudio Dedicated Management Module
+        // ==========================================
+        Route::prefix('asdreams')->name('asdreams.')->group(function () {
+            // 1. Dashboard
+            Route::get('/', [AdminAsdreamsDashboardController::class, 'index'])->name('dashboard');
+
+            // 2. Homepage Banner / Slider
+            Route::resource('banners', AdminAsdreamsBannerController::class)->except(['show']);
+            Route::post('banners/{banner}/toggle-status', [AdminAsdreamsBannerController::class, 'toggleStatus'])->name('banners.toggle-status');
+
+            // 3. Homepage Brands
+            Route::resource('brands', AdminAsdreamsBrandController::class)->except(['show']);
+            Route::post('brands/{brand}/toggle-status', [AdminAsdreamsBrandController::class, 'toggleStatus'])->name('brands.toggle-status');
+
+            // 4. Offer Management & Offer Details
+            Route::resource('offers', AdminAsdreamsOfferController::class)->except(['show']);
+            Route::post('offers/{offer}/toggle-status', [AdminAsdreamsOfferController::class, 'toggleStatus'])->name('offers.toggle-status');
+
+            // 5. About Page Management
+            Route::get('about', [AdminAsdreamsAboutController::class, 'index'])->name('about.index');
+            Route::post('about', [AdminAsdreamsAboutController::class, 'update'])->name('about.update');
+
+            // 6. Gallery Management
+            Route::get('gallery', [AdminAsdreamsGalleryController::class, 'index'])->name('gallery.index');
+            Route::get('gallery/create', [AdminAsdreamsGalleryController::class, 'createImage'])->name('gallery.create');
+            Route::post('gallery', [AdminAsdreamsGalleryController::class, 'storeImage'])->name('gallery.store');
+            Route::get('gallery/{image}/edit', [AdminAsdreamsGalleryController::class, 'editImage'])->name('gallery.edit');
+            Route::put('gallery/{image}', [AdminAsdreamsGalleryController::class, 'updateImage'])->name('gallery.update');
+            Route::delete('gallery/{image}', [AdminAsdreamsGalleryController::class, 'destroyImage'])->name('gallery.destroy');
+            Route::post('gallery/{image}/toggle-status', [AdminAsdreamsGalleryController::class, 'toggleImageStatus'])->name('gallery.toggle-status');
+            Route::post('gallery/categories', [AdminAsdreamsGalleryController::class, 'storeCategory'])->name('gallery.categories.store');
+            Route::delete('gallery/categories/{category}', [AdminAsdreamsGalleryController::class, 'destroyCategory'])->name('gallery.categories.destroy');
+
+            // 7. Team Management
+            Route::resource('team', AdminAsdreamsTeamController::class)->except(['show']);
+            Route::post('team/{team}/toggle-status', [AdminAsdreamsTeamController::class, 'toggleStatus'])->name('team.toggle-status');
+
+            // 8. Contact Page Management
+            Route::get('contact', [AdminAsdreamsContactController::class, 'index'])->name('contact.index');
+            Route::post('contact', [AdminAsdreamsContactController::class, 'update'])->name('contact.update');
+
+            // 9. Enquiry Management (Offer & Contact)
+            Route::get('enquiries', [AdminAsdreamsEnquiryController::class, 'index'])->name('enquiries.index');
+            Route::get('enquiries/offers/{enquiry}', [AdminAsdreamsEnquiryController::class, 'showOffer'])->name('enquiries.show-offer');
+            Route::put('enquiries/offers/{enquiry}', [AdminAsdreamsEnquiryController::class, 'updateOfferStatus'])->name('enquiries.update-offer-status');
+            Route::delete('enquiries/offers/{enquiry}', [AdminAsdreamsEnquiryController::class, 'destroyOffer'])->name('enquiries.destroy-offer');
+            Route::get('enquiries/contact/{enquiry}', [AdminAsdreamsEnquiryController::class, 'showContact'])->name('enquiries.show-contact');
+            Route::put('enquiries/contact/{enquiry}', [AdminAsdreamsEnquiryController::class, 'updateContactStatus'])->name('enquiries.update-contact-status');
+            Route::delete('enquiries/contact/{enquiry}', [AdminAsdreamsEnquiryController::class, 'destroyContact'])->name('enquiries.destroy-contact');
+
+            // 10. Shoot Booking Management
+            Route::get('shoot-bookings', [AdminAsdreamsShootBookingController::class, 'index'])->name('shoot-bookings.index');
+            Route::get('shoot-bookings/{booking}', [AdminAsdreamsShootBookingController::class, 'show'])->name('shoot-bookings.show');
+            Route::match(['put', 'patch'], 'shoot-bookings/{booking}', [AdminAsdreamsShootBookingController::class, 'updateStatus'])->name('shoot-bookings.update-status');
+            Route::match(['put', 'patch'], 'shoot-bookings/{booking}/status', [AdminAsdreamsShootBookingController::class, 'updateStatus'])->name('shoot-bookings.status');
+            Route::delete('shoot-bookings/{booking}', [AdminAsdreamsShootBookingController::class, 'destroy'])->name('shoot-bookings.destroy');
+
+            // 11. Studio Booking Enquiries
+            Route::get('studio-bookings', [AdminAsdreamsStudioBookingController::class, 'index'])->name('studio-bookings.index');
+            Route::get('studio-bookings/{booking}', [AdminAsdreamsStudioBookingController::class, 'show'])->name('studio-bookings.show');
+            Route::match(['put', 'patch'], 'studio-bookings/{booking}', [AdminAsdreamsStudioBookingController::class, 'updateStatus'])->name('studio-bookings.update-status');
+            Route::match(['put', 'patch'], 'studio-bookings/{booking}/status', [AdminAsdreamsStudioBookingController::class, 'updateStatus'])->name('studio-bookings.status');
+            Route::delete('studio-bookings/{booking}', [AdminAsdreamsStudioBookingController::class, 'destroy'])->name('studio-bookings.destroy');
+
+            // 12. Our Clients Management
+            Route::resource('clients', AdminAsdreamsClientController::class)->except(['show']);
+            Route::post('clients/{client}/toggle-status', [AdminAsdreamsClientController::class, 'toggleStatus'])->name('clients.toggle-status');
+            Route::post('clients/{client}/set-featured', [AdminAsdreamsClientController::class, 'setFeatured'])->name('clients.set-featured');
+
+            // 13. Moving Client Logos Management
+            Route::resource('moving-logos', AdminAsdreamsMovingLogoController::class)->except(['show']);
+            Route::post('moving-logos/{movingLogo}/toggle-status', [AdminAsdreamsMovingLogoController::class, 'toggleStatus'])->name('moving-logos.toggle-status');
+
+            // 14. Website Settings
+            Route::get('settings', [AdminAsdreamsSettingController::class, 'index'])->name('settings.index');
+            Route::post('settings', [AdminAsdreamsSettingController::class, 'update'])->name('settings.update');
+        });
     });
 });
 
@@ -340,12 +448,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
 // IDFR Core Pages
 Route::redirect('/home', '/');
 Route::redirect('/index.html', '/');
-Route::redirect('/idfr_about.html', '/about');
-Route::redirect('/idfr_models.html', '/models');
-Route::redirect('/professionals.html', '/professionals');
-Route::redirect('/idfr_gallery.html', '/gallery');
-Route::redirect('/idfr_contact.html', '/contact');
-Route::redirect('/ticket_booking.html', '/tickets');
+Route::redirect('/idfr_about.html', '/idfr/about');
+Route::redirect('/idfr_models.html', '/idfr/models');
+Route::redirect('/professionals.html', '/idfr/professionals');
+Route::redirect('/idfr_gallery.html', '/idfr/gallery');
+Route::redirect('/idfr_contact.html', '/idfr/contact');
+Route::redirect('/ticket_booking.html', '/idfr/tickets');
+
+// Backward compatibility redirects for previous root-level IDFR paths:
+Route::redirect('/models', '/idfr/models');
+Route::redirect('/professionals', '/idfr/professionals');
+Route::redirect('/tickets', '/idfr/tickets');
+Route::redirect('/about', '/idfr/about');
+Route::redirect('/gallery', '/idfr/gallery');
+Route::redirect('/contact', '/idfr/contact');
 
 // ASDreamStudio Pages
 Route::redirect('/asdreams.html', '/asdreams');
@@ -354,7 +470,7 @@ Route::redirect('/asd_gallery.html', '/asdreams/gallery');
 Route::redirect('/asd_contact.html', '/asdreams/contact');
 Route::redirect('/team_members.html', '/asdreams/team');
 Route::redirect('/team', '/asdreams/team');
-Route::redirect('/offer_details.html', '/asdreams/contact');
+Route::redirect('/offer_details.html', '/asdreams/offers');
 Route::redirect('/contact_brand.html', '/asdreams/contact');
 
 // Creative Profiles Pages

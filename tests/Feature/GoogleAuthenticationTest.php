@@ -63,7 +63,7 @@ class GoogleAuthenticationTest extends TestCase
 
         $response = $this->get(route('auth.google.callback'));
 
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('idfr.home'));
         $response->assertSessionHas('status', 'Welcome back, Priya Nair!');
 
         // Check authentication
@@ -179,7 +179,7 @@ class GoogleAuthenticationTest extends TestCase
 
         $response = $this->get(route('auth.google.callback'));
 
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('idfr.home'));
         $this->assertTrue(Auth::guard('web')->check());
         $this->assertSame($user->id, Auth::guard('web')->id());
 

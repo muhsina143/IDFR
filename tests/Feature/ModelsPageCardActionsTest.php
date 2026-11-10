@@ -45,7 +45,7 @@ class ModelsPageCardActionsTest extends TestCase
      */
     public function test_models_page_structure(): void
     {
-        $response = $this->get('/models');
+        $response = $this->get(route('idfr.models'));
         $response->assertStatus(200);
 
         // Container and dynamic template exist
@@ -94,10 +94,10 @@ class ModelsPageCardActionsTest extends TestCase
      */
     public function test_contact_page_and_navigation_remain_untouched(): void
     {
-        $response = $this->get('/contact');
+        $response = $this->get(route('idfr.contact'));
         $response->assertStatus(200);
 
-        $modelsResponse = $this->get('/models');
+        $modelsResponse = $this->get(route('idfr.models'));
         $modelsResponse->assertStatus(200);
         $modelsResponse->assertSee('Contact', false);
     }

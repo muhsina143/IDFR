@@ -320,7 +320,7 @@ class ForgotPasswordTest extends TestCase
         Socialite::shouldReceive('driver')->with('google')->andReturn($provider);
 
         $response = $this->get(route('auth.google.callback'));
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('idfr.home'));
         $this->assertTrue(Auth::guard('web')->check());
         $this->assertSame($user->id, Auth::guard('web')->id());
     }

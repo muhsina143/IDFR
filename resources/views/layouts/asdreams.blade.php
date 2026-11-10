@@ -4,13 +4,15 @@
 @section('favicon', asset('images/asdreams/asd-logo.png'))
 
 @section('head_scripts')
+@if(request()->routeIs('landing') || (request()->routeIs('asd.home') && !request()->filled('brand') && !request()->routeIs('asd.offers.*')))
 <script>
   try {
-    if (!sessionStorage.getItem("idfrSkipBrandsPop")) {
+    if (!sessionStorage.getItem("idfrSkipBrandsPop") && location.pathname !== '/asdreams') {
       document.documentElement.classList.add("brands-pop-first");
     }
   } catch (_) {}
 </script>
+@endif
 @endsection
 
 @section('preloader')
@@ -24,9 +26,13 @@
 @endsection
 
 @section('layout_content')
-  @include('partials.asd-header')
+  @unless(View::hasSection('no_header') || request()->routeIs('asd.offers.*') || request()->filled('brand'))
+    @include('partials.asd-header')
+  @endunless
   @yield('content')
-  @include('partials.asd-footer')
+  @unless(View::hasSection('no_footer') || request()->filled('brand'))
+    @include('partials.asd-footer')
+  @endunless
 @endsection
 
 @section('extra_modals')

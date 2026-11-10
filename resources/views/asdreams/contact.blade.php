@@ -57,18 +57,19 @@
                   <div class="asd-contact__body">
                     <h3 class="asd-contact__label">Studio Address</h3>
                     <address class="asd-contact__value">
-                      ASDreamStudio, 2nd Floor, Mavoor Road,<br />
-                      Kozhikode, Kerala 673004, India
+                      {!! nl2br(e($contact->studio_address)) !!}
                     </address>
-                    <a
-                      class="text-link asd-contact__link"
-                      href="https://www.google.com/maps/search/?api=1&amp;query=Mavoor+Road+Kozhikode+Kerala"
-                      target="_blank"
-                      rel="noopener"
-                      ><span>Get Directions</span
-                      ><svg class="icon" aria-hidden="true">
-                        <use href="#i-arrow-right" /></svg
-                    ></a>
+                    @if($contact->maps_url)
+                      <a
+                        class="text-link asd-contact__link"
+                        href="{{ $contact->maps_url }}"
+                        target="_blank"
+                        rel="noopener"
+                        ><span>Get Directions</span
+                        ><svg class="icon" aria-hidden="true">
+                          <use href="#i-arrow-right" /></svg
+                      ></a>
+                    @endif
                   </div>
                 </li>
 
@@ -79,16 +80,18 @@
                   ></span>
                   <div class="asd-contact__body">
                     <h3 class="asd-contact__label">Phone</h3>
-                    <p class="asd-contact__value">
-                      <span class="asd-contact__sub">Studio</span>
-                      <a href="tel:+919876500123">+91 98765 00123</a>
-                    </p>
-                    <p class="asd-contact__value">
-                      <span class="asd-contact__sub"
-                        >Bookings &amp; WhatsApp</span
-                      >
-                      <a href="tel:+919847000456">+91 98470 00456</a>
-                    </p>
+                    @if($contact->studio_phone)
+                      <p class="asd-contact__value">
+                        <span class="asd-contact__sub">Studio</span>
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact->studio_phone) }}">{{ $contact->studio_phone }}</a>
+                      </p>
+                    @endif
+                    @if($contact->bookings_phone)
+                      <p class="asd-contact__value">
+                        <span class="asd-contact__sub">Bookings &amp; WhatsApp</span>
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $contact->bookings_phone) }}">{{ $contact->bookings_phone }}</a>
+                      </p>
+                    @endif
                   </div>
                 </li>
 
@@ -99,18 +102,18 @@
                   ></span>
                   <div class="asd-contact__body">
                     <h3 class="asd-contact__label">Email</h3>
-                    <p class="asd-contact__value">
-                      <span class="asd-contact__sub">General</span>
-                      <a href="mailto:hello@asdreamstudio.example"
-                        >hello@asdreamstudio.example</a
-                      >
-                    </p>
-                    <p class="asd-contact__value">
-                      <span class="asd-contact__sub">Bookings</span>
-                      <a href="mailto:bookings@asdreamstudio.example"
-                        >bookings@asdreamstudio.example</a
-                      >
-                    </p>
+                    @if($contact->general_email)
+                      <p class="asd-contact__value">
+                        <span class="asd-contact__sub">General</span>
+                        <a href="mailto:{{ $contact->general_email }}">{{ $contact->general_email }}</a>
+                      </p>
+                    @endif
+                    @if($contact->bookings_email)
+                      <p class="asd-contact__value">
+                        <span class="asd-contact__sub">Bookings</span>
+                        <a href="mailto:{{ $contact->bookings_email }}">{{ $contact->bookings_email }}</a>
+                      </p>
+                    @endif
                   </div>
                 </li>
 
@@ -122,27 +125,22 @@
                   <div class="asd-contact__body">
                     <h3 class="asd-contact__label">Working Hours</h3>
                     <dl class="asd-contact__hours">
-                      <div>
-                        <dt>Monday – Friday</dt>
-                        <dd>10:00 AM – 7:00 PM</dd>
-                      </div>
-                      <div>
-                        <dt>Saturday</dt>
-                        <dd>10:00 AM – 5:00 PM</dd>
-                      </div>
-                      <div>
-                        <dt>Sunday</dt>
-                        <dd>By appointment</dd>
-                      </div>
+                      @foreach($contact->working_hours ?? [] as $wh)
+                        <div>
+                          <dt>{{ $wh['days'] ?? '' }}</dt>
+                          <dd>{{ $wh['hours'] ?? '' }}</dd>
+                        </div>
+                      @endforeach
                     </dl>
                   </div>
                 </li>
               </ul>
 
-              <p class="asd-contact__note">
-                On-location shoots run seven days a week, including sunrise and
-                late-night sessions.
-              </p>
+              @if($contact->note)
+                <p class="asd-contact__note">
+                  {{ $contact->note }}
+                </p>
+              @endif
             </section>
 
             <section
@@ -160,7 +158,24 @@
                 required.
               </p>
 
-              <form class="profile-form" id="asdEnquiryForm" novalidate>
+              @if(session('success'))
+                <div class="alert alert--success" style="background: rgba(52, 168, 83, 0.15); border: 1px solid rgba(52, 168, 83, 0.4); color: #70e090; padding: 1rem 1.25rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                  {{ session('success') }}
+                </div>
+              @endif
+
+              @if($errors->any())
+                <div class="alert alert--error" style="background: rgba(234, 67, 53, 0.15); border: 1px solid rgba(234, 67, 53, 0.4); color: #ff8080; padding: 1rem 1.25rem; border-radius: 4px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                  <ul style="margin: 0; padding-left: 1.25rem;">
+                    @foreach($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </div>
+              @endif
+
+              <form class="profile-form" id="asdEnquiryForm" method="POST" action="{{ route('asd.contact.enquire') }}" novalidate>
+                @csrf
                 <div class="field">
                   <label for="enqName"
                     >Name <span aria-hidden="true">*</span></label
@@ -173,8 +188,11 @@
                     required
                     minlength="2"
                     placeholder="Your full name"
+                    value="{{ old('name') }}"
                   />
-                  <span class="field__error" aria-live="polite"></span>
+                  <span class="field__error" aria-live="polite">
+                    @error('name') {{ $message }} @enderror
+                  </span>
                 </div>
 
                 <div class="field">
@@ -187,10 +205,13 @@
                     name="phone"
                     autocomplete="tel"
                     required
-                    pattern="[0-9+\s\-]{8,16}"
+                    pattern="[0-9+\s\-]{8,25}"
                     placeholder="+91 98765 43210"
+                    value="{{ old('phone') }}"
                   />
-                  <span class="field__error" aria-live="polite"></span>
+                  <span class="field__error" aria-live="polite">
+                    @error('phone') {{ $message }} @enderror
+                  </span>
                 </div>
 
                 <div class="field">
@@ -204,8 +225,11 @@
                     name="email"
                     autocomplete="email"
                     placeholder="you@example.com"
+                    value="{{ old('email') }}"
                   />
-                  <span class="field__error" aria-live="polite"></span>
+                  <span class="field__error" aria-live="polite">
+                    @error('email') {{ $message }} @enderror
+                  </span>
                 </div>
 
                 <div class="field">
@@ -218,20 +242,26 @@
                     name="subject"
                     maxlength="120"
                     placeholder="e.g. Wedding film, December 2026"
+                    value="{{ old('subject') }}"
                   />
-                  <span class="field__error" aria-live="polite"></span>
+                  <span class="field__error" aria-live="polite">
+                    @error('subject') {{ $message }} @enderror
+                  </span>
                 </div>
 
                 <div class="field profile-form__full">
-                  <label for="enqMessage">Message</label>
+                  <label for="enqMessage">Message <span aria-hidden="true">*</span></label>
                   <textarea
                     id="enqMessage"
                     name="message"
                     rows="5"
-                    maxlength="1000"
+                    maxlength="1500"
+                    required
                     placeholder="Tell us about your date, location and the story you want to tell"
-                  ></textarea>
-                  <span class="field__error" aria-live="polite"></span>
+                  >{{ old('message') }}</textarea>
+                  <span class="field__error" aria-live="polite">
+                    @error('message') {{ $message }} @enderror
+                  </span>
                 </div>
 
                 <div class="profile-form__actions profile-form__full">

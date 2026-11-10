@@ -76,7 +76,12 @@
           </ul>
         </div> -->
         <div class="footer__col footer__brand">
-          <a href="{{ route('asd.home') }}#home" class="footer__logo" aria-label="IDFR — back to home" data-skip-brands-pop>
+          <a
+            href="{{ route('asd.home') }}#home"
+            class="footer__logo"
+            aria-label="IDFR — back to home"
+            data-skip-brands-pop
+          >
             <img
               src="{{ asset('images/asdreams/asd-logo.png') }}"
               alt="ASDreamStudio"
@@ -149,12 +154,12 @@
               >
             </li>
             <li>
-              <a href="#modelling-academy" data-program="modelling-academy"
+              <a href="{{ route('asd.contact', ['brand' => 'athuls']) }}"
                 >Modelling Academy</a
               >
             </li>
             <li>
-              <a href="#lakme-academy" data-program="lakme-academy"
+              <a href="{{ route('asd.contact', ['brand' => 'lakme']) }}"
                 >Lakme Academy</a
               >
             </li>
@@ -185,6 +190,7 @@
 
       <div class="container footer__bottom">
         <span class="footer__divider" aria-hidden="true"></span>
+        
         <div class="footer__bottom-row">
           <p>
             &copy; <span id="year">2026</span> IDFR. All Rights Reserved|
@@ -201,9 +207,3 @@
         </div>
       </div>
     </footer>
-
-    <button class="to-top" type="button" id="toTop" aria-label="Back to top">
-      <svg class="icon" aria-hidden="true">
-        <use href="#i-arrow-up" />
-      </svg>
-    </button>

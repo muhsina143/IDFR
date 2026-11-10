@@ -61,7 +61,7 @@ class AdminRegistrationAndProfileTest extends TestCase
         $resModel = $this->actingAs($admin, 'admin')->get(route('admin.registrations.show', $modelUser));
         $resModel->assertOk();
         $resModel->assertSee('Pooja Hegde');
-        $resModel->assertSee('Model Portfolio');
+        $resModel->assertSee('Fashion Model Profile');
     }
 
     /**

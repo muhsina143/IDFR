@@ -1,6 +1,6 @@
 <header class="site-header" id="siteHeader">
       <nav class="nav" aria-label="Primary">
-        <a class="nav__logo" href="{{ route('asd.home') }}" aria-label="IDFR — back to home">
+        <a class="nav__logo" href="{{ url('/') }}" aria-label="IDFR — back to home">
           <img
             src="{{ asset('images/logo/idfr-logo.png') }}"
             alt="IDFR"

@@ -185,18 +185,16 @@
                 loading="lazy"
               />
               <div class="asd-brand__body">
-                <div class="asd-brand__logo asd-brand__logo--wide">
+                <div class="asd-brand__logo asd-brand__logo--idfr">
                   <img
-                    src="{{ asset('images/logo/idfr-mark.png') }}"
-                    alt="IDFR"
-                    width="474"
-                    height="220"
+                    src="{{ asset('images/logo/idfr-logo.png') }}"
+                    alt="IDFR — Indian Designer Fashion Runway"
+                    width="487"
+                    height="413"
                     loading="lazy"
                   />
                 </div>
-                <h3 class="asd-brand__name asd-brand__name--caps">
-                  Indian Designer Fashion Runway
-                </h3>
+                <h3 class="visually-hidden">Indian Designer Fashion Runway</h3>
                 <span class="asd-brand__rule" aria-hidden="true"></span>
                 <ul class="asd-brand__tags">
                   <li>Designers</li>
@@ -227,16 +225,16 @@
                 loading="lazy"
               />
               <div class="asd-brand__body">
-                <div class="asd-brand__logo">
+                <div class="asd-brand__logo asd-brand__logo--lg">
                   <img
-                    src="{{ asset('images/asdreams/brands/athuls-academy-logo.png') }}"
-                    alt=""
-                    width="110"
-                    height="177"
+                    src="{{ asset('images/asdreams/brands/at1_new.png') }}"
+                    alt="Athul’s Academy"
+                    width="1080"
+                    height="1080"
                     loading="lazy"
                   />
                 </div>
-                <h3 class="asd-brand__name">Athul’s Academy</h3>
+                <h3 class="visually-hidden">Athul’s Academy</h3>
                 <p class="asd-brand__tagline">Modelling &amp; Grooming</p>
                 <span class="asd-brand__rule" aria-hidden="true"></span>
                 <ul class="asd-brand__tags">
@@ -248,9 +246,7 @@
                 </ul>
                 <a
                   class="btn btn--ghost btn--sm asd-brand__btn"
-                  href="https://athulsacademy.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="{{ route('asd.contact', ['brand' => 'athuls']) }}"
                   aria-label="Explore Athul’s Academy"
                   ><span>Explore</span
                   ><svg class="icon" aria-hidden="true">
@@ -269,22 +265,14 @@
                 loading="lazy"
               />
               <div class="asd-brand__body">
-                <div class="asd-brand__logo">
-                  <span
-                    class="asd-lakme"
-                    role="img"
-                    aria-label="Lakmé Academy, Vidyaranyapura"
-                  >
-                    <span class="asd-lakme__word" aria-hidden="true"
-                      >Lakmé</span
-                    >
-                    <span class="asd-lakme__sub" aria-hidden="true"
-                      >Academy</span
-                    >
-                    <span class="asd-lakme__place" aria-hidden="true"
-                      >Vidyaranyapura</span
-                    >
-                  </span>
+                <div class="asd-brand__logo asd-brand__logo--lg">
+                  <img
+                    src="{{ asset('images/asdreams/brands/lak1_new.png') }}"
+                    alt="Lakmé Academy, Vidyaranyapura"
+                    width="864"
+                    height="525"
+                    loading="lazy"
+                  />
                 </div>
                 <h3 class="visually-hidden">Lakmé Academy</h3>
                 <p class="asd-brand__tagline">
@@ -299,9 +287,7 @@
                 </ul>
                 <a
                   class="btn btn--ghost btn--sm asd-brand__btn"
-                  href="https://www.lakme-academy.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="{{ route('asd.contact', ['brand' => 'lakme']) }}"
                   aria-label="Explore Lakmé Academy"
                   ><span>Explore</span
                   ><svg class="icon" aria-hidden="true">
@@ -792,12 +778,17 @@
         </div>
       </section>
 
+      @if($clients->isNotEmpty() || $movingLogos->isNotEmpty())
       <!-- ============ CLIENTS ============ -->
       <section
         class="section section--light clients"
         id="clients"
         aria-labelledby="clientsTitle"
       >
+        @if($clients->isNotEmpty())
+        @php
+          $initialClient = $clients->firstWhere('is_featured', true) ?? $clients->first();
+        @endphp
         <div class="container">
           <div class="section-head">
             <div>
@@ -829,8 +820,8 @@
                 <img
                   class="photo"
                   id="clientFeatureImg"
-                  src="{{ asset('images/clients/client-featured.jpg') }}"
-                  alt=""
+                  src="{{ $initialClient->featured_image_url }}"
+                  alt="{{ $initialClient->name }} campaign"
                   loading="lazy"
                   width="1000"
                   height="1250"
@@ -853,19 +844,19 @@
             ></div>
           </div>
         </div>
+        @endif
+        @if($movingLogos->isNotEmpty())
         <div class="logo-strip" aria-hidden="true">
           <div class="logo-strip__track" id="clientStrip"></div>
         </div>
+        @endif
       </section>
+      @endif
     </main>
 @endsection
-@section('page_content_templates')
-<!-- ============ PAGE CONTENT ============
-         Content for the sections built by js/script.js. <template> content is not displayed;
-         the script reads it and renders each section. Edit text, images and options here. -->
 
-    <!-- Hero capture slider (#asdSlides): one figure per slide. figcaption = caption title, data-meta = caption line. -->
-    <template id="asdHeroData">
+@section('page_content_templates')
+<template id="asdHeroData">
       <figure data-meta="Portrait Session · Kozhikode">
         <img
           src="{{ asset('images/asdreams/hero-01.jpg') }}"
@@ -1323,7 +1314,7 @@
         </div>
       </div>
       <div class="info__actions">
-        <a class="btn btn--gold" href="{{ route('idfr.tickets') }}"
+        <a class="btn btn--gold" href="ticket_booking.html"
           ><span>Reserve Your Seat</span
           ><svg class="icon" aria-hidden="true">
             <use href="#i-arrow-right" /></svg
@@ -1564,7 +1555,7 @@
         <p>
           When you create an IDFR profile we collect the details you provide —
           such as your name, contact information, measurements and portfolio
-          images — to present your profile to verified industry partners and clients.
+          images — to present your profile to verified casting recruiters.
         </p>
         <h3>How we use it</h3>
         <p>
@@ -1592,7 +1583,7 @@
       <div class="info__text">
         <h3>Using IDFR</h3>
         <p>
-          IDFR is a marketplace that connects models with
+          IDFR is a marketplace that connects models with casting recruiters,
           brands and fashion shows. Members agree to provide accurate
           information and to conduct themselves professionally.
         </p>
@@ -1604,7 +1595,8 @@
         </p>
         <h3>Assignments</h3>
         <p>
-          Assignments are agreed directly between models and clients. IDFR is not party to individual contracts.
+          Assignments are agreed directly between models and recruiters. IDFR
+          verifies recruiters but is not party to individual contracts.
         </p>
       </div>
       <div class="info__actions">
@@ -1743,144 +1735,46 @@
       </div>
     </template>
 
-
-    <!-- Clients (#clientsGrid + featured testimonial). The logo strip shows every client, then every sponsor except the title sponsor. -->
+    <!-- Clients (#clientsGrid + featured testimonial) -->
     <template id="clientsData">
-      <article>
-        <h3>Maison Kerala</h3>
-        <p data-industry>Couture House</p>
-        <img src="{{ asset('images/clients/client-featured.jpg') }}" alt="" />
+      @foreach($clients as $client)
+      <article data-featured="{{ $client->is_featured ? 'true' : 'false' }}">
+        <h3>{{ $client->name }}</h3>
+        <p data-industry>{{ $client->category ?: 'Client' }}</p>
+        <img src="{{ $client->featured_image_url }}" alt="{{ $client->name }}" />
         <span
-          data-logo="arch"
-          data-mark="M"
-          data-word="MAISON"
-          data-sub="KERALA"
+          @if($client->logo_url)
+          data-logo="image"
+          data-src="{{ $client->logo_url }}"
+          @else
+          data-logo="{{ $client->logo_style ?: 'arch' }}"
+          data-mark="{{ $client->logo_mark ?: strtoupper(substr($client->name, 0, 1)) }}"
+          data-word="{{ $client->logo_word ?: strtoupper($client->name) }}"
+          data-sub="{{ $client->logo_sub ?: '' }}"
+          @endif
         ></span>
-        <blockquote>
-          IDFR helped us cast our entire festive campaign in a single week. The
-          talent was professional, prepared and camera-ready.
-        </blockquote>
-        <p data-person>Neha Varghese</p>
-        <p data-role>Creative Director</p>
+        <blockquote>{{ $client->description }}</blockquote>
+        <p data-person>{{ $client->author_name }}</p>
+        <p data-role>{{ $client->author_role }}</p>
       </article>
-      <article>
-        <h3>Vasa Bridal</h3>
-        <p data-industry>Bridal Wear</p>
-        <img src="{{ asset('images/clients/client-01.jpg') }}" alt="" />
-        <span
-          data-logo="diamond"
-          data-mark="V"
-          data-word="VASA"
-          data-sub="BRIDAL"
-        ></span>
-        <blockquote>
-          Every bride in our lookbook was an IDFR model. Their portfolios made
-          shortlisting effortless.
-        </blockquote>
-        <p data-person>Lakshmi Prasad</p>
-        <p data-role>Founder</p>
-      </article>
-      <article>
-        <h3>Urban Thread</h3>
-        <p data-industry>Streetwear</p>
-        <img src="{{ asset('images/clients/client-02.jpg') }}" alt="" />
-        <span
-          data-logo="bars"
-          data-mark="U"
-          data-word="URBAN"
-          data-sub="THREAD"
-        ></span>
-        <blockquote>
-          We found fresh, authentic faces for our youth line — exactly the
-          energy our brand needed.
-        </blockquote>
-        <p data-person>Karan Shah</p>
-        <p data-role>Brand Manager</p>
-      </article>
-      <article>
-        <h3>Lumen Magazine</h3>
-        <p data-industry>Fashion Publication</p>
-        <img src="{{ asset('images/gallery/s2-06.jpg') }}" alt="" />
-        <span
-          data-logo="circle"
-          data-mark="L"
-          data-word="LUMEN"
-          data-sub="MAGAZINE"
-        ></span>
-        <blockquote>
-          Our cover stars from IDFR consistently deliver striking editorial
-          work. It is our first stop for new faces.
-        </blockquote>
-        <p data-person>Rhea Kapoor</p>
-        <p data-role>Fashion Editor</p>
-      </article>
-      <article>
-        <h3>Prism Advertising</h3>
-        <p data-industry>Advertising Agency</p>
-        <img src="{{ asset('images/gallery/s3-04.jpg') }}" alt="" />
-        <span
-          data-logo="hex"
-          data-mark="P"
-          data-word="PRISM"
-          data-sub="ADVERTISING"
-        ></span>
-        <blockquote>
-          From TV commercials to digital films, IDFR talent has elevated
-          campaigns for our biggest accounts.
-        </blockquote>
-        <p data-person>Siddharth Rao</p>
-        <p data-role>Casting Head</p>
-      </article>
-      <article>
-        <h3>Kanji Silks</h3>
-        <p data-industry>Heritage Textiles</p>
-        <img src="{{ asset('images/partners/partner-03.jpg') }}" alt="" />
-        <span
-          data-logo="weave"
-          data-mark="K"
-          data-word="KANJI"
-          data-sub="SILKS"
-        ></span>
-        <blockquote>
-          IDFR models carry our heritage silks with grace. Their runway training
-          shows in every frame.
-        </blockquote>
-        <p data-person>Meenakshi Sundaram</p>
-        <p data-role>Managing Director</p>
-      </article>
-      <article>
-        <h3>Northstar Footwear</h3>
-        <p data-industry>Footwear</p>
-        <img src="{{ asset('images/gallery/s2-01.jpg') }}" alt="" />
-        <span
-          data-logo="star"
-          data-mark="N"
-          data-word="NORTHSTAR"
-          data-sub="FOOTWEAR"
-        ></span>
-        <blockquote>
-          Booking models through IDFR is fast and transparent. We now cast every
-          season with them.
-        </blockquote>
-        <p data-person>Imran Qureshi</p>
-        <p data-role>Marketing Lead</p>
-      </article>
-      <article>
-        <h3>Aura Cosmetics</h3>
-        <p data-industry>Beauty</p>
-        <img src="{{ asset('images/gallery/s2-03.jpg') }}" alt="" />
-        <span
-          data-logo="drop"
-          data-mark="A"
-          data-word="AURA"
-          data-sub="COSMETICS"
-        ></span>
-        <blockquote>
-          The beauty talent on IDFR is outstanding — flawless skin, great
-          expressions and total professionalism.
-        </blockquote>
-        <p data-person>Fatima Sheikh</p>
-        <p data-role>Head of Brand</p>
-      </article>
+      @endforeach
+    </template>
+
+    <!-- Moving Client Logos (#clientStrip) -->
+    <template id="movingLogosData">
+      @foreach($movingLogos as $movingLogo)
+      <span
+        data-name="{{ $movingLogo->name }}"
+        @if($movingLogo->logo_url)
+        data-logo="image"
+        data-src="{{ $movingLogo->logo_url }}"
+        @else
+        data-logo="{{ $movingLogo->logo_style ?: 'circle' }}"
+        data-mark="{{ $movingLogo->logo_mark ?: strtoupper(substr($movingLogo->name, 0, 1)) }}"
+        data-word="{{ $movingLogo->logo_word ?: strtoupper($movingLogo->name) }}"
+        data-sub="{{ $movingLogo->logo_sub ?: '' }}"
+        @endif
+      ></span>
+      @endforeach
     </template>
 @endsection

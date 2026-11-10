@@ -119,7 +119,7 @@ class ModelProfileModalTypeTest extends TestCase
         ]);
 
         // Check homepage
-        $homeResponse = $this->get('/');
+        $homeResponse = $this->get(route('idfr.home'));
         $homeResponse->assertStatus(200);
         $homeResponse->assertSee('data-types="Runway / Ramp Model,Editorial Model"', false);
         $homeResponse->assertSee('<li>Runway / Ramp Model</li>', false);
@@ -127,7 +127,7 @@ class ModelProfileModalTypeTest extends TestCase
         $homeResponse->assertDontSee('data-specialities', false);
 
         // Check models page
-        $modelsResponse = $this->get('/models');
+        $modelsResponse = $this->get(route('idfr.models'));
         $modelsResponse->assertStatus(200);
         $modelsResponse->assertSee('data-types="Runway / Ramp Model,Editorial Model"', false);
         $modelsResponse->assertSee('<li>Runway / Ramp Model</li>', false);
@@ -174,7 +174,7 @@ class ModelProfileModalTypeTest extends TestCase
      */
     public function test_pages_do_not_output_login_reminder_in_modals(): void
     {
-        foreach (['/', '/models', '/professionals', '/gallery', '/about', '/contact'] as $url) {
+        foreach (['/', '/idfr/models', '/idfr/professionals', '/idfr/gallery', '/idfr/about', '/idfr/contact'] as $url) {
             $response = $this->get($url);
             $response->assertStatus(200);
             $response->assertDontSee('Please log in to contact or enquire about this professional.', false);

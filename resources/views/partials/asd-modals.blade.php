@@ -79,6 +79,7 @@
   </div>
 </div>
 
+@if(!request()->routeIs('asd.offers.*') && !request()->filled('brand'))
 <!-- ============ OUR BRANDS WINDOW (full screen, opens when the page loads) ============ -->
 <!-- Top: banner slider (one figure and one dot per banner; keep #brandsPopTotal in step). Bottom: brand links that mirror the Explore buttons in the Brands section above -->
 <div
@@ -96,212 +97,62 @@
       aria-label="ASDreamStudio highlights"
     >
       <div class="brands-pop__slides" id="brandsPopSlides">
-        <figure
-          class="brands-pop__slide is-active"
-          role="group"
-          aria-roledescription="slide"
-          aria-label="1 of 7"
-        >
-          <img
-            class="brands-pop__img"
-            src="{{ asset('images/asdreams/hr2.png') }}"
-            alt="Photographer framing a shot through her camera"
-            width="1100"
-            height="900"
-          />
-          <figcaption>
-            <span class="brands-pop__meta"
-              >Portrait Session · Kozhikode</span
-            >
-            <span class="brands-pop__caption"
-              >Behind the <em>Viewfinder</em></span
-            >
-            <span class="brands-pop__desc"
-              >Stories, emotions and timeless moments captured through our
-              lens.</span
-            >
-            <a class="brands-pop__cta" href="{{ route('asd.contact') }}?offer=viewfinder"
-              >Offer Details
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-arrow-right" /></svg
-            ></a>
-          </figcaption>
-        </figure>
-        <figure
-          class="brands-pop__slide"
-          role="group"
-          aria-roledescription="slide"
-          aria-label="2 of 7"
-          aria-hidden="true"
-          inert
-        >
-          <img
-            class="brands-pop__img"
-            src="{{ asset('images/asdreams/hr3.png') }}"
-            alt="Vintage camera resting beside instant photo prints"
-            width="1100"
-            height="900"
-          />
-          <figcaption>
-            <span class="brands-pop__meta">Studio Archive</span>
-            <span class="brands-pop__caption"
-              >Prints &amp; <em>Polaroids</em></span
-            >
-            <span class="brands-pop__desc"
-              >Every frame printed with care: keepsakes to hold, share and
-              treasure.</span
-            >
-            <a class="brands-pop__cta" href="{{ route('asd.contact') }}?offer=polaroids"
-              >Offer Details
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-arrow-right" /></svg
-            ></a>
-          </figcaption>
-        </figure>
-        <figure
-          class="brands-pop__slide"
-          role="group"
-          aria-roledescription="slide"
-          aria-label="3 of 7"
-          aria-hidden="true"
-          inert
-        >
-          <img
-            class="brands-pop__img"
-            src="{{ asset('images/asdreams/hr4.png') }}"
-            alt="Bride and groom sharing a quiet moment"
-            width="1100"
-            height="900"
-          />
-          <figcaption>
-            <span class="brands-pop__meta">Wedding Story · Kochi</span>
-            <span class="brands-pop__caption">The First <em>Look</em></span>
-            <span class="brands-pop__desc"
-              >Quiet glances and joyful tears, documented the way you felt
-              them.</span
-            >
-            <a class="brands-pop__cta" href="{{ route('asd.contact') }}?offer=first-look"
-              >Offer Details
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-arrow-right" /></svg
-            ></a>
-          </figcaption>
-        </figure>
-        <figure
-          class="brands-pop__slide"
-          role="group"
-          aria-roledescription="slide"
-          aria-label="4 of 7"
-          aria-hidden="true"
-          inert
-        >
-          <img
-            class="brands-pop__img"
-            src="{{ asset('images/asdreams/hero-08.jpg') }}"
-            alt="Photography studio set with softboxes and a white backdrop"
-            width="1100"
-            height="900"
-          />
-          <figcaption>
-            <span class="brands-pop__meta">Fashion Editorial · Studio 01</span>
-            <span class="brands-pop__caption">Studio <em>Light</em></span>
-            <span class="brands-pop__desc"
-              >Editorial portraits and fashion campaigns shaped by light in
-              our studio.</span
-            >
-            <a class="brands-pop__cta" href="{{ route('asd.contact') }}?offer=studio-light"
-              >Offer Details
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-arrow-right" /></svg
-            ></a>
-          </figcaption>
-        </figure>
-        <figure
-          class="brands-pop__slide"
-          role="group"
-          aria-roledescription="slide"
-          aria-label="5 of 7"
-          aria-hidden="true"
-          inert
-        >
-          <img
-            class="brands-pop__img"
-            src="{{ asset('images/asdreams/hero-05.jpg') }}"
-            alt="Photographer shooting on a busy city street"
-            width="1100"
-            height="900"
-          />
-          <figcaption>
-            <span class="brands-pop__meta">Documentary · Bengaluru</span>
-            <span class="brands-pop__caption">Street <em>Frames</em></span>
-            <span class="brands-pop__desc"
-              >Honest, unposed stories found in the rhythm of the city.</span
-            >
-            <a class="brands-pop__cta" href="{{ route('asd.contact') }}?offer=street-frames"
-              >Offer Details
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-arrow-right" /></svg
-            ></a>
-          </figcaption>
-        </figure>
-        <figure
-          class="brands-pop__slide"
-          role="group"
-          aria-roledescription="slide"
-          aria-label="6 of 7"
-          aria-hidden="true"
-          inert
-        >
-          <img
-            class="brands-pop__img"
-            src="{{ asset('images/asdreams/hr5.png') }}"
-            alt="Wedding couple embracing outdoors"
-            width="1100"
-            height="900"
-          />
-          <figcaption>
-            <span class="brands-pop__meta">Wedding · Munnar</span>
-            <span class="brands-pop__caption">Golden <em>Vows</em></span>
-            <span class="brands-pop__desc"
-              >Weddings told with warmth, from the first ritual to the last
-              dance.</span
-            >
-            <a class="brands-pop__cta" href="{{ route('asd.contact') }}?offer=golden-vows"
-              >Offer Details
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-arrow-right" /></svg
-            ></a>
-          </figcaption>
-        </figure>
-        <figure
-          class="brands-pop__slide"
-          role="group"
-          aria-roledescription="slide"
-          aria-label="7 of 7"
-          aria-hidden="true"
-          inert
-        >
-          <img
-            class="brands-pop__img"
-            src="{{ asset('images/asdreams/hero-07.jpg') }}"
-            alt="Photographer on a mountain peak above a sea of clouds"
-            width="1100"
-            height="900"
-          />
-          <figcaption>
-            <span class="brands-pop__meta">Destination · Wayanad</span>
-            <span class="brands-pop__caption">Above the <em>Clouds</em></span>
-            <span class="brands-pop__desc"
-              >Destination shoots that travel wherever your story takes
-              us.</span
-            >
-            <a class="brands-pop__cta" href="{{ route('asd.contact') }}?offer=above-clouds"
-              >Offer Details
-              <svg class="icon" aria-hidden="true">
-                <use href="#i-arrow-right" /></svg
-            ></a>
-          </figcaption>
-        </figure>
+        @forelse($asdBanners ?? [] as $bIndex => $banner)
+          @php
+            $isFirst = $loop->first;
+            $highlight = $banner->highlight_title;
+            $mainTitle = $banner->title;
+            if ($highlight && str_contains($mainTitle, $highlight)) {
+              $titleHtml = str_replace($highlight, '<em>' . e($highlight) . '</em>', e($mainTitle));
+            } else {
+              $titleHtml = e($mainTitle) . ($highlight ? ' <em>' . e($highlight) . '</em>' : '');
+            }
+            $offerUrl = $banner->offer_url;
+          @endphp
+          <figure
+            class="brands-pop__slide {{ $isFirst ? 'is-active' : '' }}"
+            role="group"
+            aria-roledescription="slide"
+            aria-label="{{ $loop->iteration }} of {{ count($asdBanners) }}"
+            {!! $isFirst ? '' : 'aria-hidden="true" inert' !!}
+          >
+            <img
+              class="brands-pop__img"
+              src="{{ $banner->image_url }}"
+              alt="{{ $banner->alt_text ?? $banner->title }}"
+              width="1100"
+              height="900"
+            />
+            <figcaption>
+              @if($banner->label)
+                <span class="brands-pop__meta">{{ $banner->label }}</span>
+              @endif
+              <span class="brands-pop__caption">{!! $titleHtml !!}</span>
+              @if($banner->description)
+                <span class="brands-pop__desc">{{ $banner->description }}</span>
+              @endif
+              <a class="brands-pop__cta" href="{{ $offerUrl }}">
+                {{ $banner->button_text ?: 'Offer Details' }}
+                <svg class="icon" aria-hidden="true">
+                  <use href="#i-arrow-right" />
+                </svg>
+              </a>
+            </figcaption>
+          </figure>
+        @empty
+          <figure class="brands-pop__slide is-active" role="group" aria-roledescription="slide" aria-label="1 of 1">
+            <img class="brands-pop__img" src="{{ asset('images/asdreams/hr2.png') }}" alt="Behind the Viewfinder" width="1100" height="900" />
+            <figcaption>
+              <span class="brands-pop__meta">Portrait Session · Kozhikode</span>
+              <span class="brands-pop__caption">Behind the <em>Viewfinder</em></span>
+              <span class="brands-pop__desc">Stories, emotions and timeless moments captured through our lens.</span>
+              <a class="brands-pop__cta" href="{{ route('asd.offers.index') }}">
+                Offer Details
+                <svg class="icon" aria-hidden="true"><use href="#i-arrow-right" /></svg>
+              </a>
+            </figcaption>
+          </figure>
+        @endforelse
       </div>
       <button
         class="asd-hero__arrow brands-pop__arrow brands-pop__arrow--prev"
@@ -326,53 +177,9 @@
       <div class="brands-pop__pager">
         <p class="brands-pop__count" aria-hidden="true">
           <span id="brandsPopCurrent">01</span> /
-          <span id="brandsPopTotal">07</span>
+          <span id="brandsPopTotal">{{ sprintf('%02d', max(1, count($asdBanners ?? []))) }}</span>
         </p>
-        <div class="brands-pop__dots" id="brandsPopDots">
-          <button
-            class="brands-pop__dot"
-            type="button"
-            data-banner-dot="0"
-            aria-label="Show banner 1: Behind the Viewfinder"
-            aria-current="true"
-          ></button>
-          <button
-            class="brands-pop__dot"
-            type="button"
-            data-banner-dot="1"
-            aria-label="Show banner 2: Prints &amp; Polaroids"
-          ></button>
-          <button
-            class="brands-pop__dot"
-            type="button"
-            data-banner-dot="2"
-            aria-label="Show banner 3: The First Look"
-          ></button>
-          <button
-            class="brands-pop__dot"
-            type="button"
-            data-banner-dot="3"
-            aria-label="Show banner 4: Studio Light"
-          ></button>
-          <button
-            class="brands-pop__dot"
-            type="button"
-            data-banner-dot="4"
-            aria-label="Show banner 5: Street Frames"
-          ></button>
-          <button
-            class="brands-pop__dot"
-            type="button"
-            data-banner-dot="5"
-            aria-label="Show banner 6: Golden Vows"
-          ></button>
-          <button
-            class="brands-pop__dot"
-            type="button"
-            data-banner-dot="6"
-            aria-label="Show banner 7: Above the Clouds"
-          ></button>
-        </div>
+        <div class="brands-pop__dots" id="brandsPopDots" style="display: none;" hidden></div>
       </div>
       <p
         class="visually-hidden"
@@ -381,69 +188,6 @@
       ></p>
     </section>
     <section class="brands-pop__brands">
-      <!-- Golden smoke & silks -->
-      <div class="brands-pop__smoke" aria-hidden="true">
-        <svg
-          class="brands-pop__smoke-silk brands-pop__smoke-silk--left"
-          viewBox="0 -70 1440 400"
-          preserveAspectRatio="none"
-          focusable="false"
-        >
-          <use
-            href="#brandsSilkL"
-            stroke="url(#brandsSmokeGoldL)"
-            stroke-width="3"
-            filter="url(#brandsSilkBlur)"
-            opacity="0.5"
-          />
-          <use
-            href="#brandsSilkL"
-            stroke="url(#brandsSmokeGoldL)"
-            stroke-width="0.8"
-          />
-        </svg>
-        <svg
-          class="brands-pop__smoke-silk brands-pop__smoke-silk--right"
-          viewBox="0 -70 1440 400"
-          preserveAspectRatio="none"
-          focusable="false"
-        >
-          <use
-            href="#brandsSilkR"
-            stroke="url(#brandsSmokeGoldR)"
-            stroke-width="3"
-            filter="url(#brandsSilkBlur)"
-            opacity="0.5"
-          />
-          <use
-            href="#brandsSilkR"
-            stroke="url(#brandsSmokeGoldR)"
-            stroke-width="0.8"
-          />
-        </svg>
-        <svg
-          class="brands-pop__smoke-shine"
-          viewBox="0 -70 1440 400"
-          preserveAspectRatio="none"
-          focusable="false"
-        >
-          <path
-            class="brands-pop__shine brands-pop__shine--glow"
-            d="M0 66 C 260 40 520 14 760 14 C 1000 14 1220 36 1440 54"
-            pathLength="1000"
-          />
-          <path
-            class="brands-pop__shine"
-            d="M0 66 C 260 40 520 14 760 14 C 1000 14 1220 36 1440 54"
-            pathLength="1000"
-          />
-          <path
-            class="brands-pop__shine brands-pop__shine--back"
-            d="M1440 54 C 1220 36 1000 14 760 14 C 520 14 260 40 0 66"
-            pathLength="1000"
-          />
-        </svg>
-      </div>
       <div class="brands-pop__head">
         <h2
           class="section-title brands-pop__title"
@@ -455,100 +199,60 @@
         </h2>
       </div>
       <ul class="brands-pop__grid">
-        <li class="brands-pop__item">
-          <a class="brands-pop__link" href="{{ route('asd.home') }}#home">
-            <span class="brands-pop__logo">
-              <span class="brands-pop__mark">
-                <img
-                  src="{{ asset('images/asdreams/asd-logo.png') }}"
-                  alt=""
-                  width="666"
-                  height="470"
-                />
+        @foreach($asdBrands ?? [] as $brand)
+          @php
+            $variantClass = match($brand->css_variant) {
+              'wide' => 'brands-pop__logo--wide',
+              'tall' => 'brands-pop__logo--tall',
+              'lakme' => 'brands-pop__logo--lakme',
+              default => '',
+            };
+
+            // Format brand name and subtitle consistently across all four cards
+            $brandName = $brand->name;
+            $brandTagline = $brand->tagline;
+
+            if ($brand->name === 'Indian Designer Fashion Runway' || $brand->name === 'IDFR') {
+              $brandName = 'IDFR';
+              $brandTagline = ($brand->tagline && $brand->tagline !== 'IDFR') ? $brand->tagline : 'Indian Designer Fashion Runway';
+            } elseif ($brand->name === 'Beauty & Wellness' || $brand->name === 'Lakme' || $brand->name === 'Lakmé Academy') {
+              $brandName = 'Lakme';
+              $brandTagline = ($brand->tagline && $brand->tagline !== 'Beauty & Wellness' && $brand->tagline !== 'Cosmetology & Styling') ? $brand->tagline : 'Makeup · Hair | Nails · Skin';
+            }
+
+            $linkUrl = $brand->link_url;
+            if ($brandName === 'IDFR' && ($linkUrl === '/' || empty($linkUrl) || $linkUrl === '#')) {
+              $linkUrl = route('idfr.home');
+            } elseif ($brandName === 'ASDreamStudio' && ($linkUrl === '/asdreams#home' || empty($linkUrl) || $linkUrl === '#')) {
+              $linkUrl = route('asd.home');
+            }
+          @endphp
+          <li class="brands-pop__item">
+            <a class="brands-pop__link" href="{{ $linkUrl }}" aria-label="{{ $brandName }}">
+              <span class="brands-pop__logo {{ $variantClass }}">
+                <span class="brands-pop__mark">
+                  <img
+                    src="{{ $brand->logo_url }}"
+                    alt="{{ $brandName }}"
+                    loading="lazy"
+                  />
+                </span>
+                <span class="asd-brand__name brands-pop__name">{{ $brandName }}</span>
+                @if($brandTagline)
+                  <span class="brands-pop__tag">{{ $brandTagline }}</span>
+                @endif
+                <span class="brands-pop__go" aria-hidden="true">
+                  <svg class="icon"><use href="#i-arrow-right" /></svg>
+                </span>
               </span>
-              <span class="asd-brand__name brands-pop__name"
-                ><span>AS</span>DreamStudio</span
-              >
-              <span class="brands-pop__tag"
-                >Photography &amp; Videography</span
-              >
-              <span class="brands-pop__go" aria-hidden="true">
-                <svg class="icon"><use href="#i-arrow-right" /></svg>
-              </span>
-            </span>
-          </a>
-        </li>
-        <li class="brands-pop__item">
-          <a
-            class="brands-pop__link"
-            href="{{ route('idfr.home') }}"
-            aria-label="Indian Designer Fashion Runway"
-          >
-            <span class="brands-pop__logo brands-pop__logo--wide">
-              <span class="brands-pop__mark">
-                <img
-                  src="{{ asset('images/logo/idfr-logo.png') }}"
-                  alt="IDFR — Indian Designer Fashion Runway"
-                  width="487"
-                  height="413"
-                />
-              </span>
-              <span class="brands-pop__go" aria-hidden="true">
-                <svg class="icon"><use href="#i-arrow-right" /></svg>
-              </span>
-            </span>
-          </a>
-        </li>
-        <li class="brands-pop__item">
-          <a
-            class="brands-pop__link"
-            href="{{ route('asd.contact') }}?brand=athuls"
-          >
-            <span class="brands-pop__logo brands-pop__logo--tall">
-              <span class="brands-pop__mark">
-                <img
-                  src="{{ asset('images/asdreams/brands/athuls-academy-logo.png') }}"
-                  alt=""
-                  width="901"
-                  height="906"
-                />
-              </span>
-              <span class="asd-brand__name brands-pop__name"
-                >Athul’s Academy</span
-              >
-              <span class="brands-pop__tag">Fashion &amp; Modelling</span>
-              <span class="brands-pop__go" aria-hidden="true">
-                <svg class="icon"><use href="#i-arrow-right" /></svg>
-              </span>
-            </span>
-          </a>
-        </li>
-        <li class="brands-pop__item">
-          <a
-            class="brands-pop__link"
-            href="{{ route('asd.contact') }}?brand=lakme"
-            aria-label="Lakmé Academy"
-          >
-            <span class="brands-pop__logo brands-pop__logo--lakme">
-              <span class="brands-pop__mark">
-                <img
-                  src="{{ asset('images/asdreams/brands/lakme-academy.jpg') }}"
-                  alt="Lakmé Academy, Vidyaranyapura"
-                  width="864"
-                  height="525"
-                />
-              </span>
-              <span class="brands-pop__tag">Beauty &amp; Wellness</span>
-              <span class="brands-pop__go" aria-hidden="true">
-                <svg class="icon"><use href="#i-arrow-right" /></svg>
-              </span>
-            </span>
-          </a>
-        </li>
+            </a>
+          </li>
+        @endforeach
       </ul>
     </section>
   </div>
 </div>
+@endif
 
 <!-- ============ BOOK A SHOOT MODAL ============ -->
 <div
@@ -820,16 +524,16 @@
           <label for="studioPurpose"
             >Purpose of Rental <span aria-hidden="true">*</span></label
           >
-          <select id="studioPurpose" name="purpose" required>
-            <option value="" disabled selected>Select a purpose</option>
-            <option value="Photography">Photography</option>
-            <option value="Videography">Videography</option>
-            <option value="Fashion shoot">Fashion shoot</option>
-            <option value="Commercial production">
-              Commercial production
-            </option>
-            <option value="Other">Other</option>
-          </select>
+          <input
+            type="text"
+            id="studioPurpose"
+            name="purpose"
+            required
+            minlength="2"
+            maxlength="150"
+            placeholder="e.g. Photography, Videography, Fashion shoot"
+            autocomplete="off"
+          />
           <span class="field__error" aria-live="polite"></span>
         </div>
 

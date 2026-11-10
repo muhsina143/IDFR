@@ -765,6 +765,45 @@ html:not(.js) .preloader {
   gap: 1.25rem;
 }
 
+.nav__shoot-book {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nav__shoot-book .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--black);
+}
+
+.btn--gold.nav__shoot-book:hover .icon {
+  color: var(--black);
+}
+
+.page-asd .nav__login,
+.page-asd [data-auth="login"],
+.page-asd .mobile-menu__actions [data-auth="login"],
+.page-asd .mobile-menu__actions [data-auth="register"] {
+  display: none !important;
+}
+
+.page-asd .nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.page-asd .mobile-menu__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
 .nav__login {
   display: inline-flex;
   align-items: center;
@@ -7170,8 +7209,6 @@ html.brands-pop-first .preloader__inner {
 }
 
 .brands-pop__panel {
-  /* Height of the gold wave that joins the banner to the brands */
-  --wave-h: clamp(40px, 8vh, 96px);
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -7255,7 +7292,7 @@ html.brands-pop-first .preloader__inner {
   position: absolute;
   z-index: 1;
   top: 0;
-  bottom: calc(var(--wave-h) * 0.6);
+  bottom: 0;
   left: clamp(4.75rem, 8vw, 8.5rem);
   right: clamp(4.25rem, 7vw, 7rem);
   display: flex;
@@ -7358,7 +7395,8 @@ html.brands-pop-first .preloader__inner {
 
 /* Gold ring arrows with a halo */
 .brands-pop__arrow {
-  top: calc(50% - var(--wave-h) * 0.3);
+  top: 50%;
+  transform: translateY(-50%);
   border-color: var(--gold);
   background: rgba(0, 0, 0, 0.45);
   transition:
@@ -7394,12 +7432,12 @@ html.brands-pop-first .preloader__inner {
   right: clamp(0.75rem, 2.5vw, 2rem);
 }
 
-/* Counter and dots, kept clear of the wave */
+/* Counter and dots */
 .brands-pop__pager {
   position: absolute;
   z-index: 2;
   right: clamp(1rem, 2.5vw, 2rem);
-  bottom: calc(var(--wave-h) * 0.62 + clamp(0.5rem, 2vh, 1.25rem));
+  bottom: clamp(1rem, 2.5vh, 1.75rem);
   display: flex;
   align-items: center;
   gap: 0.9rem;
@@ -7416,8 +7454,7 @@ html.brands-pop-first .preloader__inner {
 }
 
 .brands-pop__dots {
-  display: flex;
-  align-items: center;
+  display: none !important;
 }
 
 .brands-pop__dot {
@@ -7450,13 +7487,12 @@ html.brands-pop-first .preloader__inner {
   box-shadow: 0 0 8px var(--gold-a60);
 }
 
-/* Our Brands: four cards in a row, under a glowing gold wave */
+/* Our Brands: four cards in a row directly below the hero slider */
 .brands-pop__brands {
   position: relative;
   z-index: 2;
   flex: none;
-  /* Equal top and bottom; their sum is unchanged so the banner keeps its height */
-  --pad-y: calc((clamp(0.25rem, 1vh, 0.75rem) + clamp(1.5rem, 5vh, 3.25rem)) / 2);
+  --pad-y: clamp(1.25rem, 3vh, 2.25rem);
   padding: var(--pad-y) var(--gutter);
   background:
     radial-gradient(ellipse 42% 30% at 50% 100%,
@@ -7464,194 +7500,6 @@ html.brands-pop-first .preloader__inner {
       transparent 70%),
     var(--black);
   text-align: center;
-}
-
-.brands-pop__wave {
-  position: absolute;
-  left: 0;
-  bottom: calc(100% - 1px);
-  width: 100%;
-  height: var(--wave-h);
-  overflow: visible;
-  pointer-events: none;
-}
-
-.brands-pop__wave-fill {
-  fill: var(--black);
-}
-
-.brands-pop__wave-glow,
-.brands-pop__wave-line {
-  fill: none;
-  stroke: url(#brandsPopWaveGold);
-  vector-effect: non-scaling-stroke;
-}
-
-.brands-pop__wave-glow {
-  stroke-width: 6;
-  opacity: 0.75;
-}
-
-.brands-pop__wave-line {
-  stroke-width: 1.5;
-}
-
-/* Golden smoke around the wave: same horizontal scale as the wave, viewBox y -70–330 (the wave is y 0–140) */
-.brands-pop__smoke {
-  position: absolute;
-  left: 0;
-  top: calc(1px - var(--wave-h) * 1.5);
-  width: 100%;
-  height: calc(var(--wave-h) * 400 / 140);
-  overflow-x: clip;
-  pointer-events: none;
-}
-
-.brands-pop__smoke>svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  will-change: transform, opacity;
-}
-
-.brands-pop__smoke-haze {
-  animation: brandsSmokeDrift 14s ease-in-out infinite;
-}
-
-/* Each ribbon breathes around the point where it meets the wave line */
-.brands-pop__smoke-silk--left {
-  transform-origin: 32.6% 23.75%;
-  animation: brandsSilkLeft 9s ease-in-out infinite;
-}
-
-.brands-pop__smoke-silk--right {
-  transform-origin: 67.4% 22.25%;
-  animation: brandsSilkRight 10s ease-in-out -3s infinite;
-}
-
-/* Light gliding along the wave */
-.brands-pop__shine {
-  fill: none;
-  stroke: url(#brandsSmokeShine);
-  stroke-width: 3;
-  stroke-linecap: round;
-  stroke-dasharray: 90 910;
-  stroke-dashoffset: 90;
-  animation: brandsShine 7s cubic-bezier(0.45, 0, 0.25, 1) 1.2s infinite;
-}
-
-.brands-pop__shine--glow {
-  stroke-width: 10;
-  stroke-dasharray: 140 860;
-  stroke-opacity: 0.3;
-}
-
-.brands-pop__shine--back {
-  stroke-width: 2;
-  stroke-dasharray: 60 940;
-  stroke-opacity: 0.7;
-  animation-duration: 9s;
-  animation-delay: 4.5s;
-}
-
-/* Gold sparks drifting up out of the smoke */
-.brands-pop__sparks {
-  position: absolute;
-  inset: 0;
-}
-
-.brands-pop__sparks span {
-  position: absolute;
-  left: var(--x);
-  top: var(--y);
-  width: var(--s);
-  height: var(--s);
-  border-radius: 50%;
-  background: radial-gradient(circle, #FFF3C4 0, #F5C842 45%, rgba(245, 200, 66, 0) 72%);
-  box-shadow: 0 0 6px 1px rgba(245, 200, 66, 0.55);
-  opacity: 0;
-  animation: brandsSpark var(--d) ease-in-out var(--t) infinite;
-  will-change: transform, opacity;
-}
-
-@keyframes brandsSmokeDrift {
-
-  0%,
-  100% {
-    transform: translate3d(-1.2%, 0, 0);
-    opacity: 0.75;
-  }
-
-  50% {
-    transform: translate3d(1.2%, -3%, 0);
-    opacity: 1;
-  }
-}
-
-@keyframes brandsSilkLeft {
-
-  0%,
-  100% {
-    transform: none;
-  }
-
-  50% {
-    transform: scale(1.02, 1.1) skewX(-2deg);
-  }
-}
-
-@keyframes brandsSilkRight {
-
-  0%,
-  100% {
-    transform: none;
-  }
-
-  50% {
-    transform: scale(1.02, 1.1) skewX(2deg);
-  }
-}
-
-@keyframes brandsShine {
-  0% {
-    stroke-dashoffset: 90;
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 1;
-  }
-
-  80% {
-    opacity: 1;
-  }
-
-  100% {
-    stroke-dashoffset: -1000;
-    opacity: 0;
-  }
-}
-
-@keyframes brandsSpark {
-  0% {
-    opacity: 0;
-    transform: translate3d(0, 0, 0) scale(0.5);
-  }
-
-  25% {
-    opacity: 1;
-  }
-
-  70% {
-    opacity: 0.8;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translate3d(var(--dx), -36px, 0) scale(1);
-  }
 }
 
 .brands-pop__head {
@@ -7732,7 +7580,7 @@ html.brands-pop-first .preloader__inner {
 /* Opaque card, stacked over the next one, so each card can come out from behind the previous */
 .brands-pop__logo {
   --size: var(--sq);
-  --mark: calc(var(--sq) * 0.34);
+  --mark: calc(var(--sq) * 0.38);
   position: relative;
   z-index: var(--z, 1);
   display: flex;
@@ -7741,7 +7589,7 @@ html.brands-pop-first .preloader__inner {
   justify-content: flex-start;
   width: var(--sq);
   height: var(--sq);
-  padding: calc(var(--sq) * 0.08) calc(var(--sq) * 0.06) calc(var(--sq) * 0.07);
+  padding: calc(var(--sq) * 0.07) calc(var(--sq) * 0.06) calc(var(--sq) * 0.065);
   box-sizing: border-box;
   overflow: hidden;
   border: 1px solid var(--gold-a60);
@@ -7784,6 +7632,7 @@ html.brands-pop-first .preloader__inner {
   transition: opacity 0.5s ease;
 }
 
+/* Dedicated uniform height logo/image container for all 4 cards */
 .brands-pop__mark {
   position: relative;
   display: flex;
@@ -7799,78 +7648,51 @@ html.brands-pop-first .preloader__inner {
   width: auto;
   height: auto;
   max-height: 100%;
-  max-width: calc(var(--sq) * 0.6);
+  max-width: calc(var(--sq) * 0.62);
   object-fit: contain;
   filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.6));
   transition: transform 0.6s var(--ease-out);
 }
 
-/* IDFR Card (Card 2): logo image contains IDFR + Indian Designer + Fashion Runway */
-.brands-pop__logo--wide .brands-pop__mark {
-  height: calc(var(--sq) * 0.46);
-}
-
+/* Card 2 (IDFR): scaled with proper aspect ratio inside the uniform mark box */
 .brands-pop__logo--wide .brands-pop__mark img {
-  width: auto;
-  height: auto;
-  max-width: calc(var(--sq) * 0.62);
+  max-width: calc(var(--sq) * 0.60);
   max-height: 100%;
   object-fit: contain;
 }
 
-/* Athul's Academy (Card 3): vertical sketch logo */
+/* Card 3 (Athul's Academy): vertical sketch logo */
 .brands-pop__logo--tall .brands-pop__mark img {
   max-height: 100%;
-  max-width: calc(var(--sq) * 0.45);
+  max-width: calc(var(--sq) * 0.48);
+  object-fit: contain;
 }
 
-/* Lakmé / Beauty & Wellness (Card 4): portrait photo */
-.brands-pop__logo--lakme .brands-pop__mark {
-  height: calc(var(--sq) * 0.35);
-}
-
+/* Card 4 (Lakme): clear uncropped logo with original aspect ratio */
 .brands-pop__logo--lakme .brands-pop__mark img {
-  max-height: 100%;
-  max-width: calc(var(--sq) * 0.45);
-  border-radius: 3px;
+  max-height: 86%;
+  max-width: calc(var(--sq) * 0.62);
+  aspect-ratio: auto;
+  object-fit: contain;
+  border-radius: 0;
 }
 
-.brands-pop__logo .asd-lakme {
-  position: relative;
-  gap: calc(var(--size) * 0.02);
-  transition: transform 0.6s var(--ease-out);
-}
-
-.brands-pop__logo .asd-lakme__word {
-  font-size: calc(var(--size) * 0.13);
-}
-
-.brands-pop__logo .asd-lakme__sub {
-  font-size: calc(var(--size) * 0.056);
-}
-
-.brands-pop__logo .asd-lakme__place {
-  gap: 0.35em;
-  margin-top: 0.25em;
-  font-size: calc(var(--size) * 0.036);
-}
-
-.brands-pop__logo .asd-lakme__place::before,
-.brands-pop__logo .asd-lakme__place::after {
-  width: 1.1em;
-}
-
+/* Uniform Brand Name across all 4 cards */
 .brands-pop__name {
   position: relative;
   display: block;
+  width: 100%;
   max-width: 100%;
   margin-top: calc(var(--sq) * 0.025);
   margin-bottom: 0;
-  font-size: clamp(0.72rem, calc(var(--sq) * 0.076), 1.02rem);
+  font-size: clamp(0.72rem, calc(var(--sq) * 0.076), 0.98rem);
   font-weight: 600;
-  line-height: 1.2;
+  line-height: 1.25;
   text-align: center;
-  text-wrap: balance;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--white);
   transition: color 0.4s ease;
 }
 
@@ -7878,47 +7700,40 @@ html.brands-pop-first .preloader__inner {
   color: inherit;
 }
 
-.brands-pop__name.asd-brand__name--caps {
-  max-width: 12em;
-  font-size: clamp(0.5rem, calc(var(--sq) * 0.05), 0.7rem);
-  font-weight: 500;
-  line-height: 1.6;
-  letter-spacing: 0.16em;
-}
-
+/* Uniform Description/Subtitle across all 4 cards */
 .brands-pop__tag {
   position: relative;
   display: block;
+  width: 100%;
   max-width: 100%;
   margin-top: calc(var(--sq) * 0.015);
   margin-bottom: 0;
-  font-size: clamp(0.48rem, calc(var(--sq) * 0.038), 0.62rem);
-  letter-spacing: 0.16em;
+  font-size: clamp(0.44rem, calc(var(--sq) * 0.036), 0.56rem);
+  letter-spacing: 0.14em;
   line-height: 1.3;
   text-transform: uppercase;
   color: var(--white-70);
   text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Lakmé / Beauty & Wellness tag spacing */
-.brands-pop__logo--lakme .brands-pop__tag {
-  margin-top: calc(var(--sq) * 0.035);
-}
-
-/* Arrow button: horizontally centered and pinned to the exact bottom across all cards */
+/* Arrow button: horizontally centered with balanced, consistent spacing across all cards */
 .brands-pop__go {
   position: relative;
   display: grid;
   place-items: center;
   flex: none;
-  width: clamp(22px, calc(var(--sq) * 0.13), 28px);
-  height: clamp(22px, calc(var(--sq) * 0.13), 28px);
+  width: clamp(22px, calc(var(--sq) * 0.125), 26px);
+  height: clamp(22px, calc(var(--sq) * 0.125), 26px);
   margin-top: auto;
-  margin-bottom: 0;
+  margin-bottom: calc(var(--sq) * 0.015);
+  margin-inline: auto;
   align-self: center;
   border: 1px solid var(--gold);
   border-radius: 50%;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   color: var(--gold);
   transition:
     background-color 0.4s ease,
@@ -7964,14 +7779,6 @@ html.brands-pop-first .preloader__inner {
   outline: none;
 }
 
-.brands-pop.is-open .brands-pop__wave {
-  animation: fadeIn 1.2s ease 0.1s backwards;
-}
-
-.brands-pop.is-open .brands-pop__smoke {
-  animation: fadeIn 1.8s ease 0.3s backwards;
-}
-
 .brands-pop.is-open .brands-pop__title {
   animation: titleIn 0.9s var(--ease-out) 0.25s backwards;
 }
@@ -7988,14 +7795,14 @@ html.brands-pop-first .preloader__inner {
   .brands-pop__slide figcaption {
     left: 1.25rem;
     right: 1.25rem;
-    bottom: calc(var(--wave-h) * 0.6 + 4.5rem);
+    bottom: 4.5rem;
   }
 
   .brands-pop__arrow {
     width: 44px;
     height: 44px;
     top: auto;
-    bottom: calc(var(--wave-h) * 0.62 + 0.75rem);
+    bottom: 0.75rem;
     transform: none;
   }
 
@@ -8009,7 +7816,7 @@ html.brands-pop-first .preloader__inner {
   }
 
   .brands-pop__pager {
-    bottom: calc(var(--wave-h) * 0.62 + 0.75rem + 22px);
+    bottom: calc(0.75rem + 22px);
     transform: translateY(50%);
   }
 
@@ -8116,21 +7923,6 @@ html.brands-pop-first .preloader__inner {
   .brands-pop__slide img {
     transform: none;
     transition: none;
-  }
-
-  .brands-pop__smoke>svg,
-  .brands-pop__shine,
-  .brands-pop__sparks span {
-    animation: none;
-  }
-
-  .brands-pop__shine {
-    stroke-dasharray: none;
-    stroke-opacity: 0;
-  }
-
-  .brands-pop__sparks span {
-    opacity: 0.7;
   }
 }
 
@@ -8512,6 +8304,29 @@ html.brands-pop-first .preloader__inner {
   color: var(--black);
 }
 
+.page-asd .clients .client__logo {
+  display: flex;
+  align-items: center;
+}
+
+.page-asd .clients .client__logo img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100% !important;
+  object-fit: contain;
+}
+
+.page-asd .clients .client-feature__logo img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 54px !important;
+  object-fit: contain;
+}
+
 .page-asd .clients .client.is-active .client__logo {
   color: var(--black);
 }
@@ -8529,8 +8344,20 @@ html.brands-pop-first .preloader__inner {
 }
 
 .page-asd .clients .logo-strip__track span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--white);
   opacity: 0.45;
+}
+
+.page-asd .clients .logo-strip__track span img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 140px;
+  max-height: 44px;
+  object-fit: contain;
 }
 
 .page-asd .clients .logo-strip__track span:hover {
@@ -10195,6 +10022,34 @@ html.brands-pop-first .preloader__inner {
     height: 18px;
   }
 
+  .nav__shoot-book span {
+    display: none;
+  }
+
+  .nav__shoot-book {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav__shoot-book .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .mobile-menu__actions .nav__shoot-book {
+    width: 100%;
+    height: auto;
+    padding: 0.85rem 1.5rem;
+  }
+
+  .mobile-menu__actions .nav__shoot-book span {
+    display: inline;
+  }
+
   .nav__login {
     width: 44px;
     height: 44px;
@@ -10635,6 +10490,10 @@ body.is-authenticated .site-header [data-auth="login"],
 body.is-authenticated .nav__actions .nav__register,
 body.is-authenticated .nav__actions .nav__login {
   display: none !important;
+}
+
+body.is-authenticated .site-header .nav__shoot-book {
+  display: inline-flex !important;
 }
 
 .nav__account {

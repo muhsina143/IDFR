@@ -31,6 +31,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'contact',
             'tickets',
+            'idfr/contact',
+            'idfr/tickets',
             'asdreams/shoot-booking',
         ]);
     })

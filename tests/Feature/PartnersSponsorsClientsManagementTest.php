@@ -416,7 +416,7 @@ class PartnersSponsorsClientsManagementTest extends TestCase
         $this->assertNotNull($featuredClient);
 
         // Query the homepage
-        $response = $this->get('/');
+        $response = $this->get(route('idfr.home'));
         $response->assertOk();
 
         // 1. Partners verification

@@ -759,9 +759,11 @@ const MobileMenu = (() => {
 
     function init() {
 
-        menu = $('#mobileMenu');
+        menu = $('#mobileMenu') || $('#asdMobileMenu');
 
-        toggle = $('.nav__toggle');
+        toggle = $('.nav__toggle') || $('.nav__burger');
+
+        if (!menu || !toggle) return;
 
         toggle.addEventListener('click', () => (isOpen ? close() : open()));
 
@@ -819,9 +821,9 @@ function initHeader() {
 
         const y = window.scrollY;
 
-        header.classList.toggle('is-scrolled', y > 40);
+        if (header) header.classList.toggle('is-scrolled', y > 40);
 
-        toTop.classList.toggle('is-visible', y > 800);
+        if (toTop) toTop.classList.toggle('is-visible', y > 800);
 
         ticking = false;
 
@@ -837,15 +839,19 @@ function initHeader() {
 
 
 
-    toTop.addEventListener('click', () => {
+    if (toTop) {
 
-        window.scrollTo({ top: 0, behavior: prefersReducedMotion.matches ? 'auto' : 'smooth' });
+        toTop.addEventListener('click', () => {
 
-        const logo = $('.nav__logo');
+            window.scrollTo({ top: 0, behavior: prefersReducedMotion.matches ? 'auto' : 'smooth' });
 
-        if (logo) logo.focus({ preventScroll: true });
+            const logo = $('.nav__logo');
 
-    });
+            if (logo) logo.focus({ preventScroll: true });
+
+        });
+
+    }
 
 
 
@@ -3245,7 +3251,25 @@ function initClients() {
 
         const personEl = $('#clientFeaturePerson');
 
-        if (personEl) personEl.innerHTML = `<strong>${esc(c.person || '')}</strong> - ${esc(c.role || '')}, ${esc(c.name || '')}`;
+        if (personEl) {
+            const pName = (c.person || '').trim();
+            const pRole = (c.role || '').trim();
+            const cName = (c.name || '').trim();
+            const cCat = (c.industry || '').trim();
+
+            if (pName) {
+                const suffix = [pRole, cName].filter(Boolean).join(', ');
+                personEl.innerHTML = suffix
+                    ? `<strong>${esc(pName)}</strong> - ${esc(suffix)}`
+                    : `<strong>${esc(pName)}</strong>`;
+            } else if (cName) {
+                personEl.innerHTML = cCat
+                    ? `<strong>${esc(cName)}</strong> &mdash; ${esc(cCat)}`
+                    : `<strong>${esc(cName)}</strong>`;
+            } else {
+                personEl.innerHTML = '';
+            }
+        }
 
     };
 
@@ -3309,35 +3333,45 @@ function initClients() {
 
     });
 
+}
 
+
+
+function initClientStrip() {
 
     const stripEl = $('#clientStrip');
 
-    if (stripEl) {
+    if (!stripEl) return;
 
-        const sourceItems = (DATA.movingLogos && DATA.movingLogos.length > 0)
+    const isAsdreams = document.body.classList.contains('page-asd');
+
+    const sourceItems = isAsdreams
+
+        ? (DATA.movingLogos || [])
+
+        : ((DATA.movingLogos && DATA.movingLogos.length > 0)
 
             ? DATA.movingLogos
 
-            : [...DATA.clients, ...DATA.sponsors.slice(1)];
+            : [...DATA.clients, ...DATA.sponsors.slice(1)]);
 
+    if (sourceItems.length > 0) {
 
+        const repeatTimes = Math.max(1, Math.ceil(12 / sourceItems.length));
 
-        if (sourceItems.length > 0) {
+        let half = '';
 
-            const repeatTimes = Math.max(1, Math.ceil(12 / sourceItems.length));
+        for (let r = 0; r < repeatTimes; r++) {
 
-            let half = '';
-
-            for (let r = 0; r < repeatTimes; r++) {
-
-                half += sourceItems.map((x) => `<span>${logoSVG(x.logo, x.name)}</span>`).join('');
-
-            }
-
-            stripEl.innerHTML = half + half;
+            half += sourceItems.map((x) => `<span>${logoSVG(x.logo, x.name)}</span>`).join('');
 
         }
+
+        stripEl.innerHTML = half + half;
+
+    } else {
+
+        stripEl.innerHTML = '';
 
     }
 
@@ -3728,7 +3762,17 @@ const Auth = (() => {
 
         if (!navActions) return;
 
+        const isAsd = document.body.classList.contains('page-asd') ||
+                      !!document.querySelector('.page-asd') ||
+                      !!document.querySelector('#siteHeader .nav__logo[aria-label*="ASDreamStudio"]') ||
+                      !!document.querySelector('#siteHeader img[alt*="ASDreamStudio"]');
 
+        if (isAsd) {
+            $$('#siteHeader .nav__login, #siteHeader [data-auth="login"], .page-asd .nav__login, .page-asd [data-auth="login"]').forEach(el => el.remove());
+            if (mobileActions) {
+                $$('[data-auth="login"], [data-auth="register"]', mobileActions).forEach(el => el.remove());
+            }
+        }
 
         const loginBtn = $('.nav__login', navActions);
 
@@ -3739,8 +3783,25 @@ const Auth = (() => {
         if (user && user.name) {
             document.body.classList.add('is-authenticated');
             if (loginBtn) loginBtn.remove();
-            if (regBtn) regBtn.remove();
-            $$('#siteHeader .nav__register, #siteHeader .nav__login, .nav__actions .nav__register, .nav__actions .nav__login').forEach(el => el.remove());
+            if (regBtn && !regBtn.hasAttribute('data-shoot-book') && !regBtn.classList.contains('nav__shoot-book')) regBtn.remove();
+            $$('#siteHeader .nav__login, .nav__actions .nav__login').forEach(el => el.remove());
+            $$('#siteHeader .nav__register, .nav__actions .nav__register').forEach(el => {
+                if (!el.hasAttribute('data-shoot-book') && !el.classList.contains('nav__shoot-book')) {
+                    el.remove();
+                }
+            });
+
+            if (isAsd) {
+                if (mobileActions && !$('.nav__shoot-book, [data-shoot-book]', mobileActions)) {
+                    mobileActions.innerHTML = `
+                        <button class="btn btn--gold btn--full nav__shoot-book" type="button" data-shoot-book aria-haspopup="dialog" aria-controls="shootBookModal" aria-label="Book a Shoot">
+                            <svg class="icon" aria-hidden="true"><use href="#i-calendar" /></svg>
+                            <span>Book a Shoot</span>
+                        </button>
+                    `;
+                }
+                return;
+            }
 
 
 
@@ -4024,6 +4085,21 @@ const Auth = (() => {
             document.body.classList.remove('is-authenticated');
             const navAccount = $('#navAccount');
             if (navAccount) navAccount.remove();
+
+            if (isAsd) {
+                const curLogin = $('.nav__login', navActions);
+                if (curLogin) curLogin.remove();
+
+                if (mobileActions && !$('.nav__shoot-book, [data-shoot-book]', mobileActions)) {
+                    mobileActions.innerHTML = `
+                        <button class="btn btn--gold btn--full nav__shoot-book" type="button" data-shoot-book aria-haspopup="dialog" aria-controls="shootBookModal" aria-label="Book a Shoot">
+                            <svg class="icon" aria-hidden="true"><use href="#i-calendar" /></svg>
+                            <span>Book a Shoot</span>
+                        </button>
+                    `;
+                }
+                return;
+            }
 
             let curLogin = $('.nav__login', navActions);
             let curReg = $('.nav__register', navActions);
@@ -5718,23 +5794,16 @@ function isAsdreamsHomeLink(href) {
 
 
 function isIndexLink(href) {
-
     if (!href || href.startsWith('#')) return false;
 
     try {
-
         const u = new URL(href, location.href);
-
         const path = u.pathname.replace(/\\/g, '/');
 
-        return /(^|\/)(index\.html)?$/.test(path) || path.endsWith('/index.html') || path === '/' || path === '';
-
+        return /(^|\/)(index\.html)?$/.test(path) || path.endsWith('/index.html') || path === '/' || path === '' || path === '/idfr' || path.endsWith('/idfr');
     } catch (_) {
-
-        return /(?:^|\/)index\.html(?:[?#]|$)/.test(href);
-
+        return /(?:^|\/)(?:index\.html|idfr)(?:[?#]|$)/.test(href);
     }
-
 }
 
 
@@ -5753,30 +5822,10 @@ function initSkipBrandsPopLinks() {
 
         const footerLogo = e.target.closest('a.footer__logo[data-skip-brands-pop]');
 
-        // Home from about / gallery / team / contact (and mobile menu) → asdreams hero, not brands popup
-
-        const asdHomeNav = e.target.closest('a.nav__link[href="asdreams.html#home"][data-nav="home"], a[href="asdreams.html#home"][data-nav="home"]');
-
+        // Home from about / gallery / team / contact / offers (and mobile menu) → asdreams hero, not brands popup
+        const asdHomeNav = e.target.closest('a[data-nav="home"]');
         if (explore || footerLogo || (asdHomeNav && !$('#brandsPopup'))) markSkipBrandsPop();
-
-
-
-        // index.html nav logo → brands popup on asdreams
-
-        const indexLogo = e.target.closest('a.nav__logo');
-
-        if (indexLogo && $('#home') && !$('#brandsPopup')) {
-
-            e.preventDefault();
-
-            clearSkipBrandsPop();
-
-            location.assign('asdreams.html');
-
-        }
-
     });
-
 }
 
 
@@ -5797,7 +5846,7 @@ function initIndexBrandsPopBack() {
 
         clearSkipBrandsPop();
 
-        location.replace('asdreams.html');
+        location.replace('/asdreams');
 
     });
 
@@ -5928,7 +5977,7 @@ function initBrandsPopup() {
 
     banner.addEventListener('pointerdown', (e) => {
 
-        if (e.pointerType === 'mouse' || e.target.closest('button')) return;
+        if (e.pointerType === 'mouse' || e.target.closest('button, a')) return;
 
         startX = e.clientX;
 
@@ -5974,65 +6023,7 @@ function initBrandsPopup() {
 
         anims = [];
 
-        items.forEach((li) => li.classList.remove('is-landed'));
-
-        if (prefersReducedMotion.matches || !Element.prototype.animate) {
-
-            items.forEach((li) => li.classList.add('is-landed'));
-
-            return;
-
-        }
-
-        const logos = items.map((li) => $('.brands-pop__logo', li));
-
-        const rects = logos.map((l) => l.getBoundingClientRect());
-
-        const START = 450;
-
-        const FIRST = 1000;
-
-        const NEXT = 950;
-
-        const STAGGER = 760;
-
-        const easing = 'cubic-bezier(0.22, 1, 0.36, 1)';
-
-        logos.forEach((logo, i) => {
-
-            const r = rects[i];
-
-            let keyframes;
-
-            if (i === 0) {
-
-                keyframes = [{ transform: `translateX(${-Math.ceil(r.right + 24)}px)` }, { transform: 'none' }];
-
-            } else {
-
-                const p = rects[i - 1];
-
-                keyframes = [
-
-                    { transform: `translate(${p.left - r.left}px, ${p.top - r.top}px) rotate(-90deg) scale(0.86)`, opacity: 0, offset: 0 },
-
-                    { opacity: 1, offset: 0.06 },
-
-                    { transform: 'none', opacity: 1 }
-
-                ];
-
-            }
-
-            const delay = i ? START + FIRST - 150 + (i - 1) * STAGGER : START;
-
-            const anim = logo.animate(keyframes, { duration: i ? NEXT : FIRST, delay, easing, fill: 'backwards' });
-
-            anim.finished.then(() => items[i].classList.add('is-landed')).catch(() => { });
-
-            anims.push(anim);
-
-        });
+        items.forEach((li) => li.classList.add('is-landed'));
 
     };
 
@@ -6186,52 +6177,44 @@ function initBrandsPopup() {
 
 
 
+    const isLandingPage = () => {
+        const path = (location.pathname || '').replace(/\/+$/, '') || '/';
+        return path === '/' || path === '/index.html';
+    };
+
     const show = () => {
+        if (!isLandingPage()) {
+            document.documentElement.classList.remove('brands-pop-first');
+            if (Modal.isOpen(popup)) Modal.close(popup);
+            return;
+        }
 
         if (consumeSkipBrandsPop()) {
-
             document.documentElement.classList.remove('brands-pop-first');
 
             // Entered via Explore / ASD Home nav — show hero, keep Back → popup
-
             if (history.state && history.state[BRANDS_POP_STATE] === 'closed') {
-
                 syncBrandsPopHistory('closed');
-
             } else {
-
                 seedHeroHistory();
-
             }
 
             // Links use #home; the section id is asd-home
-
             const hero = $('#asd-home');
-
             if (hero && (location.hash === '#home' || location.hash === '#asd-home')) {
-
                 requestAnimationFrame(() => hero.scrollIntoView({ block: 'start', behavior: 'auto' }));
-
             }
-
             return;
-
         }
 
         // Restored via Back / bfcache with an explicit state
-
         if (history.state && history.state[BRANDS_POP_STATE] === 'closed') {
-
             document.documentElement.classList.remove('brands-pop-first');
-
             return;
-
         }
 
         syncBrandsPopHistory('open');
-
         openPopup();
-
     };
 
 
@@ -6291,47 +6274,30 @@ function initBrandsPopup() {
 
 
     popup.addEventListener('click', (e) => {
-
         const link = e.target.closest('.brands-pop__link, .brands-pop__cta');
-
         if (!link) return;
 
+        let href = link.getAttribute('href') || '';
+        if (!href || href === '#' || href.startsWith('#')) return;
 
-
-        const href = link.getAttribute('href') || '';
-
-
-
-        // ASDreamStudio tile: preloader → hero; Back reopens the brands popup
-
-        if (link.classList.contains('brands-pop__link') && isAsdreamsHomeLink(href)) {
-
-            e.preventDefault();
-
-            enterHero();
-
-            return;
-
+        // Ensure IDFR brand card navigates cleanly to /idfr even if legacy href="/" was rendered
+        const ariaLabel = (link.getAttribute('aria-label') || '').toLowerCase();
+        if ((ariaLabel.includes('idfr') || ariaLabel.includes('indian designer')) && (href === '/' || href === '')) {
+            href = '/idfr';
         }
 
-
-
-        // IDFR (and any index link): Back from index returns to the brands popup
-
-        if (link.classList.contains('brands-pop__link') && isIndexLink(href)) {
-
-            markReturnBrandsPop();
-
-            clearSkipBrandsPop();
-
-            syncBrandsPopHistory('open');
-
+        // ASDreamStudio brand card: ensure /asdreams opens directly into the ASDreamStudio website
+        if (link.classList.contains('brands-pop__link')) {
+            if (href.includes('/asdreams') && !href.includes('/asdreams/contact')) {
+                markSkipBrandsPop();
+            }
         }
 
-
-
-        Modal.close(popup);
-
+        // Offer Details CTA and all Brand Cards navigate cleanly and directly:
+        // No unwanted intermediate homepage flash, no delayed redirects.
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = href;
     });
 
 }
@@ -7234,38 +7200,97 @@ function initShootBooking() {
 
 
 
-    form.addEventListener('submit', (e) => {
-
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         if (submit.disabled) return;
-
         applyCustomValidity();
-
-        if (!validateForm(form)) return;
+        if (typeof validateForm === 'function' && !validateForm(form)) return;
 
         submit.disabled = true;
+        const defaultLabel = label ? label.textContent : 'Submit';
+        if (label) label.textContent = 'Submitting…';
 
-        label.textContent = 'Submittingâ€¦';
+        try {
+            const formData = new FormData(form);
+            const tokenInput = $('input[name="_token"]', form) || $('meta[name="csrf-token"]');
+            const token = tokenInput ? (tokenInput.value || tokenInput.getAttribute('content')) : '';
+            const actionUrl = form.getAttribute('action') || '/asdreams/shoot-booking';
 
-        setTimeout(() => {
+            const response = await fetch(actionUrl, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: formData
+            });
 
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok && data.success) {
+                form.reset();
+                if (typeof clearFormErrors === 'function') {
+                    clearFormErrors(form);
+                }
+                if (phoneInput) phoneInput.setCustomValidity('');
+                if (dateInput) dateInput.setCustomValidity('');
+
+                formView.hidden = true;
+                success.hidden = false;
+                modal.setAttribute('aria-labelledby', 'shootBookSuccessTitle');
+
+                const successMsg = $('.shoot-book__message', success);
+                if (successMsg && data.message) {
+                    successMsg.textContent = data.message;
+                }
+
+                const heading = $('#shootBookSuccessTitle', success);
+                if (heading) heading.focus();
+
+                if (typeof toast === 'function') {
+                    toast(data.message || 'Shoot booking request received successfully!');
+                }
+            } else if (response.status === 422 && data.errors) {
+                if (typeof clearFormErrors === 'function') {
+                    clearFormErrors(form);
+                }
+                Object.entries(data.errors).forEach(([fieldName, messages]) => {
+                    const input = $('[name="' + fieldName + '"]', form);
+                    if (input) {
+                        const field = input.closest('.field');
+                        if (field) {
+                            field.classList.add('has-error');
+                            const errSpan = $('.field__error', field);
+                            if (errSpan) {
+                                errSpan.textContent = Array.isArray(messages) ? messages[0] : messages;
+                            }
+                            input.setAttribute('aria-invalid', 'true');
+                        }
+                    }
+                });
+                const firstErr = $('.field.has-error input, .field.has-error select, .field.has-error textarea', form);
+                if (firstErr) {
+                    firstErr.focus();
+                }
+                if (typeof toast === 'function') {
+                    toast(data.message || 'Please check the highlighted fields.');
+                }
+            } else {
+                const errorMsg = data.message || 'Could not submit your booking. Please try again.';
+                if (typeof toast === 'function') {
+                    toast(errorMsg);
+                }
+            }
+        } catch (err) {
+            console.error('Shoot booking submission error:', err);
+            if (typeof toast === 'function') {
+                toast('A network error occurred while submitting. Please check your connection and try again.');
+            }
+        } finally {
             submit.disabled = false;
-
-            label.textContent = 'Submit';
-
-            formView.hidden = true;
-
-            success.hidden = false;
-
-            modal.setAttribute('aria-labelledby', 'shootBookSuccessTitle');
-
-            const heading = $('#shootBookSuccessTitle', success);
-
-            if (heading) heading.focus();
-
-        }, 500);
-
+            if (label) label.textContent = defaultLabel;
+        }
     });
 
 }
@@ -7282,16 +7307,32 @@ function initStudioBooking() {
     const phoneInput = $('#studioPhone', form);
     const startDateInput = $('#studioStart', form);
     const endDateInput = $('#studioEnd', form);
+    const daysInput = $('#studioDays', form);
+    const purposeInput = $('#studioPurpose', form);
 
     const todayISO = () => {
         const d = new Date();
         return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
     };
 
+    const updateDays = () => {
+        if (!daysInput || !startDateInput || !endDateInput) return;
+        if (startDateInput.value && endDateInput.value) {
+            const start = new Date(startDateInput.value + 'T00:00:00');
+            const end = new Date(endDateInput.value + 'T00:00:00');
+            const diffTime = end.getTime() - start.getTime();
+            if (diffTime >= 0) {
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                daysInput.value = Math.max(1, diffDays);
+            }
+        }
+    };
+
     const resetView = () => {
         form.reset();
         if (typeof clearFormErrors === 'function') clearFormErrors(form);
         if (phoneInput) phoneInput.setCustomValidity('');
+        if (purposeInput) purposeInput.setCustomValidity('');
         if (startDateInput) {
             startDateInput.setCustomValidity('');
             startDateInput.min = todayISO();
@@ -7299,6 +7340,9 @@ function initStudioBooking() {
         if (endDateInput) {
             endDateInput.setCustomValidity('');
             endDateInput.min = todayISO();
+        }
+        if (daysInput) {
+            daysInput.value = '1';
         }
         if (formView) formView.hidden = false;
         if (success) success.hidden = true;
@@ -7309,8 +7353,49 @@ function initStudioBooking() {
         }
     };
 
+    if (startDateInput) {
+        startDateInput.addEventListener('change', () => {
+            if (endDateInput) {
+                endDateInput.min = startDateInput.value || todayISO();
+                if (endDateInput.value && endDateInput.value < startDateInput.value) {
+                    endDateInput.value = startDateInput.value;
+                }
+            }
+            updateDays();
+        });
+    }
+
+    if (endDateInput) {
+        endDateInput.addEventListener('change', () => {
+            updateDays();
+        });
+    }
+
+    const applyCustomValidity = () => {
+        if (phoneInput) {
+            phoneInput.setCustomValidity('');
+            const raw = phoneInput.value.trim();
+            const digits = raw.replace(/\D/g, '');
+            if (raw && (!/^\+?[0-9][0-9\s().-]{6,18}$/.test(raw) || digits.length < 8 || digits.length > 15)) {
+                phoneInput.setCustomValidity('Please enter a valid phone number.');
+            }
+        }
+        if (startDateInput) {
+            startDateInput.setCustomValidity('');
+            if (startDateInput.value && startDateInput.value < todayISO()) {
+                startDateInput.setCustomValidity('Please choose today or a future date.');
+            }
+        }
+        if (endDateInput && startDateInput) {
+            endDateInput.setCustomValidity('');
+            if (endDateInput.value && startDateInput.value && endDateInput.value < startDateInput.value) {
+                endDateInput.setCustomValidity('End date cannot be earlier than start date.');
+            }
+        }
+    };
+
     document.addEventListener('click', (e) => {
-        const trigger = e.target.closest('[data-studio-book]');
+        const trigger = e.target.closest('[data-studio-book], a[href="#studioBookModal"]');
         if (!trigger) return;
         e.preventDefault();
         resetView();
@@ -7318,25 +7403,86 @@ function initStudioBooking() {
         Modal.open(modal, trigger);
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (submit && submit.disabled) return;
+        applyCustomValidity();
         if (typeof validateForm === 'function' && !validateForm(form)) return;
-        if (submit) {
-            submit.disabled = true;
-            if (label) label.textContent = 'Submitting…';
-        }
-        setTimeout(() => {
-            if (submit) {
-                submit.disabled = false;
-                if (label) label.textContent = 'Submit';
+
+        if (submit) submit.disabled = true;
+        const defaultLabel = label ? label.textContent : 'Submit';
+        if (label) label.textContent = 'Submitting…';
+
+        try {
+            const formData = new FormData(form);
+            const tokenInput = $('input[name="_token"]', form) || $('meta[name="csrf-token"]');
+            const token = tokenInput ? (tokenInput.value || tokenInput.getAttribute('content')) : '';
+            const actionUrl = form.getAttribute('action') || '/asdreams/studio-booking';
+
+            const response = await fetch(actionUrl, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: formData
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (response.ok && data.success) {
+                form.reset();
+                if (typeof clearFormErrors === 'function') clearFormErrors(form);
+                if (phoneInput) phoneInput.setCustomValidity('');
+
+                if (formView) formView.hidden = true;
+                if (success) success.hidden = false;
+                modal.setAttribute('aria-labelledby', 'studioBookSuccessTitle');
+
+                const successMsg = $('.shoot-book__message', success);
+                if (successMsg && data.message) {
+                    successMsg.textContent = data.message;
+                }
+
+                const heading = $('#studioBookSuccessTitle', success);
+                if (heading) heading.focus();
+
+                if (typeof toast === 'function') {
+                    toast(data.message || 'Studio booking request received successfully!');
+                }
+            } else if (response.status === 422 && data.errors) {
+                if (typeof clearFormErrors === 'function') clearFormErrors(form);
+                Object.entries(data.errors).forEach(([fieldName, messages]) => {
+                    const input = $('[name="' + fieldName + '"]', form);
+                    if (input) {
+                        const field = input.closest('.field');
+                        if (field) {
+                            field.classList.add('has-error');
+                            const errSpan = $('.field__error', field);
+                            if (errSpan) {
+                                errSpan.textContent = Array.isArray(messages) ? messages[0] : messages;
+                            }
+                            input.setAttribute('aria-invalid', 'true');
+                        }
+                    }
+                });
+                const firstErr = $('.field.has-error input, .field.has-error select, .field.has-error textarea', form);
+                if (firstErr) firstErr.focus();
+                if (typeof toast === 'function') toast(data.message || 'Please check the highlighted fields.');
+            } else {
+                const errorMsg = data.message || 'Could not submit studio booking. Please try again.';
+                if (typeof toast === 'function') toast(errorMsg);
             }
-            if (formView) formView.hidden = true;
-            if (success) success.hidden = false;
-            modal.setAttribute('aria-labelledby', 'studioBookSuccessTitle');
-            const heading = $('#studioBookSuccessTitle', success);
-            if (heading) heading.focus();
-        }, 500);
+        } catch (err) {
+            console.error('Studio booking submission error:', err);
+            if (typeof toast === 'function') {
+                toast('A network error occurred while submitting. Please check your connection and try again.');
+            }
+        } finally {
+            if (submit) submit.disabled = false;
+            if (label) label.textContent = defaultLabel;
+        }
     });
 }
 
@@ -7941,6 +8087,8 @@ const initApp = () => {
     onPage('#sponsorsGrid', initSponsors);
 
     onPage('#clientsGrid', initClients);
+
+    onPage('#clientStrip', initClientStrip);
 
     onPage('#profileGallery', initProfileGallery);
 

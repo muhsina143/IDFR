@@ -113,5 +113,6 @@
       </script>
     @endif
     @stack('scripts')
+    @yield('scripts')
   </body>
 </html>
