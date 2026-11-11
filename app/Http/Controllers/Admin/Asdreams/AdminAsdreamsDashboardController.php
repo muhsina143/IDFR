@@ -4,13 +4,11 @@ namespace App\Http\Controllers\Admin\Asdreams;
 
 use App\Http\Controllers\Controller;
 use App\Models\Asdreams\AsdreamsBanner;
-use App\Models\Asdreams\AsdreamsBrand;
 use App\Models\Asdreams\AsdreamsClient;
 use App\Models\Asdreams\AsdreamsContactEnquiry;
 use App\Models\Asdreams\AsdreamsGalleryCategory;
 use App\Models\Asdreams\AsdreamsGalleryImage;
 use App\Models\Asdreams\AsdreamsMovingLogo;
-use App\Models\Asdreams\AsdreamsOffer;
 use App\Models\Asdreams\AsdreamsOfferEnquiry;
 use App\Models\Asdreams\AsdreamsShootBooking;
 use App\Models\Asdreams\AsdreamsStudioEquipment;
@@ -26,10 +24,6 @@ class AdminAsdreamsDashboardController extends Controller
         $stats = [
             'banners_count' => AsdreamsBanner::count(),
             'banners_active' => AsdreamsBanner::where('is_active', true)->count(),
-            'brands_count' => AsdreamsBrand::count(),
-            'brands_active' => AsdreamsBrand::where('is_active', true)->count(),
-            'offers_count' => AsdreamsOffer::count(),
-            'offers_published' => AsdreamsOffer::where('status', 'published')->count(),
             'gallery_categories_count' => AsdreamsGalleryCategory::count(),
             'gallery_images_count' => AsdreamsGalleryImage::count(),
             'team_count' => AsdreamsTeamMember::count(),

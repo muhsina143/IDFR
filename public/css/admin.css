@@ -23,6 +23,14 @@
   --sidebar-w: 270px;
 }
 
+.sprite {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 /* =========================================================================
    1. MODULE HEADER & BREADCRUMBS
    ========================================================================= */
@@ -386,7 +394,7 @@ input[type="number"].form-control,
 input[type="password"].form-control,
 input[type="date"].form-control,
 input[type="tel"].form-control,
-.admin-card input[type="text"]:not(.raw-input),
+.admin-card input[type="text"]:not(.raw-input):not(.filter-input),
 .admin-card input[type="email"]:not(.raw-input),
 .admin-card input[type="url"]:not(.raw-input),
 .admin-card input[type="number"]:not(.raw-input),
@@ -715,7 +723,7 @@ input[type="file"]::file-selector-button:hover {
 
 .filter-group--search .search-icon {
   position: absolute;
-  left: 0.9rem;
+  left: 1rem;
   top: 50%;
   transform: translateY(-50%);
   width: 16px;
@@ -724,6 +732,7 @@ input[type="file"]::file-selector-button:hover {
   stroke-width: 2;
   fill: none;
   pointer-events: none;
+  z-index: 1;
 }
 
 .filter-input {
@@ -731,11 +740,16 @@ input[type="file"]::file-selector-button:hover {
   background: var(--bg-input);
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
-  padding: 0.65rem 0.9rem 0.65rem 2.45rem;
+  padding: 0.65rem 0.9rem;
   color: #FFFFFF;
   font-size: 0.88rem;
   font-family: var(--font-sans);
   box-sizing: border-box;
+}
+
+.admin-card .filter-group--search .filter-input,
+.filter-group--search .filter-input {
+  padding-left: 3rem;
 }
 
 .filter-input:focus {

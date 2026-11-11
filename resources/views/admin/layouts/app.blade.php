@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="{{ asset('css/admin.css') }}" />
+  <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}" />
 
   <style>
     :root {
@@ -524,14 +524,6 @@
       <a href="{{ route('admin.asdreams.banners.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.banners*') ? 'active' : '' }}">
         <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
         <span>Homepage Banners</span>
-      </a>
-      <a href="{{ route('admin.asdreams.brands.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.brands*') ? 'active' : '' }}">
-        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-        <span>Homepage Brands</span>
-      </a>
-      <a href="{{ route('admin.asdreams.offers.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.offers*') ? 'active' : '' }}">
-        <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
-        <span>Offer Management</span>
       </a>
       <a href="{{ route('admin.asdreams.gallery.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.gallery*') ? 'active' : '' }}">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>

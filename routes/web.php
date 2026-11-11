@@ -20,14 +20,12 @@ use App\Http\Controllers\Admin\AdminSeasonRegistrationController;
 use App\Http\Controllers\Admin\AdminSponsorController;
 use App\Http\Controllers\Admin\AdminSponsorshipEnquiryController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsBannerController;
-use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsBrandController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsClientController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsContactController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsDashboardController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsEnquiryController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsGalleryController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsMovingLogoController;
-use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsOfferController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsSettingController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsShootBookingController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsStudioBookingController;
@@ -374,14 +372,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             // 2. Homepage Banner / Slider
             Route::resource('banners', AdminAsdreamsBannerController::class)->except(['show']);
             Route::post('banners/{banner}/toggle-status', [AdminAsdreamsBannerController::class, 'toggleStatus'])->name('banners.toggle-status');
-
-            // 3. Homepage Brands
-            Route::resource('brands', AdminAsdreamsBrandController::class)->except(['show']);
-            Route::post('brands/{brand}/toggle-status', [AdminAsdreamsBrandController::class, 'toggleStatus'])->name('brands.toggle-status');
-
-            // 4. Offer Management & Offer Details
-            Route::resource('offers', AdminAsdreamsOfferController::class)->except(['show']);
-            Route::post('offers/{offer}/toggle-status', [AdminAsdreamsOfferController::class, 'toggleStatus'])->name('offers.toggle-status');
 
             // 6. Gallery Management
             Route::get('gallery', [AdminAsdreamsGalleryController::class, 'index'])->name('gallery.index');

@@ -132,7 +132,7 @@ class AsdreamsStudioRentalSetting
         $numericClean = str_replace([',', ' '], '', $rawAmount);
         $amountFloat = is_numeric($numericClean) ? (float) $numericClean : 1000.0;
         $decimals = (abs($amountFloat - floor($amountFloat)) > 0.0001) ? 2 : 0;
-        $formattedNumber = number_format($amountFloat, $decimals);
+        $formattedNumber = number_format($amountFloat, $decimals, '.', '');
 
         $currencyMeta = self::CURRENCIES[$currency];
         $formattedPrice = $currencyMeta['symbol']
@@ -153,7 +153,7 @@ class AsdreamsStudioRentalSetting
             'currency' => $currency,
             'currency_symbol' => $currencyMeta['symbol'],
             'rental_unit' => $unit,
-            'unit_display' => self::UNITS[$unit]['display'],
+            'unit_display' => strtolower(self::UNITS[$unit]['display']),
             'pricing_label' => $getValue('studio_rental_pricing_label'),
             'price_description' => $getValue('studio_rental_price_description'),
             'price_enabled' => $priceEnabled,

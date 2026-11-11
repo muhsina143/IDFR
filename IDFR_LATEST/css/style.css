@@ -7926,413 +7926,365 @@ html.brands-pop-first .preloader__inner {
   }
 }
 
-/* ---------- Studio Rental (isolated to ASDreamStudio) ---------- */
-.page-asd .studio-rental {
-  position: relative;
+/* ---------- Studio rental (ASDreamStudio) ---------- */
+.studio-rental {
   background: var(--black);
-  color: var(--white);
-  font-family: var(--font-sans);
-  padding: clamp(3rem, 7vw, 6rem) 0;
+  border-top: 1px solid var(--white-10);
 }
 
-.page-asd .studio-rental__area {
-  display: inline-flex;
+.studio-rental__area {
+  display: flex;
   align-items: center;
-  gap: 1.25rem;
-  padding: 1rem 1.75rem;
-  border: 1px solid var(--gold-a35);
-  background: rgba(245, 200, 66, 0.04);
-  border-radius: 4px;
-  margin-bottom: 2.5rem;
+  gap: 1rem;
+  width: fit-content;
   max-width: 100%;
+  margin: 0 0 clamp(1.75rem, 4vw, 2.5rem);
+  padding: 1rem 1.35rem;
+  border: 1px solid var(--gold-a35);
+  background: linear-gradient(135deg, var(--gold-a10), transparent 70%);
 }
 
-.page-asd .studio-rental__area-icon {
+.studio-rental__area-icon {
   display: grid;
   place-items: center;
+  flex-shrink: 0;
   width: 2.75rem;
   height: 2.75rem;
   border: 1px solid var(--gold);
   color: var(--gold);
-  border-radius: 50%;
-  flex-shrink: 0;
 }
 
-.page-asd .studio-rental__area-icon .icon {
-  width: 1.35rem;
-  height: 1.35rem;
+.studio-rental__area-icon .icon {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
-.page-asd .studio-rental__area-label {
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--gold);
-  margin-bottom: 0.15rem;
-}
-
-.page-asd .studio-rental__area-value {
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
+.studio-rental__area-label {
+  font-size: 0.64rem;
   font-weight: 500;
-  color: var(--white);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--white-50);
 }
 
-.page-asd .studio-rental__panels {
+.studio-rental__area-value {
+  margin-top: 0.2rem;
+  /* font-family: var(--font-serif); */
+  font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem);
+  font-weight: 500;
+  color: var(--gold);
+  line-height: 1.2;
+}
+
+.studio-rental__panels {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-  margin-bottom: 3.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
-@media (max-width: 860px) {
-  .page-asd .studio-rental__panels {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-  }
+.studio-rental__panel {
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  border: 1px solid var(--white-10);
+  background: var(--white-05);
 }
 
-.page-asd .studio-rental__panel {
-  min-width: 0;
-  background: #0d0d0d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: clamp(1.5rem, 3vw, 2.25rem);
-  border-radius: 4px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+.studio-rental__panel-head {
+  margin-bottom: 1.25rem;
 }
 
-.page-asd .studio-rental__panel:hover {
-  border-color: var(--gold-a35);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.page-asd .studio-rental__panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  padding-bottom: 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  margin-bottom: 1.5rem;
-}
-
-.page-asd .studio-rental__panel-title {
+.studio-rental__panel-title {
   font-family: var(--font-serif);
-  font-size: clamp(1.2rem, 2.2vw, 1.45rem);
-  color: var(--white);
-  margin: 0;
+  font-size: clamp(1.2rem, 1rem + 0.7vw, 1.45rem);
+  font-weight: 500;
+  line-height: 1.25;
 }
 
-.page-asd .studio-rental__ac {
+.studio-rental__panel-note {
+  margin-top: 0.4rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--white-50);
+}
+
+.studio-rental__ac {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  color: var(--gold-light);
-  background: rgba(245, 200, 66, 0.1);
-  border: 1px solid var(--gold-a35);
-  padding: 0.3rem 0.75rem;
-  border-radius: 20px;
+  gap: 0.45rem;
+  margin-top: 0.55rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  color: var(--gold);
 }
 
-.page-asd .studio-rental__ac .icon {
+.studio-rental__ac .icon {
   width: 0.95rem;
   height: 0.95rem;
-  color: var(--gold);
+  flex-shrink: 0;
 }
 
-.page-asd .studio-rental__panel-note {
-  font-size: 0.75rem;
-  color: var(--white-70);
-  letter-spacing: 0.04em;
-}
-
-.page-asd .studio-rental__facilities {
+.studio-rental__facilities {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem 1.5rem;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
 }
 
-@media (max-width: 480px) {
-  .page-asd .studio-rental__facilities {
-    grid-template-columns: 1fr;
-  }
-}
-
-.page-asd .studio-rental__facilities li {
+.studio-rental__facilities li {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  font-size: 0.88rem;
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--white-10);
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 0.9rem;
   color: var(--white-90);
 }
 
-.page-asd .studio-rental__fac-icon {
+.studio-rental__fac-icon {
   display: grid;
   place-items: center;
-  width: 2.2rem;
-  height: 2.2rem;
-  border: 1px solid rgba(245, 200, 66, 0.35);
-  border-radius: 50%;
-  color: var(--gold);
   flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--gold-a35);
+  color: var(--gold);
 }
 
-.page-asd .studio-rental__fac-icon .icon {
-  width: 1rem;
-  height: 1rem;
+.studio-rental__fac-icon .icon {
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
-.page-asd .studio-rental__equipment {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.studio-rental__equipment {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.1rem 1.5rem;
+  gap: 0.55rem;
 }
 
-@media (max-width: 520px) {
-  .page-asd .studio-rental__equipment {
-    grid-template-columns: 1fr;
-  }
-}
-
-.page-asd .studio-rental__equipment li {
+.studio-rental__equipment li {
   display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  font-size: 0.88rem;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--white-10);
+  font-size: 0.92rem;
+  line-height: 1.45;
   color: var(--white-90);
 }
 
-.page-asd .studio-rental__equipment .icon {
-  width: 1.15rem;
-  height: 1.15rem;
+.studio-rental__equipment li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.studio-rental__equipment .icon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.15rem;
   color: var(--gold);
-  flex-shrink: 0;
 }
 
-.page-asd .studio-rental__equip-img {
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: 0.35rem;
+.studio-rental__equip-img {
+  flex-shrink: 0;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-top: 0.05rem;
   object-fit: cover;
-  border: 1px solid rgba(245, 200, 66, 0.35);
-  flex-shrink: 0;
+  border: 1px solid var(--gold-a35);
+  filter: var(--photo-filter);
 }
 
-.page-asd .studio-rental__gallery-head {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.4rem;
-  margin-bottom: 1.5rem;
+.studio-rental__gallery-wrap {
+  margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
-.page-asd .studio-rental__gallery-head .studio-rental__panel-title {
-  font-family: var(--font-serif);
-  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
-  font-weight: 500;
-  line-height: 1.2;
-  color: var(--white);
-  margin: 0;
+.studio-rental__gallery-head {
+  margin-bottom: 1.15rem;
 }
 
-.page-asd .studio-rental__gallery-head .studio-rental__panel-note {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  line-height: 1.5;
-  letter-spacing: 0.02em;
-  color: var(--white-70);
-  margin: 0;
-}
-
-.page-asd .studio-rental__gallery-title {
-  font-family: var(--font-serif);
-  font-size: clamp(1.2rem, 2vw, 1.4rem);
-  color: var(--white);
-  margin-bottom: 1.25rem;
-  text-align: center;
-}
-
-.page-asd .studio-rental__gallery {
+.studio-rental__gallery {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1rem, 1.8vw, 1.5rem);
-  list-style: none;
-  padding: 0;
-  margin: 0 0 3.25rem;
+  gap: clamp(0.65rem, 1.5vw, 1rem);
 }
 
-.page-asd .studio-rental__gallery > li {
-  min-width: 0;
-}
-
-@media (max-width: 1024px) {
-  .page-asd .studio-rental__gallery {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.15rem;
-  }
-}
-
-@media (max-width: 640px) {
-  .page-asd .studio-rental__gallery {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1rem;
-  }
-}
-
-.page-asd .studio-rental__shot {
+.studio-rental__shot {
   position: relative;
   display: block;
   width: 100%;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  background: #0d0d0d;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
   padding: 0;
+  border: 1px solid var(--white-10);
+  background: var(--white-05);
   cursor: pointer;
-  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+  text-align: left;
+  color: inherit;
 }
 
-.page-asd .studio-rental__shot:hover,
-.page-asd .studio-rental__shot:focus-visible {
-  border-color: var(--gold-a35);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55);
-}
-
-.page-asd .studio-rental__shot img {
-  display: block;
+.studio-rental__shot .photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  filter: var(--photo-filter);
-  transition: transform 0.65s var(--ease-out);
+  transition: transform 1s var(--ease-out);
 }
 
-.page-asd .studio-rental__shot:hover img,
-.page-asd .studio-rental__shot:focus-visible img {
-  transform: scale(1.06);
-}
-
-.page-asd .studio-rental__shot-cap {
+.studio-rental__shot::after {
+  content: "";
   position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  padding: 3.25rem 1.25rem 1rem;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.88) 0%,
-    rgba(0, 0, 0, 0.45) 55%,
-    transparent 100%
-  );
-  font-family: var(--font-sans);
-  font-size: clamp(0.68rem, 0.85vw, 0.78rem);
+  inset: 0;
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 0.75) 0%,
+      rgba(0, 0, 0, 0.15) 45%,
+      transparent 70%);
+  pointer-events: none;
+  transition: background-color 0.4s ease;
+}
+
+.studio-rental__shot:hover .photo,
+.studio-rental__shot:focus-visible .photo {
+  transform: scale(1.05);
+}
+
+.studio-rental__shot:hover,
+.studio-rental__shot:focus-visible {
+  border-color: var(--gold-a60);
+  outline: none;
+}
+
+.studio-rental__shot-cap {
+  position: absolute;
+  z-index: 1;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  font-size: 0.72rem;
   font-weight: 500;
-  line-height: 1.3;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
   color: var(--white);
-  text-align: left;
   pointer-events: none;
 }
 
-.page-asd .studio-rental__cta {
+.studio-rental__cta {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  background: linear-gradient(135deg, rgba(245, 200, 66, 0.08) 0%, rgba(20, 20, 20, 0.95) 100%);
+  gap: 1.25rem 2rem;
+  padding: clamp(1.35rem, 3vw, 1.85rem) clamp(1.25rem, 3vw, 2rem);
   border: 1px solid var(--gold-a35);
-  border-radius: 6px;
-  padding: clamp(1.5rem, 3vw, 2.5rem);
+  background:
+    linear-gradient(120deg, var(--gold-a10), transparent 55%),
+    var(--white-05);
 }
 
-.page-asd .studio-rental__price {
+.studio-rental__price {
   flex: 1 1 280px;
   min-width: 0;
-  max-width: 64ch;
 }
 
-.page-asd .studio-rental__price-label {
-  font-size: 0.72rem;
+.studio-rental__price-label {
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.24em;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: var(--gold);
-  margin-bottom: 0.25rem;
+  color: var(--white-50);
 }
 
-.page-asd .studio-rental__pricing-tag {
-  font-size: 0.76rem;
-  letter-spacing: 0.08em;
+.studio-rental__pricing-tag {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--white-70);
-  margin-bottom: 0.25rem;
 }
 
-.page-asd .studio-rental__price-value {
+.studio-rental__price-value {
+  margin-top: 0.35rem;
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.5rem;
-  margin-bottom: 0.45rem;
+  gap: 0.35rem 0.55rem;
 }
 
-.page-asd .studio-rental__amount {
-  font-family: var(--font-serif);
-  font-size: clamp(2rem, 4vw, 2.85rem);
-  font-weight: 600;
-  color: var(--gold-light);
+.studio-rental__amount {
+  /* font-family: var(--font-serif); */
+  font-size: clamp(1.85rem, 1.4rem + 1.6vw, 2.6rem);
+  font-weight: 500;
   line-height: 1;
+  color: var(--gold);
 }
 
-.page-asd .studio-rental__per {
-  font-size: 0.92rem;
+.studio-rental__per {
+  font-size: 0.95rem;
   color: var(--white-70);
 }
 
-.page-asd .studio-rental__short-desc {
+.studio-rental__short-desc {
+  margin-top: 0.55rem;
+  max-width: 60ch;
   font-size: 0.9rem;
   line-height: 1.55;
   color: var(--white-90);
-  margin-top: 0.25rem;
 }
 
-.page-asd .studio-rental__price-note {
-  font-size: 0.75rem;
+.studio-rental__price-note {
+  margin-top: 0.45rem;
+  font-size: 0.78rem;
+  font-style: italic;
   color: var(--white-50);
-  margin-top: 0.35rem;
-  line-height: 1.5;
 }
 
-.page-asd .studio-rental__booking-info {
-  font-size: 0.8rem;
-  color: var(--gold-light);
+.studio-rental__booking-info {
   margin-top: 0.4rem;
-  line-height: 1.45;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--gold);
 }
 
-.page-asd .studio-rental__book {
-  padding: 0.85rem 2rem;
+.studio-rental__book {
   flex-shrink: 0;
 }
 
-@media (max-width: 600px) {
-  .page-asd .studio-rental__cta {
-    flex-direction: column;
-    align-items: flex-start;
+@media (max-width: 900px) {
+  .studio-rental__panels {
+    grid-template-columns: 1fr;
   }
 
-  .page-asd .studio-rental__price {
-    flex-basis: auto;
+  .studio-rental__gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .studio-rental__facilities {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-rental__cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .studio-rental__price {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
+  .studio-rental__book {
+    width: 100%;
+  }
+}
+
+@media (max-width: 360px) {
+  .studio-rental__gallery {
+    grid-template-columns: 1fr;
+  }
+
+  .studio-rental__area {
     width: 100%;
   }
 }
@@ -9921,6 +9873,20 @@ html.brands-pop-first .preloader__inner {
   .pg__stage {
     max-height: none;
   }
+
+  .page-asd .mobile-menu__actions {
+    margin-top: 1.75rem;
+  }
+
+  .page-asd .mobile-menu__actions .btn--full,
+  .page-asd .mobile-menu__actions .nav__shoot-book {
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    min-height: 48px;
+    padding: 0.85rem 1.25rem;
+    font-size: 0.8rem;
+  }
 }
 
 /* Stacked hero: phones and portrait tablets */
@@ -11079,4 +11045,13 @@ body.is-authenticated .site-header .nav__shoot-book {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+}
+
+@supports (-webkit-touch-callout: none) {
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }

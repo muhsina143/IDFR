@@ -637,34 +637,19 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
 
           <div class="studio-rental__cta" data-reveal="up">
             <div class="studio-rental__price">
-              <p class="studio-rental__price-label">{{ $rentalConfig['title'] }}</p>
+  <p class="studio-rental__price-label">{{ $rentalConfig['title'] }}</p>
 
-              @if($rentalConfig['price_enabled'])
-                @if(filled($rentalConfig['pricing_label']))
-                  <p class="studio-rental__pricing-tag">{{ $rentalConfig['pricing_label'] }}</p>
-                @endif
-                <p class="studio-rental__price-value">
-                  <span class="studio-rental__amount">{{ $rentalConfig['formatted_price'] }}</span>
-                  <span class="studio-rental__per">{{ $rentalConfig['unit_display'] }}</span>
-                </p>
-              @endif
+  @if($rentalConfig['price_enabled'])
+    <p class="studio-rental__price-value">
+      <span class="studio-rental__amount">{{ $rentalConfig['formatted_price'] }}</span>
+      <span class="studio-rental__per">{{ $rentalConfig['unit_display'] }}</span>
+    </p>
 
-              @if(filled($rentalConfig['short_description']))
-                <p class="studio-rental__short-desc">{{ $rentalConfig['short_description'] }}</p>
-              @endif
-
-              @if($rentalConfig['price_enabled'] && filled($rentalConfig['price_description']))
-                <p class="studio-rental__price-note">{{ $rentalConfig['price_description'] }}</p>
-              @endif
-
-              @if(filled($rentalConfig['booking_info']))
-                <p class="studio-rental__booking-info">{{ $rentalConfig['booking_info'] }}</p>
-              @endif
-
-              @if($rentalConfig['price_enabled'] && filled($rentalConfig['additional_note']))
-                <p class="studio-rental__price-note">{{ $rentalConfig['additional_note'] }}</p>
-              @endif
-            </div>
+    @if(filled($rentalConfig['price_description']))
+      <p class="studio-rental__price-note">{{ $rentalConfig['price_description'] }}</p>
+    @endif
+  @endif
+</div>
             <button
               class="btn btn--gold studio-rental__book"
               type="button"

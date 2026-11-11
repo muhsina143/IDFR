@@ -470,7 +470,7 @@ class AsdreamsPageTest extends TestCase
     {
         $this->get(route('admin.asdreams.dashboard'))->assertRedirect(route('admin.login'));
         $this->get(route('admin.asdreams.banners.index'))->assertRedirect(route('admin.login'));
-        $this->get(route('admin.asdreams.offers.index'))->assertRedirect(route('admin.login'));
+        $this->get(route('admin.asdreams.enquiries.index'))->assertRedirect(route('admin.login'));
     }
 
     /**
@@ -481,8 +481,6 @@ class AsdreamsPageTest extends TestCase
         $routes = [
             route('admin.asdreams.dashboard'),
             route('admin.asdreams.banners.index'),
-            route('admin.asdreams.brands.index'),
-            route('admin.asdreams.offers.index'),
             route('admin.asdreams.gallery.index'),
             route('admin.asdreams.team.index'),
             route('admin.asdreams.contact.index'),
@@ -491,14 +489,30 @@ class AsdreamsPageTest extends TestCase
             route('admin.asdreams.settings.index'),
         ];
 
-        $this->assertFalse(Route::has('admin.asdreams.about.index'));
-        $this->assertFalse(Route::has('admin.asdreams.about.update'));
+        foreach (['about.index', 'about.update', 'brands.index', 'brands.create', 'brands.store', 'brands.edit', 'brands.update', 'brands.destroy', 'brands.toggle-status', 'offers.index', 'offers.create', 'offers.store', 'offers.edit', 'offers.update', 'offers.destroy', 'offers.toggle-status'] as $removedSuffix) {
+            $this->assertFalse(Route::has('admin.asdreams.'.$removedSuffix));
+        }
+
+        $this->actingAs($this->adminUser, 'admin')->get('/admin/asdreams/brands')->assertNotFound();
+        $this->actingAs($this->adminUser, 'admin')->get('/admin/asdreams/offers')->assertNotFound();
 
         foreach ($routes as $url) {
             $response = $this->actingAs($this->adminUser, 'admin')->get($url);
             $response->assertStatus(200);
+            $response->assertSee('css/admin.css?v=', false);
             $response->assertDontSee('<span>About Page</span>', false);
+            $response->assertDontSee('<span>Homepage Brands</span>', false);
+            $response->assertDontSee('<span>Offer Management</span>', false);
+            $response->assertDontSee('Manage Offers &rarr;', false);
         }
+
+        $adminCss = File::get(public_path('css/admin.css'));
+        $this->assertStringContainsString('.admin-card input[type="text"]:not(.raw-input):not(.filter-input)', $adminCss);
+        $this->assertStringContainsString('.filter-group--search .search-icon', $adminCss);
+        $this->assertStringContainsString('left: 1rem;', $adminCss);
+        $this->assertStringContainsString('pointer-events: none;', $adminCss);
+        $this->assertStringContainsString('padding-left: 3rem;', $adminCss);
+        $this->assertStringContainsString('.admin-card .filter-group--search .filter-input', $adminCss);
     }
 
     /**

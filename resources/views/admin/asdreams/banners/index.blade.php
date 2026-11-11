@@ -86,9 +86,9 @@
               @endphp
               @if($linkedOffer)
                 <div>
-                  <a href="{{ route('admin.asdreams.offers.edit', $linkedOffer) }}" style="color: var(--gold); text-decoration: none; font-size: 0.85rem; font-weight: 500; display: block;">
+                  <span style="color: var(--gold); font-size: 0.85rem; font-weight: 500; display: block;">
                     {{ $linkedOffer->title }}
-                  </a>
+                  </span>
                   <a href="{{ route('asd.offers.show', $linkedOffer->slug) }}" target="_blank" style="color: var(--text-muted); font-size: 0.72rem; text-decoration: underline;">
                     /asdreams/offers/{{ $linkedOffer->slug }} ↗
                   </a>

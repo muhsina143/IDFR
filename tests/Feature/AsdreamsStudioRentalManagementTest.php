@@ -103,6 +103,32 @@ class AsdreamsStudioRentalManagementTest extends TestCase
         $hubResponse->assertSee('Main Floor');
         $hubResponse->assertSee('A. Rental Pricing');
         $hubResponse->assertSee('B. Studio Information');
+        $hubResponse->assertSee('<svg class="sprite"', false);
+        $hubResponse->assertDontSee('<div class="alert alert--success">', false);
+
+        foreach ([public_path('css/admin.css'), base_path('IDFR_LATEST/css/admin.css')] as $cssPath) {
+            $css = File::get($cssPath);
+            $this->assertMatchesRegularExpression(
+                '/\.sprite\s*\{[^}]*position:\s*absolute;[^}]*width:\s*0;[^}]*height:\s*0;[^}]*overflow:\s*hidden;/s',
+                $css
+            );
+        }
+
+        // Flash alerts must still render when saving Studio Rental settings without AJAX
+        $flashResponse = $this->actingAs($this->adminUser, 'admin')
+            ->followingRedirects()
+            ->post(route('admin.asdreams.studio-rental.pricing.update'), [
+                'title' => 'Book Studio for Rent',
+                'price_amount' => '1000',
+                'currency' => 'INR',
+                'rental_unit' => 'Per Day',
+                'price_enabled' => '1',
+                'from_hub' => '1',
+            ]);
+
+        $flashResponse->assertOk();
+        $flashResponse->assertSee('<div class="alert alert--success">', false);
+        $flashResponse->assertSee('Studio rental pricing and information updated successfully.');
     }
 
     public function test_admin_sidebar_renders_early_scroll_persistence_and_active_centering_script(): void
@@ -166,8 +192,9 @@ class AsdreamsStudioRentalManagementTest extends TestCase
             $response->assertSee('4,000 sq. ft.');
             $response->assertSee('Studio Rental');
             $response->assertSee('Starting From');
-            $response->assertSee('₹1,000');
-            $response->assertSee('/ Day');
+            $response->assertSee('₹1000');
+            $response->assertSee('/ day');
+            $response->assertDontSee('₹1,000');
             $response->assertSee('Professional photography and creative studio space available for your projects.');
             $response->assertSee('Final pricing may vary depending on rental duration, studio requirements and additional services.');
             $response->assertDontSee('Mock price');
@@ -186,15 +213,18 @@ class AsdreamsStudioRentalManagementTest extends TestCase
         }
 
         $css = File::get(public_path('css/style.css'));
-        $this->assertStringContainsString('flex-direction: column;', $css);
-        $this->assertStringContainsString('align-items: flex-start;', $css);
+        $this->assertStringContainsString('.studio-rental__area-icon {', $css);
+        $this->assertStringContainsString('.studio-rental__facilities li {', $css);
+        $this->assertStringContainsString('.studio-rental__equipment li {', $css);
+        $this->assertStringContainsString('.studio-rental__equip-img {', $css);
         $this->assertStringContainsString('grid-template-columns: repeat(3, minmax(0, 1fr));', $css);
         $this->assertStringContainsString('grid-template-columns: repeat(2, minmax(0, 1fr));', $css);
-        $this->assertStringContainsString('grid-template-columns: minmax(0, 1fr);', $css);
         $this->assertStringContainsString('object-fit: cover;', $css);
-        $this->assertStringContainsString('object-position: center;', $css);
-        $this->assertStringContainsString('transform: scale(1.06);', $css);
+        $this->assertStringContainsString('transform: scale(1.05);', $css);
         $this->assertStringContainsString('text-align: left;', $css);
+        $this->assertStringContainsString('.studio-rental__pricing-tag {', $css);
+        $this->assertStringContainsString('.studio-rental__short-desc {', $css);
+        $this->assertStringContainsString('.studio-rental__booking-info {', $css);
     }
 
     public function test_admin_can_crud_facilities_and_update_heading_and_description(): void
@@ -440,8 +470,8 @@ class AsdreamsStudioRentalManagementTest extends TestCase
             $res->assertSee('Commercial Soundstage Hire');
             $res->assertSee('5,200 sq. ft.');
             $res->assertSee('Rates From');
-            $res->assertSee('د.إ 1,500');
-            $res->assertSee('/ Hour');
+            $res->assertSee('د.إ 1500');
+            $res->assertSee('/ hour');
             $res->assertSee('Acoustic cyclorama floor available for editorial &amp; commercial shoots.', false);
             $res->assertSee('50% advance reservation deposit required.');
             $res->assertSee('Late night surcharge applies after 10 PM.');
@@ -466,9 +496,28 @@ class AsdreamsStudioRentalManagementTest extends TestCase
 
         $usdRes = $this->get(route('asd.home'))->assertOk();
         $usdRes->assertSee('Starting At');
-        $usdRes->assertSee('$2,500');
-        $usdRes->assertSee('/ Session');
+        $usdRes->assertSee('$2500');
+        $usdRes->assertSee('/ session');
         $usdRes->assertSee('Includes basic lighting rig.');
+
+        // 2b. Decimal INR price retains decimals without thousands separator and uses lowercase "/ day"
+        $this->postJson(route('admin.asdreams.studio-rental.pricing.update'), [
+            'title' => 'Studio Rental',
+            'short_description' => 'Half-rate custom block.',
+            'booking_info' => '',
+            'additional_note' => '',
+            'price_amount' => '1250.5',
+            'currency' => 'INR',
+            'rental_unit' => 'Per Day',
+            'pricing_label' => 'Starting From',
+            'price_description' => '',
+            'price_enabled' => '1',
+        ])->assertOk()->assertJson(['success' => true]);
+
+        $decRes = $this->get(route('asd.home'))->assertOk();
+        $decRes->assertSee('₹1250.50');
+        $decRes->assertSee('/ day');
+        $decRes->assertDontSee('₹1,250.50');
 
         // 3. Disable price display -> price amount, unit, and notes hidden while Book Studio & title stay visible
         $this->postJson(route('admin.asdreams.studio-rental.pricing.update'), [
@@ -489,8 +538,8 @@ class AsdreamsStudioRentalManagementTest extends TestCase
         $hiddenRes->assertSee('Contact us for bespoke quotes.');
         $hiddenRes->assertSee('Weekdays and weekends available.');
         $hiddenRes->assertSee('data-studio-book', false);
-        $hiddenRes->assertDontSee('$2,500');
-        $hiddenRes->assertDontSee('/ Session');
+        $hiddenRes->assertDontSee('$2500');
+        $hiddenRes->assertDontSee('/ session');
         $hiddenRes->assertDontSee('Starting At');
         $hiddenRes->assertDontSee('Hidden price description when disabled');
         $hiddenRes->assertDontSee('Hidden additional note when disabled');
