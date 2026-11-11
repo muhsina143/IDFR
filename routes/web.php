@@ -19,7 +19,6 @@ use App\Http\Controllers\Admin\AdminSeasonImageController;
 use App\Http\Controllers\Admin\AdminSeasonRegistrationController;
 use App\Http\Controllers\Admin\AdminSponsorController;
 use App\Http\Controllers\Admin\AdminSponsorshipEnquiryController;
-use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsAboutController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsBannerController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsBrandController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsClientController;
@@ -32,6 +31,10 @@ use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsOfferController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsSettingController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsShootBookingController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsStudioBookingController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsStudioEquipmentController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsStudioFacilityController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsStudioGalleryController;
+use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsStudioRentalController;
 use App\Http\Controllers\Admin\Asdreams\AdminAsdreamsTeamController;
 use App\Http\Controllers\AsdreamsController;
 use App\Http\Controllers\Auth\AuthController;
@@ -380,10 +383,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('offers', AdminAsdreamsOfferController::class)->except(['show']);
             Route::post('offers/{offer}/toggle-status', [AdminAsdreamsOfferController::class, 'toggleStatus'])->name('offers.toggle-status');
 
-            // 5. About Page Management
-            Route::get('about', [AdminAsdreamsAboutController::class, 'index'])->name('about.index');
-            Route::post('about', [AdminAsdreamsAboutController::class, 'update'])->name('about.update');
-
             // 6. Gallery Management
             Route::get('gallery', [AdminAsdreamsGalleryController::class, 'index'])->name('gallery.index');
             Route::get('gallery/create', [AdminAsdreamsGalleryController::class, 'createImage'])->name('gallery.create');
@@ -435,9 +434,30 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('moving-logos', AdminAsdreamsMovingLogoController::class)->except(['show']);
             Route::post('moving-logos/{movingLogo}/toggle-status', [AdminAsdreamsMovingLogoController::class, 'toggleStatus'])->name('moving-logos.toggle-status');
 
-            // 14. Website Settings
+            // 14. Studio Rental Management
+            Route::get('studio-rental', [AdminAsdreamsStudioRentalController::class, 'index'])->name('studio-rental.index');
+            Route::match(['post', 'put'], 'studio-rental/pricing', [AdminAsdreamsStudioRentalController::class, 'updatePricingSettings'])->name('studio-rental.pricing.update');
+
+            Route::post('studio-facilities/settings', [AdminAsdreamsStudioFacilityController::class, 'updateSettings'])->name('studio-facilities.settings');
+            Route::resource('studio-facilities', AdminAsdreamsStudioFacilityController::class)
+                ->except(['show'])
+                ->parameters(['studio-facilities' => 'facility']);
+            Route::post('studio-facilities/{facility}/toggle-status', [AdminAsdreamsStudioFacilityController::class, 'toggleStatus'])->name('studio-facilities.toggle-status');
+
+            Route::post('studio-equipment/settings', [AdminAsdreamsStudioEquipmentController::class, 'updateSettings'])->name('studio-equipment.settings');
+            Route::resource('studio-equipment', AdminAsdreamsStudioEquipmentController::class)
+                ->except(['show'])
+                ->parameters(['studio-equipment' => 'equipment']);
+            Route::post('studio-equipment/{equipment}/toggle-status', [AdminAsdreamsStudioEquipmentController::class, 'toggleStatus'])->name('studio-equipment.toggle-status');
+
+            Route::resource('studio-gallery', AdminAsdreamsStudioGalleryController::class)
+                ->except(['show'])
+                ->parameters(['studio-gallery' => 'studioGallery']);
+            Route::post('studio-gallery/{studioGallery}/toggle-status', [AdminAsdreamsStudioGalleryController::class, 'toggleStatus'])->name('studio-gallery.toggle-status');
+
+            // 15. Website Settings
             Route::get('settings', [AdminAsdreamsSettingController::class, 'index'])->name('settings.index');
-            Route::post('settings', [AdminAsdreamsSettingController::class, 'update'])->name('settings.update');
+            Route::match(['post', 'put'], 'settings', [AdminAsdreamsSettingController::class, 'update'])->name('settings.update');
         });
     });
 });

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AsdreamsContactEnquiry extends Model
 {
     use HasFactory;
+    use HasReadTracking;
 
     protected $table = 'asdreams_contact_enquiries';
 
@@ -19,14 +20,14 @@ class AsdreamsContactEnquiry extends Model
         'subject',
         'message',
         'status',
+        'read_at',
         'admin_notes',
         'ip_address',
     ];
 
-    public function scopeNew($query)
-    {
-        return $query->where('status', 'new');
-    }
+    protected $casts = [
+        'read_at' => 'datetime',
+    ];
 
     public function scopeRecent($query)
     {

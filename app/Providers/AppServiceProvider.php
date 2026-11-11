@@ -62,9 +62,6 @@ class AppServiceProvider extends ServiceProvider
 
             if (Schema::hasTable('sponsorship_enquiries')) {
                 $view->with('sponsorshipTypes', SponsorshipEnquiry::availableTypes());
-                if (str_starts_with($view->getName(), 'admin.')) {
-                    $view->with('newSponsorshipCount', SponsorshipEnquiry::where('status', 'new')->count());
-                }
             }
 
             if (Schema::hasTable('professional_categories')) {
@@ -79,19 +76,33 @@ class AppServiceProvider extends ServiceProvider
                 $asdBrands = AsdreamsBrand::active()->get();
                 $view->with('asdBanners', $asdBanners)
                     ->with('asdBrands', $asdBrands);
-
-                if (str_starts_with($view->getName(), 'admin.')) {
-                    $newAsdOfferEnquiriesCount = AsdreamsOfferEnquiry::where('status', 'new')->count();
-                    $newAsdContactEnquiriesCount = AsdreamsContactEnquiry::where('status', 'new')->count();
-                    $newAsdShootBookingsCount = AsdreamsShootBooking::shoot()->where('status', 'new')->count();
-                    $newAsdStudioBookingsCount = AsdreamsShootBooking::studio()->where('status', 'new')->count();
-
-                    $view->with('newAsdOfferEnquiriesCount', $newAsdOfferEnquiriesCount)
-                        ->with('newAsdContactEnquiriesCount', $newAsdContactEnquiriesCount)
-                        ->with('newAsdShootBookingsCount', $newAsdShootBookingsCount)
-                        ->with('newAsdStudioBookingsCount', $newAsdStudioBookingsCount);
-                }
             }
+        });
+
+        View::composer('admin.layouts.app', function ($view): void {
+            if (Schema::hasTable('sponsorship_enquiries')) {
+                $view->with('newSponsorshipCount', SponsorshipEnquiry::where('status', 'new')->count());
+            }
+
+            $offerUnread = Schema::hasTable('asdreams_offer_enquiries')
+                ? AsdreamsOfferEnquiry::unread()->count()
+                : 0;
+            $contactUnread = Schema::hasTable('asdreams_contact_enquiries')
+                ? AsdreamsContactEnquiry::unread()->count()
+                : 0;
+
+            if (Schema::hasTable('asdreams_shoot_bookings')) {
+                $shootUnread = AsdreamsShootBooking::shoot()->unread()->count();
+                $studioUnread = AsdreamsShootBooking::studio()->unread()->count();
+            } else {
+                $shootUnread = 0;
+                $studioUnread = 0;
+            }
+
+            $view->with('newAsdOfferEnquiriesCount', $offerUnread)
+                ->with('newAsdContactEnquiriesCount', $contactUnread)
+                ->with('newAsdShootBookingsCount', $shootUnread)
+                ->with('newAsdStudioBookingsCount', $studioUnread);
         });
     }
 }

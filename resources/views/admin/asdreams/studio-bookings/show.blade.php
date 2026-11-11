@@ -101,6 +101,7 @@
           <label class="form-label" for="status">Booking Status</label>
           <select id="status" name="status" class="form-control">
             <option value="new" {{ old('status', $booking->status) == 'new' ? 'selected' : '' }}>New (Uncontacted)</option>
+            <option value="read" {{ old('status', $booking->status) == 'read' ? 'selected' : '' }}>Read</option>
             <option value="contacted" {{ old('status', $booking->status) == 'contacted' ? 'selected' : '' }}>Contacted / Quoting</option>
             <option value="confirmed" {{ old('status', $booking->status) == 'confirmed' ? 'selected' : '' }}>Confirmed &amp; Scheduled</option>
             <option value="completed" {{ old('status', $booking->status) == 'completed' ? 'selected' : '' }}>Rental Completed</option>

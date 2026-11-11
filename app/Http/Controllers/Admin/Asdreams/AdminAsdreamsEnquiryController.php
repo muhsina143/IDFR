@@ -79,8 +79,8 @@ class AdminAsdreamsEnquiryController extends Controller
             $enquiries = $query->paginate(20)->withQueryString();
         }
 
-        $newOffersCount = AsdreamsOfferEnquiry::where('status', 'new')->count();
-        $newContactCount = AsdreamsContactEnquiry::where('status', 'new')->count();
+        $newOffersCount = AsdreamsOfferEnquiry::unread()->count();
+        $newContactCount = AsdreamsContactEnquiry::unread()->count();
 
         return view('admin.asdreams.enquiries.index', compact(
             'enquiries',
@@ -93,17 +93,19 @@ class AdminAsdreamsEnquiryController extends Controller
 
     public function showOffer(AsdreamsOfferEnquiry $enquiry): View
     {
+        $enquiry->markAsRead();
+
         return view('admin.asdreams.enquiries.show-offer', compact('enquiry'));
     }
 
     public function updateOfferStatus(Request $request, AsdreamsOfferEnquiry $enquiry): RedirectResponse
     {
         $validated = $request->validate([
-            'status' => 'required|in:new,contacted,completed,archived',
+            'status' => 'required|in:new,read,contacted,completed,archived',
             'admin_notes' => 'nullable|string|max:1000',
         ]);
 
-        $enquiry->update($validated);
+        $enquiry->applyAdminStatusUpdate($validated);
 
         return back()->with('success', 'Offer enquiry updated successfully.');
     }
@@ -118,17 +120,19 @@ class AdminAsdreamsEnquiryController extends Controller
 
     public function showContact(AsdreamsContactEnquiry $enquiry): View
     {
+        $enquiry->markAsRead();
+
         return view('admin.asdreams.enquiries.show-contact', compact('enquiry'));
     }
 
     public function updateContactStatus(Request $request, AsdreamsContactEnquiry $enquiry): RedirectResponse
     {
         $validated = $request->validate([
-            'status' => 'required|in:new,contacted,completed,archived',
+            'status' => 'required|in:new,read,contacted,completed,archived',
             'admin_notes' => 'nullable|string|max:1000',
         ]);
 
-        $enquiry->update($validated);
+        $enquiry->applyAdminStatusUpdate($validated);
 
         return back()->with('success', 'Contact enquiry updated successfully.');
     }

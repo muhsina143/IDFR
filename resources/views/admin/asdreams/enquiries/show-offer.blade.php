@@ -95,12 +95,13 @@
 
       <form action="{{ route('admin.asdreams.enquiries.update-offer-status', $enquiry) }}" method="POST">
         @csrf
-        @method('PATCH')
+        @method('PUT')
 
         <div class="form-group">
           <label class="form-label" for="status">Follow-up Status</label>
           <select id="status" name="status" class="form-control">
             <option value="new" {{ old('status', $enquiry->status) == 'new' ? 'selected' : '' }}>New (Uncontacted)</option>
+            <option value="read" {{ old('status', $enquiry->status) == 'read' ? 'selected' : '' }}>Read</option>
             <option value="contacted" {{ old('status', $enquiry->status) == 'contacted' ? 'selected' : '' }}>Contacted / In Discussion</option>
             <option value="completed" {{ old('status', $enquiry->status) == 'completed' ? 'selected' : '' }}>Completed / Booked</option>
             <option value="archived" {{ old('status', $enquiry->status) == 'archived' ? 'selected' : '' }}>Archived / Closed</option>

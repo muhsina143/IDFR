@@ -89,6 +89,33 @@
     <div style="font-size: 2rem; font-family: var(--font-serif); font-weight: 700; color: #fff;">{{ $stats['moving_logos_count'] }}</div>
     <a href="{{ route('admin.asdreams.moving-logos.index') }}" style="font-size: 0.8rem; color: var(--gold); text-decoration: none; margin-top: 0.5rem; display: inline-block;">Manage Moving Logos &rarr;</a>
   </div>
+
+  <div class="admin-card" style="padding: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Studio Facilities</span>
+      <span style="background: rgba(34, 197, 94, 0.1); color: #4ade80; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">{{ $stats['studio_facilities_active'] }} Active</span>
+    </div>
+    <div style="font-size: 2rem; font-family: var(--font-serif); font-weight: 700; color: #fff;">{{ $stats['studio_facilities_count'] }}</div>
+    <a href="{{ route('admin.asdreams.studio-rental.index', ['tab' => 'facilities']) }}" style="font-size: 0.8rem; color: var(--gold); text-decoration: none; margin-top: 0.5rem; display: inline-block;">Manage Facilities &rarr;</a>
+  </div>
+
+  <div class="admin-card" style="padding: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Equipment Included</span>
+      <span style="background: rgba(229, 184, 61, 0.1); color: var(--gold); padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">{{ $stats['studio_equipment_active'] }} Active</span>
+    </div>
+    <div style="font-size: 2rem; font-family: var(--font-serif); font-weight: 700; color: #fff;">{{ $stats['studio_equipment_count'] }}</div>
+    <a href="{{ route('admin.asdreams.studio-rental.index', ['tab' => 'equipment']) }}" style="font-size: 0.8rem; color: var(--gold); text-decoration: none; margin-top: 0.5rem; display: inline-block;">Manage Equipment &rarr;</a>
+  </div>
+
+  <div class="admin-card" style="padding: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+      <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600;">Studio Rental Gallery</span>
+      <span style="background: rgba(34, 197, 94, 0.1); color: #4ade80; padding: 0.2rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 700;">{{ $stats['studio_gallery_active'] }} Active</span>
+    </div>
+    <div style="font-size: 2rem; font-family: var(--font-serif); font-weight: 700; color: #fff;">{{ $stats['studio_gallery_count'] }}</div>
+    <a href="{{ route('admin.asdreams.studio-rental.index', ['tab' => 'gallery']) }}" style="font-size: 0.8rem; color: var(--gold); text-decoration: none; margin-top: 0.5rem; display: inline-block;">Manage Studio Rental &rarr;</a>
+  </div>
 </div>
 
 <!-- Recent Leads & Enquiries Grid -->

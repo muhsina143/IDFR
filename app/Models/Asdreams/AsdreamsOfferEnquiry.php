@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AsdreamsOfferEnquiry extends Model
 {
     use HasFactory;
+    use HasReadTracking;
 
     protected $table = 'asdreams_offer_enquiries';
 
@@ -22,12 +23,14 @@ class AsdreamsOfferEnquiry extends Model
         'preferred_date',
         'message',
         'status',
+        'read_at',
         'admin_notes',
         'ip_address',
     ];
 
     protected $casts = [
         'preferred_date' => 'date',
+        'read_at' => 'datetime',
     ];
 
     public function banner(): BelongsTo
@@ -38,11 +41,6 @@ class AsdreamsOfferEnquiry extends Model
     public function offer(): BelongsTo
     {
         return $this->belongsTo(AsdreamsOffer::class, 'offer_id');
-    }
-
-    public function scopeNew($query)
-    {
-        return $query->where('status', 'new');
     }
 
     public function scopeRecent($query)

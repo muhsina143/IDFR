@@ -7930,6 +7930,8 @@ html.brands-pop-first .preloader__inner {
 .page-asd .studio-rental {
   position: relative;
   background: var(--black);
+  color: var(--white);
+  font-family: var(--font-sans);
   padding: clamp(3rem, 7vw, 6rem) 0;
 }
 
@@ -7942,6 +7944,7 @@ html.brands-pop-first .preloader__inner {
   background: rgba(245, 200, 66, 0.04);
   border-radius: 4px;
   margin-bottom: 2.5rem;
+  max-width: 100%;
 }
 
 .page-asd .studio-rental__area-icon {
@@ -7952,6 +7955,7 @@ html.brands-pop-first .preloader__inner {
   border: 1px solid var(--gold);
   color: var(--gold);
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .page-asd .studio-rental__area-icon .icon {
@@ -7989,6 +7993,7 @@ html.brands-pop-first .preloader__inner {
 }
 
 .page-asd .studio-rental__panel {
+  min-width: 0;
   background: #0d0d0d;
   border: 1px solid rgba(255, 255, 255, 0.08);
   padding: clamp(1.5rem, 3vw, 2.25rem);
@@ -8113,6 +8118,41 @@ html.brands-pop-first .preloader__inner {
   flex-shrink: 0;
 }
 
+.page-asd .studio-rental__equip-img {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.35rem;
+  object-fit: cover;
+  border: 1px solid rgba(245, 200, 66, 0.35);
+  flex-shrink: 0;
+}
+
+.page-asd .studio-rental__gallery-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.page-asd .studio-rental__gallery-head .studio-rental__panel-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--white);
+  margin: 0;
+}
+
+.page-asd .studio-rental__gallery-head .studio-rental__panel-note {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--white-70);
+  margin: 0;
+}
+
 .page-asd .studio-rental__gallery-title {
   font-family: var(--font-serif);
   font-size: clamp(1.2rem, 2vw, 1.4rem);
@@ -8123,22 +8163,28 @@ html.brands-pop-first .preloader__inner {
 
 .page-asd .studio-rental__gallery {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1rem, 1.8vw, 1.5rem);
   list-style: none;
   padding: 0;
-  margin: 0 0 3.5rem;
+  margin: 0 0 3.25rem;
+}
+
+.page-asd .studio-rental__gallery > li {
+  min-width: 0;
 }
 
 @media (max-width: 1024px) {
   .page-asd .studio-rental__gallery {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.15rem;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .page-asd .studio-rental__gallery {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
   }
 }
 
@@ -8148,35 +8194,54 @@ html.brands-pop-first .preloader__inner {
   width: 100%;
   aspect-ratio: 4 / 5;
   overflow: hidden;
-  background: #111;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
   padding: 0;
   cursor: pointer;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.page-asd .studio-rental__shot:hover,
+.page-asd .studio-rental__shot:focus-visible {
+  border-color: var(--gold-a35);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.55);
 }
 
 .page-asd .studio-rental__shot img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s var(--ease-out);
+  object-position: center;
+  filter: var(--photo-filter);
+  transition: transform 0.65s var(--ease-out);
 }
 
-.page-asd .studio-rental__shot:hover img {
-  transform: scale(1.08);
+.page-asd .studio-rental__shot:hover img,
+.page-asd .studio-rental__shot:focus-visible img {
+  transform: scale(1.06);
 }
 
 .page-asd .studio-rental__shot-cap {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  padding: 1.5rem 0.75rem 0.5rem;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent);
-  font-size: 0.72rem;
+  padding: 3.25rem 1.25rem 1rem;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.45) 55%,
+    transparent 100%
+  );
+  font-family: var(--font-sans);
+  font-size: clamp(0.68rem, 0.85vw, 0.78rem);
+  font-weight: 500;
+  line-height: 1.3;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--white-90);
-  text-align: center;
+  letter-spacing: 0.14em;
+  color: var(--white);
+  text-align: left;
   pointer-events: none;
 }
 
@@ -8192,6 +8257,12 @@ html.brands-pop-first .preloader__inner {
   padding: clamp(1.5rem, 3vw, 2.5rem);
 }
 
+.page-asd .studio-rental__price {
+  flex: 1 1 280px;
+  min-width: 0;
+  max-width: 64ch;
+}
+
 .page-asd .studio-rental__price-label {
   font-size: 0.72rem;
   text-transform: uppercase;
@@ -8200,10 +8271,19 @@ html.brands-pop-first .preloader__inner {
   margin-bottom: 0.25rem;
 }
 
+.page-asd .studio-rental__pricing-tag {
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white-70);
+  margin-bottom: 0.25rem;
+}
+
 .page-asd .studio-rental__price-value {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
+  margin-bottom: 0.45rem;
 }
 
 .page-asd .studio-rental__amount {
@@ -8219,14 +8299,42 @@ html.brands-pop-first .preloader__inner {
   color: var(--white-70);
 }
 
+.page-asd .studio-rental__short-desc {
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--white-90);
+  margin-top: 0.25rem;
+}
+
 .page-asd .studio-rental__price-note {
   font-size: 0.75rem;
   color: var(--white-50);
   margin-top: 0.35rem;
+  line-height: 1.5;
+}
+
+.page-asd .studio-rental__booking-info {
+  font-size: 0.8rem;
+  color: var(--gold-light);
+  margin-top: 0.4rem;
+  line-height: 1.45;
 }
 
 .page-asd .studio-rental__book {
   padding: 0.85rem 2rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .page-asd .studio-rental__cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-asd .studio-rental__price {
+    flex-basis: auto;
+    width: 100%;
+  }
 }
 
 /* ---------- Footer call to action ---------- */

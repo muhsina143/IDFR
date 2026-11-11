@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Asdreams\AsdreamsAboutContent;
 use App\Models\Asdreams\AsdreamsBanner;
 use App\Models\Asdreams\AsdreamsBrand;
 use App\Models\Asdreams\AsdreamsClient;
@@ -13,6 +12,10 @@ use App\Models\Asdreams\AsdreamsMovingLogo;
 use App\Models\Asdreams\AsdreamsOffer;
 use App\Models\Asdreams\AsdreamsOfferEnquiry;
 use App\Models\Asdreams\AsdreamsShootBooking;
+use App\Models\Asdreams\AsdreamsStudioEquipment;
+use App\Models\Asdreams\AsdreamsStudioFacility;
+use App\Models\Asdreams\AsdreamsStudioGalleryImage;
+use App\Models\Asdreams\AsdreamsStudioRentalSetting;
 use App\Models\Asdreams\AsdreamsTeamMember;
 use App\Models\Asdreams\AsdreamsWebsiteSetting;
 use Illuminate\Http\JsonResponse;
@@ -34,9 +37,24 @@ class AsdreamsController extends Controller
             ->get();
         $clients = AsdreamsClient::active()->get();
         $movingLogos = AsdreamsMovingLogo::active()->get();
+        $studioFacilities = AsdreamsStudioFacility::active()->get();
+        $studioEquipments = AsdreamsStudioEquipment::active()->get();
+        $studioGalleryImages = AsdreamsStudioGalleryImage::active()->get();
         $settings = AsdreamsWebsiteSetting::pluck('value', 'key');
+        $studioRental = AsdreamsStudioRentalSetting::getConfig($settings);
 
-        return view('asdreams.home', compact('banners', 'brands', 'categories', 'clients', 'movingLogos', 'settings'));
+        return view('asdreams.home', compact(
+            'banners',
+            'brands',
+            'categories',
+            'clients',
+            'movingLogos',
+            'studioFacilities',
+            'studioEquipments',
+            'studioGalleryImages',
+            'settings',
+            'studioRental'
+        ));
     }
 
     /**
@@ -44,9 +62,7 @@ class AsdreamsController extends Controller
      */
     public function about(): View
     {
-        $about = AsdreamsAboutContent::current();
-
-        return view('asdreams.about', compact('about'));
+        return view('asdreams.about');
     }
 
     /**

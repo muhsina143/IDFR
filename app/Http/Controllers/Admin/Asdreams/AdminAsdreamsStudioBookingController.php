@@ -57,17 +57,19 @@ class AdminAsdreamsStudioBookingController extends Controller
 
     public function show(AsdreamsShootBooking $booking): View
     {
+        $booking->markAsRead();
+
         return view('admin.asdreams.studio-bookings.show', compact('booking'));
     }
 
     public function updateStatus(Request $request, AsdreamsShootBooking $booking): RedirectResponse
     {
         $validated = $request->validate([
-            'status' => 'required|in:new,contacted,confirmed,completed,cancelled',
+            'status' => 'required|in:new,read,contacted,confirmed,completed,cancelled',
             'admin_notes' => 'nullable|string|max:1000',
         ]);
 
-        $booking->update($validated);
+        $booking->applyAdminStatusUpdate($validated);
 
         return back()->with('success', 'Studio booking updated successfully.');
     }

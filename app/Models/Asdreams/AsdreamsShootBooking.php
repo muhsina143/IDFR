@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class AsdreamsShootBooking extends Model
 {
     use HasFactory;
+    use HasReadTracking;
 
     protected $table = 'asdreams_shoot_bookings';
 
@@ -25,6 +26,7 @@ class AsdreamsShootBooking extends Model
         'start_date',
         'end_date',
         'status',
+        'read_at',
         'admin_notes',
         'ip_address',
     ];
@@ -34,12 +36,8 @@ class AsdreamsShootBooking extends Model
         'start_date' => 'date',
         'end_date' => 'date',
         'days' => 'integer',
+        'read_at' => 'datetime',
     ];
-
-    public function scopeNew($query)
-    {
-        return $query->where('status', 'new');
-    }
 
     public function scopeRecent($query)
     {

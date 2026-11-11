@@ -16,14 +16,14 @@
         <div class="asd-banner">
           <img
             class="photo asd-banner__img"
-            src="{{ $about->banner_image ? asset($about->banner_image) : asset('images/asdreams/ab2.png') }}"
+            src="{{ asset('images/asdreams/ab2.png') }}"
             alt=""
             width="1800"
             height="1200"
             loading="lazy"
           />
           <div class="asd-banner__content" data-reveal="up">
-            <h2 class="asd-banner__title" id="asdAboutTitle">{{ $about->title ?? 'About Us' }}</h2>
+            <h2 class="asd-banner__title" id="asdAboutTitle">About Us</h2>
             <nav class="breadcrumb asd-banner__crumbs" aria-label="Breadcrumb">
               <ol>
                 <li><a href="{{ route('idfr.home') }}">Home</a></li>
@@ -45,7 +45,7 @@
               >
                 <img
                   class="photo"
-                  src="{{ $about->video_cover_image ? asset($about->video_cover_image) : asset('images/asdreams/about-video.jpg') }}"
+                  src="{{ asset('images/asdreams/about-video.jpg') }}"
                   alt=""
                   width="800"
                   height="533"
@@ -58,7 +58,7 @@
               </button>
               <p class="asd-about__years">
                 <span class="asd-about__num"
-                  ><span data-count="{{ $about->years_of_experience }}">{{ $about->years_of_experience }}</span>+</span
+                  ><span data-count="15">15</span>+</span
                 >
                 <span class="asd-about__years-label">Years of Experience</span>
               </p>
@@ -66,13 +66,15 @@
 
             <div class="asd-about__how" data-reveal="up" data-delay="100">
               <h3 class="asd-about__how-title">
-                {{ $about->how_we_work_title }}
+                How we work?
                 <button class="asd-about__watch" type="button" data-asd-reel>
                   Watch The Video
                 </button>
               </h3>
               <p>
-                {{ $about->how_we_work_text }}
+                From the first mood board to the final colour grade, one
+                dedicated team plans, shoots and edits every story — so nothing
+                gets lost between the shutter and the screen.
               </p>
             </div>
 
@@ -80,54 +82,63 @@
 
             <div class="asd-about__story" data-reveal="up" data-delay="150">
               <h3 class="asd-about__heading">
-                {{ $about->story_heading_main }} <em>{{ $about->story_heading_highlight }}</em>
+                Behind the Lens, <em>Ahead of the Curve</em>
               </h3>
-              <p>
-                {{ $about->story_paragraph_1 }}
+               <p>
+               ASDreamStudio is a creative fashion and media company bringing together photography, videography, designer fashion shows, model training and beauty education.
+
               </p>
-              @if(!empty($about->story_bullets))
-                <ul class="asd-about__list">
-                  @foreach($about->story_bullets as $bullet)
-                    <li>
-                      <svg class="icon" aria-hidden="true">
-                        <use href="#i-check" />
-                      </svg>{{ $bullet }}
-                    </li>
-                  @endforeach
-                </ul>
-              @endif
-              @if($about->story_extended_text)
-                <div class="asd-about__more" id="asdAboutMore" hidden>
-                  <p>
-                    {{ $about->story_extended_text }}
-                  </p>
-                </div>
-                <button
-                  class="text-link asd-about__readmore"
-                  type="button"
-                  aria-expanded="false"
-                  aria-controls="asdAboutMore"
-                >
-                  <span>Read More</span>
+              <ul class="asd-about__list">
+                <li>
                   <svg class="icon" aria-hidden="true">
-                    <use href="#i-arrow-right" />
-                  </svg>
-                </button>
-              @endif
+                    <use href="#i-check" /></svg
+                  >We connect creativity with opportunities
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-check" /></svg
+                  >Empowering aspiring talents
+                </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-check" /></svg
+                  >Models and professionals to build successful careers in the fashion and beauty industry.
+                </li>
+              </ul>
+              <div class="asd-about__more" id="asdAboutMore" hidden>
+                <p>
+                  Our Kozhikode studio houses a 2,400 sq ft cyclorama, a
+                  dedicated edit suite and a styling lounge. Beyond IDFR, we
+                  travel across India and abroad for weddings, destination
+                  shoots, brand films and live events — always with the same
+                  small, senior crew.
+                </p>
+              </div>
+              <button
+                class="text-link asd-about__readmore"
+                type="button"
+                aria-expanded="false"
+                aria-controls="asdAboutMore"
+              >
+                <span>Read More</span>
+                <svg class="icon" aria-hidden="true">
+                  <use href="#i-arrow-right" />
+                </svg>
+              </button>
             </div>
           </div>
 
           <figure class="asd-about__media" data-reveal="clip">
             <img
               class="photo"
-              src="{{ $about->studio_image ? asset($about->studio_image) : asset('images/asdreams/about-studio.jpg') }}"
+              src="{{ asset('images/asdreams/about-studio.jpg') }}"
               alt="Camera ready for a night shoot"
               width="900"
               height="1350"
               loading="lazy"
             />
             <figcaption class="asd-about__tag">
-              <span>{{ $about->studio_caption_title }}</span>{{ $about->studio_caption_subtitle }}
+              <span>Studio 01</span>Kozhikode, Kerala
             </figcaption>
           </figure>
         </div>

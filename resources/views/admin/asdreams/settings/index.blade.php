@@ -43,35 +43,13 @@
         </div>
       </div>
 
-      <!-- Studio Rental Pricing & CTA -->
+      <!-- Studio Rental Pricing Notice (Consolidated into Studio Rental Management) -->
       <div class="admin-card">
-        <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 1.25rem;">Studio Rental Space &amp; Pricing</h3>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
-          <div class="form-group" style="grid-column: span 2;">
-            <label class="form-label" for="studio_rental_title">Rental Banner Heading</label>
-            <input type="text" id="studio_rental_title" name="studio_rental_title" value="{{ old('studio_rental_title', $settings['studio_rental_title'] ?? 'Full Day Studio Hire') }}" class="form-control" />
-            @error('studio_rental_title') <span class="form-error">{{ $message }}</span> @enderror
-          </div>
-
-          <div class="form-group" style="grid-column: span 2;">
-            <label class="form-label" for="studio_rental_subtitle">Rental Details &amp; Perks</label>
-            <textarea id="studio_rental_subtitle" name="studio_rental_subtitle" rows="3" class="form-control">{{ old('studio_rental_subtitle', $settings['studio_rental_subtitle'] ?? 'Includes Cyclorama Infinity Wall, Profoto lighting pack, high-speed WiFi, private makeup suite and client lounge.') }}</textarea>
-            @error('studio_rental_subtitle') <span class="form-error">{{ $message }}</span> @enderror
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="studio_rental_price">Display Price</label>
-            <input type="text" id="studio_rental_price" name="studio_rental_price" value="{{ old('studio_rental_price', $settings['studio_rental_price'] ?? '₹18,000') }}" class="form-control" placeholder="₹18,000" />
-            @error('studio_rental_price') <span class="form-error">{{ $message }}</span> @enderror
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="studio_rental_per">Rate Unit</label>
-            <input type="text" id="studio_rental_per" name="studio_rental_per" value="{{ old('studio_rental_per', $settings['studio_rental_per'] ?? '/ 8-hour shift') }}" class="form-control" placeholder="/ 8-hour shift" />
-            @error('studio_rental_per') <span class="form-error">{{ $message }}</span> @enderror
-          </div>
-        </div>
+        <h3 style="font-size: 1.1rem; color: #fff; margin-bottom: 0.75rem;">Studio Rental Pricing &amp; Details</h3>
+        <p class="form-hint" style="margin-bottom: 1.25rem;">Studio Rental pricing, currency, billing units, facilities, equipment, and gallery are managed together inside the centralized Studio Rental Management page.</p>
+        <a href="{{ route('admin.asdreams.studio-rental.index', ['tab' => 'settings']) }}" class="btn-gold">
+          Open Studio Rental Pricing &amp; Settings &rarr;
+        </a>
       </div>
     </div>
 

@@ -13,6 +13,9 @@ use App\Models\Asdreams\AsdreamsMovingLogo;
 use App\Models\Asdreams\AsdreamsOffer;
 use App\Models\Asdreams\AsdreamsOfferEnquiry;
 use App\Models\Asdreams\AsdreamsShootBooking;
+use App\Models\Asdreams\AsdreamsStudioEquipment;
+use App\Models\Asdreams\AsdreamsStudioFacility;
+use App\Models\Asdreams\AsdreamsStudioGalleryImage;
 use App\Models\Asdreams\AsdreamsTeamMember;
 use Illuminate\View\View;
 
@@ -34,11 +37,17 @@ class AdminAsdreamsDashboardController extends Controller
             'clients_active' => AsdreamsClient::where('is_active', true)->count(),
             'moving_logos_count' => AsdreamsMovingLogo::count(),
             'moving_logos_active' => AsdreamsMovingLogo::where('is_active', true)->count(),
-            'offer_enquiries_new' => AsdreamsOfferEnquiry::where('status', 'new')->count(),
+            'studio_facilities_count' => AsdreamsStudioFacility::count(),
+            'studio_facilities_active' => AsdreamsStudioFacility::where('is_active', true)->count(),
+            'studio_equipment_count' => AsdreamsStudioEquipment::count(),
+            'studio_equipment_active' => AsdreamsStudioEquipment::where('is_active', true)->count(),
+            'studio_gallery_count' => AsdreamsStudioGalleryImage::count(),
+            'studio_gallery_active' => AsdreamsStudioGalleryImage::where('is_active', true)->count(),
+            'offer_enquiries_new' => AsdreamsOfferEnquiry::unread()->count(),
             'offer_enquiries_total' => AsdreamsOfferEnquiry::count(),
-            'contact_enquiries_new' => AsdreamsContactEnquiry::where('status', 'new')->count(),
+            'contact_enquiries_new' => AsdreamsContactEnquiry::unread()->count(),
             'contact_enquiries_total' => AsdreamsContactEnquiry::count(),
-            'shoot_bookings_new' => AsdreamsShootBooking::where('status', 'new')->count(),
+            'shoot_bookings_new' => AsdreamsShootBooking::unread()->count(),
             'shoot_bookings_total' => AsdreamsShootBooking::count(),
         ];
 

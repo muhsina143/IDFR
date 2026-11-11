@@ -54,7 +54,7 @@
       rel="stylesheet"
     />
     @yield('preload')
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ filemtime(public_path('css/style.css')) }}" />
     @yield('styles')
     @stack('styles')
 
@@ -96,7 +96,7 @@
 
     @yield('page_content_templates')
 
-    <script src="{{ asset('js/script.js') }}" defer></script>
+    <script src="{{ asset('js/script.js') }}?v={{ filemtime(public_path('js/script.js')) }}" defer></script>
     @if(session('status') || session('error'))
       <script>
         window.addEventListener('DOMContentLoaded', function() {

@@ -70,6 +70,7 @@
       <select name="status" class="filter-select" onchange="this.form.submit()">
         <option value="">All Statuses</option>
         <option value="new" {{ request('status') === 'new' ? 'selected' : '' }}>New (Unread)</option>
+        <option value="read" {{ request('status') === 'read' ? 'selected' : '' }}>Read</option>
         <option value="contacted" {{ request('status') === 'contacted' ? 'selected' : '' }}>Contacted</option>
         <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
         <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived</option>
@@ -166,6 +167,7 @@
               @php
                 $statusColors = [
                   'new' => ['bg' => 'rgba(234, 67, 53, 0.15)', 'color' => '#ff8080', 'border' => 'rgba(234, 67, 53, 0.4)'],
+                  'read' => ['bg' => 'rgba(148, 163, 184, 0.15)', 'color' => '#cbd5e1', 'border' => 'rgba(148, 163, 184, 0.35)'],
                   'contacted' => ['bg' => 'rgba(245, 200, 66, 0.15)', 'color' => 'var(--gold)', 'border' => 'var(--gold-a35)'],
                   'completed' => ['bg' => 'rgba(52, 168, 83, 0.15)', 'color' => '#70e090', 'border' => 'rgba(52, 168, 83, 0.4)'],
                   'archived' => ['bg' => 'rgba(255, 255, 255, 0.05)', 'color' => '#888', 'border' => 'rgba(255, 255, 255, 0.1)'],

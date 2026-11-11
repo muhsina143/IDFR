@@ -419,12 +419,11 @@ class AsdreamsDataSeeder extends Seeder
         AsdreamsWebsiteSetting::set('hero_overlay_top_word', 'Photography');
         AsdreamsWebsiteSetting::set('hero_overlay_bottom_word', 'Capturing');
         AsdreamsWebsiteSetting::set('hero_overlay_bottom_highlight', 'Moments');
-        AsdreamsWebsiteSetting::set('studio_rental_title', 'Studio Rental');
-        AsdreamsWebsiteSetting::set('studio_rental_subtitle', 'Hire Studio 01 for fashion campaigns, lookbooks, podcasts and portrait sessions.');
-        AsdreamsWebsiteSetting::set('studio_rental_price', '15,000');
-        AsdreamsWebsiteSetting::set('studio_rental_per', 'per full day');
 
         // 9. Seed Our Clients & Moving Client Logos independently
         $this->call(AsdreamsClientsAndLogosSeeder::class);
+
+        // 10. Seed Studio Rental Management (Facilities, Equipment, Studio Gallery)
+        $this->call(AsdreamsStudioRentalSeeder::class);
     }
 }

@@ -128,8 +128,8 @@
               </h2>
             </div>
             <p class="section-intro" data-reveal="up" data-delay="150">
-              Photography, runway, model training and beauty education — four
-              houses working together to launch careers in fashion.
+             Four Powerful Streams. One Fashion Ecosystem.
+We don't just teach fashion. We create opportunities, build talent and launch careers
             </p>
           </div>
 
@@ -346,7 +346,7 @@
               </button>
               <p class="asd-about__years">
                 <span class="asd-about__num"
-                  ><span data-count="32">0</span>+</span
+                  ><span data-count="15">0</span>+</span
                 >
                 <span class="asd-about__years-label">Years of Experience</span>
               </p>
@@ -373,27 +373,24 @@
                 Behind the Lens, <em>Ahead of the Curve</em>
               </h3>
               <p>
-                ASDreamStudio has photographed and filmed every IDFR season
-                since the very first runway. We pair editorial instinct with
-                cinema-grade gear to turn fleeting moments — a designer's final
-                bow, a first look, a sunrise vow — into images that last a
-                lifetime.
+               ASDreamStudio is a creative fashion and media company bringing together photography, videography, designer fashion shows, model training and beauty education.
+
               </p>
               <ul class="asd-about__list">
                 <li>
                   <svg class="icon" aria-hidden="true">
                     <use href="#i-check" /></svg
-                  >Runway, backstage and campaign coverage for every IDFR season
+                  >We connect creativity with opportunities
                 </li>
                 <li>
                   <svg class="icon" aria-hidden="true">
                     <use href="#i-check" /></svg
-                  >Cinema cameras, drones and a fully equipped lighting studio
+                  >Empowering aspiring talents
                 </li>
                 <li>
                   <svg class="icon" aria-hidden="true">
                     <use href="#i-check" /></svg
-                  >Same-week edits, colour grading and print-ready albums
+                  >Models and professionals to build successful careers in the fashion and beauty industry.
                 </li>
               </ul>
               <div class="asd-about__more" id="asdAboutMore" hidden>
@@ -513,109 +510,89 @@
             </p>
           </div>
 
+          @php
+            $studioSettingsMap = isset($settings)
+              ? ($settings instanceof \Illuminate\Support\Collection ? $settings->all() : (array) $settings)
+              : [];
+            $facilitiesHeading = filled($studioSettingsMap['studio_facilities_heading'] ?? null)
+              ? $studioSettingsMap['studio_facilities_heading']
+              : 'Facilities Provided';
+            $facilitiesDescription = array_key_exists('studio_facilities_description', $studioSettingsMap)
+              ? $studioSettingsMap['studio_facilities_description']
+              : 'All areas are air-conditioned';
+            $equipmentHeading = filled($studioSettingsMap['studio_equipment_heading'] ?? null)
+              ? $studioSettingsMap['studio_equipment_heading']
+              : 'Equipment Included';
+            $equipmentDescription = array_key_exists('studio_equipment_description', $studioSettingsMap)
+              ? $studioSettingsMap['studio_equipment_description']
+              : 'Available with every studio rental booking';
+            $facilitiesList = $studioFacilities ?? collect();
+            $equipmentsList = $studioEquipments ?? collect();
+            $studioGalleryList = $studioGalleryImages ?? collect();
+            $rentalConfig = $studioRental ?? \App\Models\Asdreams\AsdreamsStudioRentalSetting::getConfig($studioSettingsMap);
+          @endphp
+
           <div class="studio-rental__area" data-reveal="up" data-delay="80">
             <span class="studio-rental__area-icon" aria-hidden="true">
               <svg class="icon"><use href="#i-area" /></svg>
             </span>
             <div>
               <p class="studio-rental__area-label">Studio Area</p>
-              <p class="studio-rental__area-value">4,000 sq. ft.</p>
+              <p class="studio-rental__area-value">{{ $rentalConfig['studio_area'] }}</p>
             </div>
           </div>
 
           <div class="studio-rental__panels">
             <div class="studio-rental__panel" data-reveal="up">
               <div class="studio-rental__panel-head">
-                <h3 class="studio-rental__panel-title">Facilities Provided</h3>
-                <p class="studio-rental__ac">
-                  <svg class="icon" aria-hidden="true">
-                    <use href="#i-snowflake" /></svg
-                  ><span>All areas are air-conditioned</span>
-                </p>
+                <h3 class="studio-rental__panel-title">{{ $facilitiesHeading }}</h3>
+                @if(filled($facilitiesDescription))
+                  <p class="studio-rental__ac">
+                    <svg class="icon" aria-hidden="true">
+                      <use href="#i-snowflake" /></svg
+                    ><span>{{ $facilitiesDescription }}</span>
+                  </p>
+                @endif
               </div>
               <ul class="studio-rental__facilities">
-                <li>
-                  <span class="studio-rental__fac-icon" aria-hidden="true"
-                    ><svg class="icon"><use href="#i-door" /></svg
-                  ></span>
-                  <span>Lobby</span>
-                </li>
-                <li>
-                  <span class="studio-rental__fac-icon" aria-hidden="true"
-                    ><svg class="icon"><use href="#i-sparkles" /></svg
-                  ></span>
-                  <span>Makeup Room</span>
-                </li>
-                <li>
-                  <span class="studio-rental__fac-icon" aria-hidden="true"
-                    ><svg class="icon"><use href="#i-hanger" /></svg
-                  ></span>
-                  <span>Changing Room</span>
-                </li>
-                <li>
-                  <span class="studio-rental__fac-icon" aria-hidden="true"
-                    ><svg class="icon"><use href="#i-cup" /></svg
-                  ></span>
-                  <span>Pantry</span>
-                </li>
-                <li>
-                  <span class="studio-rental__fac-icon" aria-hidden="true"
-                    ><svg class="icon"><use href="#i-camera" /></svg
-                  ></span>
-                  <span>Photography Room</span>
-                </li>
-                <li>
-                  <span class="studio-rental__fac-icon" aria-hidden="true"
-                    ><svg class="icon"><use href="#i-restroom" /></svg
-                  ></span>
-                  <span>2 Restrooms</span>
-                </li>
+                @foreach($facilitiesList as $facility)
+                  <li>
+                    <span class="studio-rental__fac-icon" aria-hidden="true"
+                      ><svg class="icon"><use href="#i-{{ $facility->icon ?: 'check' }}" /></svg
+                    ></span>
+                    <span>{{ $facility->name }}</span>
+                  </li>
+                @endforeach
               </ul>
             </div>
 
             <div class="studio-rental__panel" data-reveal="up" data-delay="120">
               <div class="studio-rental__panel-head">
-                <h3 class="studio-rental__panel-title">Equipment Included</h3>
-                <p class="studio-rental__panel-note">
-                  Available with every studio rental booking
-                </p>
+                <h3 class="studio-rental__panel-title">{{ $equipmentHeading }}</h3>
+                @if(filled($equipmentDescription))
+                  <p class="studio-rental__panel-note">
+                    {{ $equipmentDescription }}
+                  </p>
+                @endif
               </div>
               <ul class="studio-rental__equipment">
-                <li>
-                  <svg class="icon" aria-hidden="true">
-                    <use href="#i-light" /></svg
-                  ><span>2 SK 400 Photo Lights</span>
-                </li>
-                <li>
-                  <svg class="icon" aria-hidden="true">
-                    <use href="#i-light" /></svg
-                  ><span>1 AD 400 Photo Light</span>
-                </li>
-                <li>
-                  <svg class="icon" aria-hidden="true">
-                    <use href="#i-light" /></svg
-                  ><span>2 SL 100 Video Lights</span>
-                </li>
-                <li>
-                  <svg class="icon" aria-hidden="true">
-                    <use href="#i-light" /></svg
-                  ><span>4 Stick Lights (Video Lights)</span>
-                </li>
-                <li>
-                  <svg class="icon" aria-hidden="true">
-                    <use href="#i-sofa" /></svg
-                  ><span>Blue Sofa</span>
-                </li>
-                <li>
-                  <svg class="icon" aria-hidden="true">
-                    <use href="#i-check" /></svg
-                  ><span>Model Stool</span>
-                </li>
-                <li>
-                  <svg class="icon" aria-hidden="true">
-                    <use href="#i-check" /></svg
-                  ><span>Table and Chairs</span>
-                </li>
+                @foreach($equipmentsList as $equipment)
+                  <li>
+                    @if($equipment->image_url)
+                      <img
+                        class="studio-rental__equip-img"
+                        src="{{ $equipment->image_url }}"
+                        alt="{{ $equipment->name }}"
+                        loading="lazy"
+                      />
+                    @else
+                      <svg class="icon" aria-hidden="true">
+                        <use href="#i-{{ $equipment->icon ?: 'light' }}" /></svg
+                      >
+                    @endif
+                    <span>{{ $equipment->name }}</span>
+                  </li>
+                @endforeach
               </ul>
             </div>
           </div>
@@ -634,133 +611,59 @@
               id="studioRentalGallery"
               aria-labelledby="studioGalleryTitle"
             >
-              <li>
-                <button
-                  class="studio-rental__shot"
-                  type="button"
-                  data-studio-shot
-                  data-index="0"
-                  aria-label="Open image: Main photography floor"
-                >
-                  <img
-                    class="photo"
-                    src="{{ asset('images/asdreams/hero-08.jpg') }}"
-                    alt="Photography studio set with softboxes and a white backdrop"
-                    width="1000"
-                    height="1250"
-                    loading="lazy"
-                  />
-                  <span class="studio-rental__shot-cap">Main Floor</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  class="studio-rental__shot"
-                  type="button"
-                  data-studio-shot
-                  data-index="1"
-                  aria-label="Open image: Studio interior"
-                >
-                  <img
-                    class="photo"
-                    src="{{ asset('images/asdreams/about-studio.jpg') }}"
-                    alt="ASDreamStudio interior production space"
-                    width="1000"
-                    height="1250"
-                    loading="lazy"
-                  />
-                  <span class="studio-rental__shot-cap">Studio Interior</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  class="studio-rental__shot"
-                  type="button"
-                  data-studio-shot
-                  data-index="2"
-                  aria-label="Open image: Cinema and lighting kit"
-                >
-                  <img
-                    class="photo"
-                    src="{{ asset('images/creative/portfolio/video-cinema-camera.jpg') }}"
-                    alt="Cinema camera and lighting kit on a studio set"
-                    width="1000"
-                    height="1250"
-                    loading="lazy"
-                  />
-                  <span class="studio-rental__shot-cap">Lighting Kit</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  class="studio-rental__shot"
-                  type="button"
-                  data-studio-shot
-                  data-index="3"
-                  aria-label="Open image: Makeup and prep suite"
-                >
-                  <img
-                    class="photo"
-                    src="{{ asset('images/creative/portfolio/video-edit-suite.jpg') }}"
-                    alt="Prep suite with monitors ready for production"
-                    width="1000"
-                    height="1250"
-                    loading="lazy"
-                  />
-                  <span class="studio-rental__shot-cap">Prep Suite</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  class="studio-rental__shot"
-                  type="button"
-                  data-studio-shot
-                  data-index="4"
-                  aria-label="Open image: Portrait backdrop"
-                >
-                  <img
-                    class="photo"
-                    src="{{ asset('images/asdreams/gallery/portrait-01.jpg') }}"
-                    alt="Studio portrait backdrop with soft lighting"
-                    width="1000"
-                    height="1250"
-                    loading="lazy"
-                  />
-                  <span class="studio-rental__shot-cap">Portrait Bay</span>
-                </button>
-              </li>
-              <li>
-                <button
-                  class="studio-rental__shot"
-                  type="button"
-                  data-studio-shot
-                  data-index="5"
-                  aria-label="Open image: Stage and set lighting"
-                >
-                  <img
-                    class="photo"
-                    src="{{ asset('images/creative/portfolio/video-stage-rig.jpg') }}"
-                    alt="Stage lighting rig for video production"
-                    width="1000"
-                    height="1250"
-                    loading="lazy"
-                  />
-                  <span class="studio-rental__shot-cap">Set Lighting</span>
-                </button>
-              </li>
+              @foreach($studioGalleryList as $shot)
+                <li>
+                  <button
+                    class="studio-rental__shot"
+                    type="button"
+                    data-studio-shot
+                    data-index="{{ $loop->index }}"
+                    aria-label="Open image: {{ $shot->title }}"
+                  >
+                    <img
+                      class="photo"
+                      src="{{ $shot->image_url }}"
+                      alt="{{ $shot->description ?: $shot->title }}"
+                      width="1000"
+                      height="1250"
+                      loading="lazy"
+                    />
+                    <span class="studio-rental__shot-cap">{{ $shot->title }}</span>
+                  </button>
+                </li>
+              @endforeach
             </ul>
           </div>
 
           <div class="studio-rental__cta" data-reveal="up">
             <div class="studio-rental__price">
-              <p class="studio-rental__price-label">Studio Rental</p>
-              <p class="studio-rental__price-value">
-                <span class="studio-rental__amount">₹1000</span>
-                <span class="studio-rental__per">/ day</span>
-              </p>
-              <p class="studio-rental__price-note">
-                Mock price — subject to change
-              </p>
+              <p class="studio-rental__price-label">{{ $rentalConfig['title'] }}</p>
+
+              @if($rentalConfig['price_enabled'])
+                @if(filled($rentalConfig['pricing_label']))
+                  <p class="studio-rental__pricing-tag">{{ $rentalConfig['pricing_label'] }}</p>
+                @endif
+                <p class="studio-rental__price-value">
+                  <span class="studio-rental__amount">{{ $rentalConfig['formatted_price'] }}</span>
+                  <span class="studio-rental__per">{{ $rentalConfig['unit_display'] }}</span>
+                </p>
+              @endif
+
+              @if(filled($rentalConfig['short_description']))
+                <p class="studio-rental__short-desc">{{ $rentalConfig['short_description'] }}</p>
+              @endif
+
+              @if($rentalConfig['price_enabled'] && filled($rentalConfig['price_description']))
+                <p class="studio-rental__price-note">{{ $rentalConfig['price_description'] }}</p>
+              @endif
+
+              @if(filled($rentalConfig['booking_info']))
+                <p class="studio-rental__booking-info">{{ $rentalConfig['booking_info'] }}</p>
+              @endif
+
+              @if($rentalConfig['price_enabled'] && filled($rentalConfig['additional_note']))
+                <p class="studio-rental__price-note">{{ $rentalConfig['additional_note'] }}</p>
+              @endif
             </div>
             <button
               class="btn btn--gold studio-rental__book"

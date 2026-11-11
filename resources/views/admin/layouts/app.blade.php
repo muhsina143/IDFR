@@ -410,7 +410,7 @@
       </div>
     </div>
 
-    <nav class="admin-sidebar__nav">
+    <nav class="admin-sidebar__nav" id="sidebar-scroll">
       <span class="admin-nav__label">Overview</span>
       <a href="{{ route('admin.dashboard') }}" class="admin-nav__link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
@@ -533,10 +533,6 @@
         <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
         <span>Offer Management</span>
       </a>
-      <a href="{{ route('admin.asdreams.about.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.about*') ? 'active' : '' }}">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-        <span>About Page</span>
-      </a>
       <a href="{{ route('admin.asdreams.gallery.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.gallery*') ? 'active' : '' }}">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
         <span>Gallery Management</span>
@@ -578,9 +574,13 @@
           <span style="margin-left: auto; background: var(--gold); color: #000; font-size: 0.65rem; font-weight: 700; padding: 0.15rem 0.45rem; border-radius: 10px;">{{ $newAsdStudioBookingsCount }}</span>
         @endif
       </a>
-      <a href="{{ route('admin.asdreams.settings.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.settings*') ? 'active' : '' }}">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-        <span>Studio Settings</span>
+
+      <span class="admin-nav__label" style="margin-top: 0.65rem; padding-top: 0.5rem; font-size: 0.65rem; letter-spacing: 0.14em; color: var(--gold); opacity: 0.85;">
+        STUDIO RENTAL MANAGEMENT
+      </span>
+      <a href="{{ route('admin.asdreams.studio-rental.index') }}" class="admin-nav__link {{ request()->routeIs('admin.asdreams.studio-rental*', 'admin.asdreams.studio-facilities*', 'admin.asdreams.studio-equipment*', 'admin.asdreams.studio-gallery*', 'admin.asdreams.settings*') ? 'active' : '' }}">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg>
+        <span>Studio Rental</span>
       </a>
     </nav>
 
@@ -594,6 +594,81 @@
       </form>
     </div>
   </aside>
+  <script>
+    (function () {
+      const sidebar = document.getElementById('sidebar-scroll');
+      if (!sidebar) {
+        return;
+      }
+
+      const STORAGE_KEY = 'sidebarScrollPos';
+
+      function readSavedScroll() {
+        try {
+          const raw = sessionStorage.getItem(STORAGE_KEY);
+          if (raw === null) {
+            return null;
+          }
+          const value = Number(raw);
+          return Number.isFinite(value) && value >= 0 ? value : null;
+        } catch (e) {
+          return null;
+        }
+      }
+
+      function saveScrollPosition() {
+        try {
+          sessionStorage.setItem(STORAGE_KEY, String(sidebar.scrollTop));
+        } catch (e) {}
+      }
+
+      function isOutsideVisibleArea(container, target) {
+        const containerRect = container.getBoundingClientRect();
+        const targetRect = target.getBoundingClientRect();
+        if (containerRect.height <= 0) {
+          return false;
+        }
+        return targetRect.top < containerRect.top - 1 || targetRect.bottom > containerRect.bottom + 1;
+      }
+
+      function restoreSidebarScroll() {
+        const saved = readSavedScroll();
+        if (saved !== null) {
+          sidebar.scrollTop = saved;
+        }
+
+        const activeLink = sidebar.querySelector('.active');
+        if (activeLink && (saved === null || isOutsideVisibleArea(sidebar, activeLink))) {
+          activeLink.scrollIntoView({ block: 'center' });
+          saveScrollPosition();
+        }
+      }
+
+      let userInteracted = false;
+      ['wheel', 'pointerdown', 'touchstart', 'keydown'].forEach((evt) => {
+        sidebar.addEventListener(evt, () => {
+          userInteracted = true;
+        }, { passive: true });
+      });
+
+      // Restore synchronously before first paint to prevent a visible jump.
+      restoreSidebarScroll();
+
+      sidebar.addEventListener('scroll', saveScrollPosition, { passive: true });
+      sidebar.addEventListener('click', (event) => {
+        if (event.target.closest('a')) {
+          saveScrollPosition();
+        }
+      });
+      window.addEventListener('beforeunload', saveScrollPosition);
+      document.addEventListener('DOMContentLoaded', restoreSidebarScroll);
+      window.addEventListener('load', () => {
+        if (!userInteracted) {
+          restoreSidebarScroll();
+        }
+      });
+    })();
+  </script>
 
   <!-- Layout Container -->
   <div class="admin-layout">

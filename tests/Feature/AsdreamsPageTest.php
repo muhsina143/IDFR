@@ -11,6 +11,7 @@ use Database\Seeders\DynamicProfileFormSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class AsdreamsPageTest extends TestCase
@@ -196,7 +197,17 @@ class AsdreamsPageTest extends TestCase
      */
     public function test_asdreams_subpages_load(): void
     {
-        $this->get('/asdreams/about')->assertStatus(200)->assertSee('About')->assertSee('id="siteHeader"', false);
+        $aboutResponse = $this->get('/asdreams/about')->assertStatus(200);
+        $aboutResponse->assertSee('About Us')
+            ->assertSee('id="siteHeader"', false)
+            ->assertSee('Behind the Lens,')
+            ->assertSee('Ahead of the Curve')
+            ->assertSee('Studio 01')
+            ->assertSee('Kozhikode, Kerala')
+            ->assertSee('images/asdreams/ab2.png', false)
+            ->assertSee('images/asdreams/about-video.jpg', false)
+            ->assertSee('images/asdreams/about-studio.jpg', false);
+
         $this->get('/asdreams/gallery')->assertStatus(200)->assertSee('Gallery')->assertSee('id="siteHeader"', false);
         $this->get('/asdreams/team')->assertStatus(200)->assertSee('Team')->assertSee('id="siteHeader"', false);
     }
@@ -472,7 +483,6 @@ class AsdreamsPageTest extends TestCase
             route('admin.asdreams.banners.index'),
             route('admin.asdreams.brands.index'),
             route('admin.asdreams.offers.index'),
-            route('admin.asdreams.about.index'),
             route('admin.asdreams.gallery.index'),
             route('admin.asdreams.team.index'),
             route('admin.asdreams.contact.index'),
@@ -481,9 +491,13 @@ class AsdreamsPageTest extends TestCase
             route('admin.asdreams.settings.index'),
         ];
 
+        $this->assertFalse(Route::has('admin.asdreams.about.index'));
+        $this->assertFalse(Route::has('admin.asdreams.about.update'));
+
         foreach ($routes as $url) {
             $response = $this->actingAs($this->adminUser, 'admin')->get($url);
             $response->assertStatus(200);
+            $response->assertDontSee('<span>About Page</span>', false);
         }
     }
 

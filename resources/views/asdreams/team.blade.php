@@ -28,8 +28,7 @@
               </h1>
             </div>
             <p class="section-intro" data-reveal="up" data-delay="150">
-              One crew, many lenses — the photographers, filmmakers and
-              stylists who turn a single idea into a finished story.
+              One Visionary. One Exceptional Team. One Creative Vision.
             </p>
           </div>
 
@@ -58,10 +57,10 @@
             @endforelse
           </ul>
 
-          <p class="team-page__note">
+          <!-- <p class="team-page__note">
             These names, roles and portraits are placeholders. They will be
             replaced when the studio roster and photographs are ready.
-          </p>
+          </p> -->
         </div>
       </section>
     </main>

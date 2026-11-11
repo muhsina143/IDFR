@@ -380,9 +380,8 @@
 
             <p class="section-intro" data-reveal="up" data-delay="150">
 
-              Photography, runway, model training and beauty education — four
-
-              houses working together to launch careers in fashion.
+              Four Powerful Streams. One Fashion Ecosystem.
+We don't just teach fashion. We create opportunities, build talent and launch careers
 
             </p>
 
