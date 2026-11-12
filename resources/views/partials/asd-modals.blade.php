@@ -215,9 +215,12 @@
             if ($brand->name === 'Indian Designer Fashion Runway' || $brand->name === 'IDFR') {
               $brandName = 'IDFR';
               $brandTagline = ($brand->tagline && $brand->tagline !== 'IDFR') ? $brand->tagline : 'Indian Designer Fashion Runway';
+            } elseif (str_contains($brand->name, 'Athul')) {
+              $brandName = 'Athul’s Academy';
+              $brandTagline = (!$brand->tagline || $brand->tagline === 'Modelling & Grooming') ? 'Fashion & Modelling' : $brand->tagline;
             } elseif ($brand->name === 'Beauty & Wellness' || $brand->name === 'Lakme' || $brand->name === 'Lakmé Academy') {
-              $brandName = 'Lakme';
-              $brandTagline = ($brand->tagline && $brand->tagline !== 'Beauty & Wellness' && $brand->tagline !== 'Cosmetology & Styling') ? $brand->tagline : 'Makeup · Hair | Nails · Skin';
+              $brandName = 'Lakmé Academy';
+              $brandTagline = 'Beauty & Wellness';
             }
 
             $linkUrl = $brand->link_url;

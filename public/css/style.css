@@ -7790,17 +7790,21 @@ html.brands-pop-first .preloader__inner {
 }
 
 @media (max-width: 600px) {
+  .brands-pop__panel {
+    --wave-h: clamp(40px, 8vh, 96px);
+  }
+
   .brands-pop__slide figcaption {
     left: 1.25rem;
     right: 1.25rem;
-    bottom: 4.5rem;
+    bottom: calc(var(--wave-h) * 0.6 + 4.5rem);
   }
 
   .brands-pop__arrow {
     width: 44px;
     height: 44px;
     top: auto;
-    bottom: 0.75rem;
+    bottom: calc(var(--wave-h) * 0.62 + 0.75rem);
     transform: none;
   }
 
@@ -7814,7 +7818,7 @@ html.brands-pop-first .preloader__inner {
   }
 
   .brands-pop__pager {
-    bottom: calc(0.75rem + 22px);
+    bottom: calc(var(--wave-h) * 0.62 + 0.75rem + 22px);
     transform: translateY(50%);
   }
 
@@ -7836,12 +7840,108 @@ html.brands-pop-first .preloader__inner {
   }
 }
 
-/* Phones: 2 × 2 cards */
+/* Phones: 2 × 2 cards matching static reference */
 @media (max-width: 640px) {
+  .brands-pop__panel {
+    --wave-h: clamp(40px, 8vh, 96px);
+    height: 100vh;
+    height: 100dvh;
+    max-height: none;
+    overflow: hidden;
+  }
+
+  .brands-pop__banner {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .brands-pop__brands {
+    --pad-y: calc((clamp(0.25rem, 1vh, 0.75rem) + clamp(1.5rem, 5vh, 3.25rem)) / 2);
+    padding: var(--pad-y) var(--gutter);
+    text-align: center;
+  }
+
   .brands-pop__grid {
     --sq: clamp(84px, min(36vw, 15vh), 150px);
     grid-template-columns: repeat(2, var(--sq));
     gap: 0.85rem;
+    margin-top: clamp(0.75rem, 1.8vh, 1.25rem);
+  }
+
+  .brands-pop__logo {
+    --mark: calc(var(--sq) * 0.34);
+    justify-content: center;
+    gap: calc(var(--sq) * 0.022);
+    padding: calc(var(--sq) * 0.05) calc(var(--sq) * 0.045);
+  }
+
+  .brands-pop__logo--wide {
+    --mark: calc(var(--sq) * 0.44);
+  }
+
+  .brands-pop__logo--wide .brands-pop__mark img {
+    width: calc(var(--sq) * 0.5);
+    max-width: calc(var(--sq) * 0.56);
+    max-height: calc(var(--sq) * 0.42);
+    height: auto;
+  }
+
+  .brands-pop__logo--tall {
+    --mark: calc(var(--sq) * 0.32);
+    gap: calc(var(--sq) * 0.018);
+  }
+
+  .brands-pop__logo--tall .brands-pop__mark img {
+    height: var(--mark);
+    width: auto;
+    max-width: calc(var(--sq) * 0.38);
+  }
+
+  .brands-pop__logo--lakme {
+    --mark: calc(var(--sq) * 0.38);
+  }
+
+  .brands-pop__logo--lakme .brands-pop__mark img {
+    height: auto;
+    width: calc(var(--sq) * 0.7);
+    max-width: calc(var(--sq) * 0.78);
+    max-height: calc(var(--sq) * 0.42);
+  }
+
+  .brands-pop__name {
+    font-size: clamp(0.58rem, calc(var(--sq) * 0.068), 0.9rem);
+    color: var(--white);
+  }
+
+  .brands-pop__logo--tall .brands-pop__name {
+    font-size: clamp(0.48rem, calc(var(--sq) * 0.058), 0.68rem);
+    line-height: 1.2;
+    color: var(--gold);
+  }
+
+  .brands-pop__tag {
+    display: block;
+    font-size: clamp(0.4rem, calc(var(--sq) * 0.042), 0.55rem);
+    letter-spacing: 0.1em;
+    line-height: 1.35;
+    text-transform: uppercase;
+    text-wrap: balance;
+    color: var(--white-70);
+  }
+
+  .brands-pop__logo--wide .brands-pop__name,
+  .brands-pop__logo--wide .brands-pop__tag,
+  .brands-pop__logo--lakme .brands-pop__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .brands-pop__go {
+    display: none;
   }
 
   .brands-pop__logo .asd-lakme__place {
@@ -7880,6 +7980,20 @@ html.brands-pop-first .preloader__inner {
     margin-top: 0.6rem;
   }
 
+  .brands-pop__logo {
+    --mark: calc(var(--sq) * 0.5);
+  }
+
+  .brands-pop__name,
+  .brands-pop__tag {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
   .brands-pop__logo .asd-lakme__place {
     display: none;
   }
@@ -7893,15 +8007,9 @@ html.brands-pop-first .preloader__inner {
   }
 }
 
-/* Cards too small for a caption: logo only, the name stays for screen readers */
-@media (max-height: 500px) and (orientation: landscape),
-(max-width: 640px) and (max-height: 720px) {
-  .brands-pop__logo {
-    --mark: calc(var(--sq) * 0.5);
-  }
-
-  .brands-pop__name,
-  .brands-pop__tag {
+/* Compact portrait phones: show taglines cleanly on all cards and gold name on Athul's */
+@media (max-width: 640px) and (max-height: 720px) {
+  .brands-pop__logo:not(.brands-pop__logo--tall) .brands-pop__name {
     position: absolute;
     width: 1px;
     height: 1px;

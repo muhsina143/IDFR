@@ -72,9 +72,7 @@
                 </button>
               </h3>
               <p>
-                From the first mood board to the final colour grade, one
-                dedicated team plans, shoots and edits every story — so nothing
-                gets lost between the shutter and the screen.
+               One Dedicated Team. From Planning to Shooting to Editing - Everything Under One Roof.
               </p>
             </div>
 

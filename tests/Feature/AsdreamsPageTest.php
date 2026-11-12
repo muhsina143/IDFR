@@ -94,9 +94,12 @@ class AsdreamsPageTest extends TestCase
         $response->assertSee('href="/idfr"', false);
         $response->assertSee('Athul', false);
         $response->assertSee('href="/asdreams/contact?brand=athuls"', false);
-        $response->assertSee('Lakme', false);
+        $response->assertSee('Lakmé Academy', false);
         $response->assertSee('href="/asdreams/contact?brand=lakme"', false);
-        $response->assertDontSee('Beauty &amp; Wellness', false);
+        $response->assertSee('Photography &amp; Videography', false);
+        $response->assertSee('Indian Designer Fashion Runway', false);
+        $response->assertSee('Fashion &amp; Modelling', false);
+        $response->assertSee('Beauty &amp; Wellness', false);
 
         // All required modals
         $response->assertSee('id="asdReel"', false);
@@ -138,12 +141,12 @@ class AsdreamsPageTest extends TestCase
         $response->assertSee('brands-pop__logo--tall', false);
         $response->assertSee('athuls-academy-logo.png', false);
         $response->assertSee('Athul', false);
-        $response->assertSee('Modelling &amp; Grooming', false);
+        $response->assertSee('Fashion &amp; Modelling', false);
 
         // Card 4: Lakme
         $response->assertSee('brands-pop__logo--lakme', false);
-        $response->assertSee('Lakme', false);
-        $response->assertDontSee('Beauty &amp; Wellness', false);
+        $response->assertSee('Lakmé Academy', false);
+        $response->assertSee('Beauty &amp; Wellness', false);
 
         // Arrow button in every card
         $response->assertSee('brands-pop__go', false);
