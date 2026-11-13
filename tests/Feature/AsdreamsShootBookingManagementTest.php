@@ -52,7 +52,7 @@ class AsdreamsShootBookingManagementTest extends TestCase
 
         $this->assertDatabaseHas('asdreams_shoot_bookings', [
             'name' => 'Ananya Sharma',
-            'phone' => '+91 98765 43210',
+            'phone' => '+919876543210',
             'email' => 'ananya@example.com',
             'shoot_type' => 'Editorial Fashion Shoot',
             'subject' => 'Editorial Fashion Shoot',
@@ -92,7 +92,7 @@ class AsdreamsShootBookingManagementTest extends TestCase
         $res2->assertStatus(200);
 
         // Ensure only 1 record created in database
-        $this->assertEquals(1, AsdreamsShootBooking::where('phone', '+91 98989 89898')->count());
+        $this->assertEquals(1, AsdreamsShootBooking::where('phone', '+919898989898')->count());
     }
 
     public function test_guest_cannot_access_admin_shoot_bookings(): void

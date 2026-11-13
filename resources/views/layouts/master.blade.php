@@ -96,6 +96,7 @@
 
     @yield('page_content_templates')
 
+    <script src="{{ asset('js/validator.js') }}?v={{ filemtime(public_path('js/validator.js')) }}" defer></script>
     <script src="{{ asset('js/script.js') }}?v={{ filemtime(public_path('js/script.js')) }}" defer></script>
     @if(session('status') || session('error'))
       <script>

@@ -9,7 +9,7 @@
   <h2 class="mm__name" id="modelModalName">Book</h2>
   <p class="mm__types" id="modelModalCategory" style="margin-top: 0.25rem; color: var(--gold); font-size: 0.85rem; font-weight: 500;"></p>
 
-  <form class="enquiry" id="enquiryForm" novalidate>
+  <form class="enquiry" id="enquiryForm" data-validate data-ajax="true" novalidate>
     <!-- Automatic Association Fields -->
     <input type="hidden" name="professional_type" id="enqProType" value="model">
     <input type="hidden" name="professional_id" id="enqProId" value="">
@@ -26,6 +26,9 @@
           autocomplete="name"
           required
           minlength="2"
+          maxlength="150"
+          data-rules="required|min:2|max:150|name"
+          data-label="Full Name"
           placeholder="Your full name"
         />
         <span class="field__error" aria-live="polite"></span>
@@ -39,6 +42,8 @@
           type="tel"
           autocomplete="tel"
           required
+          data-rules="required|phone"
+          data-label="Phone Number"
           placeholder="+91 9876543210"
         />
         <span class="field__error" aria-live="polite"></span>
@@ -60,6 +65,9 @@
           type="email"
           autocomplete="email"
           required
+          data-rules="required|email"
+          data-label="Email Address"
+          data-error-target="#enqEmailError"
           placeholder="you@company.com"
           style="flex: 1;"
         />
@@ -84,6 +92,9 @@
           maxlength="6"
           pattern="[0-9]{6}"
           inputmode="numeric"
+          data-rules="digits:6"
+          data-label="6-Digit Code"
+          data-error-target="#enqOtpStatus"
           placeholder="6-digit OTP"
           style="letter-spacing: 4px; font-weight: 700; text-align: center; flex: 1;"
         />
@@ -102,7 +113,7 @@
     <div class="field-row">
       <div class="field">
         <label for="enqType">Assignment Type *</label>
-        <select id="enqType" name="assignment_type" required>
+        <select id="enqType" name="assignment_type" required data-rules="select" data-label="Assignment Type">
           <option value="Runway Show">Runway Show</option>
           <option value="Photoshoot">Photoshoot</option>
           <option value="Fashion Campaign">Fashion Campaign</option>
@@ -116,7 +127,7 @@
 
       <div class="field">
         <label for="enqDate">Preferred Date</label>
-        <input id="enqDate" name="preferred_date" type="date" />
+        <input id="enqDate" name="preferred_date" type="date" data-rules="date|date_after_or_equal:today" data-label="Preferred Date" />
         <span class="field__error" aria-live="polite"></span>
       </div>
     </div>
@@ -128,6 +139,10 @@
         name="location"
         type="text"
         required
+        minlength="2"
+        maxlength="200"
+        data-rules="required|min:2|max:200"
+        data-label="Location / Venue"
         placeholder="City or Event Location"
       />
       <span class="field__error" aria-live="polite"></span>
@@ -140,6 +155,9 @@
         name="brief"
         required
         minlength="10"
+        maxlength="3000"
+        data-rules="required|min:10|max:3000"
+        data-label="Brief / Assignment Description"
         placeholder="Please describe the project scope, theme, dates, and requirements..."
       ></textarea>
       <span class="field__error" aria-live="polite"></span>

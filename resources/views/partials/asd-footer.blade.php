@@ -196,14 +196,14 @@
             &copy; <span id="year">2026</span> IDFR. All Rights Reserved|
             Designed by: Astraz SoftwareSolutions.
           </p>
-          <ul class="footer__legal">
+          <!-- <ul class="footer__legal">
             <li>
               <a href="#privacy" data-program="privacy">Privacy Policy</a>
             </li>
             <li>
               <a href="#terms" data-program="terms">Terms &amp; Conditions</a>
             </li>
-          </ul>
+          </ul> -->
         </div>
       </div>
     </footer>

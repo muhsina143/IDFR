@@ -28,13 +28,10 @@ class AdminAuthController extends Controller
     /**
      * Process an admin login attempt with rate limiting and security checks.
      */
-    public function login(Request $request): RedirectResponse
+    public function login(\App\Http\Requests\Admin\AdminLoginRequest $request): RedirectResponse
     {
         // 1. Validation
-        $credentials = $request->validate([
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $credentials = $request->validated();
 
         $email = strtolower(trim($credentials['email']));
         $throttleKey = Str::transliterate(Str::lower($email).'|'.$request->ip());

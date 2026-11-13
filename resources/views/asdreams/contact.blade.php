@@ -174,7 +174,7 @@
                 </div>
               @endif
 
-              <form class="profile-form" id="asdEnquiryForm" method="POST" action="{{ route('asd.contact.enquire') }}" novalidate>
+              <form class="profile-form" id="asdEnquiryForm" method="POST" action="{{ route('asd.contact.enquire') }}" data-validate data-ajax="true" data-server-errors='@json($errors->getMessages())' novalidate>
                 @csrf
                 <div class="field">
                   <label for="enqName"
@@ -187,6 +187,9 @@
                     autocomplete="name"
                     required
                     minlength="2"
+                    maxlength="60"
+                    data-rules="required|min:2|max:60|name"
+                    data-label="Name"
                     placeholder="Your full name"
                     value="{{ old('name') }}"
                   />
@@ -205,7 +208,8 @@
                     name="phone"
                     autocomplete="tel"
                     required
-                    pattern="[0-9+\s\-]{8,25}"
+                    data-rules="required|phone"
+                    data-label="Phone Number"
                     placeholder="+91 98765 43210"
                     value="{{ old('phone') }}"
                   />
@@ -224,6 +228,9 @@
                     id="enqEmail"
                     name="email"
                     autocomplete="email"
+                    maxlength="120"
+                    data-rules="email|max:120"
+                    data-label="Email Address"
                     placeholder="you@example.com"
                     value="{{ old('email') }}"
                   />
@@ -240,7 +247,9 @@
                     type="text"
                     id="enqSubject"
                     name="subject"
-                    maxlength="120"
+                    maxlength="150"
+                    data-rules="min:3|max:150"
+                    data-label="Subject"
                     placeholder="e.g. Wedding film, December 2026"
                     value="{{ old('subject') }}"
                   />
@@ -255,8 +264,11 @@
                     id="enqMessage"
                     name="message"
                     rows="5"
-                    maxlength="1500"
+                    minlength="10"
+                    maxlength="2000"
                     required
+                    data-rules="required|min:10|max:2000"
+                    data-label="Message"
                     placeholder="Tell us about your date, location and the story you want to tell"
                   >{{ old('message') }}</textarea>
                   <span class="field__error" aria-live="polite">

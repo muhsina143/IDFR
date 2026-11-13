@@ -70,6 +70,9 @@ function initCreativeProfileForm(form) {
                     if (submitBtn) submitBtn.disabled = false;
                     return;
                 } else if (res.status === 422 && data?.errors) {
+                    if (window.IDFRValidator) {
+                        window.IDFRValidator.applyServerErrors(form, data.errors);
+                    }
                     const firstErr = Object.values(data.errors)[0];
                     toast(Array.isArray(firstErr) ? firstErr[0] : 'Validation failed.');
                     if (submitBtn) submitBtn.disabled = false;

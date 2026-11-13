@@ -85,7 +85,7 @@ class RoleSpecificProfileTest extends TestCase
         $user = $this->makeUser(UserRole::Model, [
             'name' => 'Zara Khan',
             'email' => 'zara@example.com',
-            'phone' => '+91 99887 76655',
+            'phone' => '+919988776655',
         ]);
 
         // View form - checks prefill of user name and email
@@ -105,7 +105,7 @@ class RoleSpecificProfileTest extends TestCase
             'experience' => '3',
             'skills' => 'Runway walk, editorial posing, Bharatanatyam',
             'modelType' => ['runway', 'editorial'],
-            'phone' => '+91 99887 76655',
+            'phone' => '+919988776655',
             'email' => 'zara@example.com',
             'about' => 'High fashion runway and editorial model based in Kochi.',
             'outstation' => 'yes',
@@ -121,7 +121,7 @@ class RoleSpecificProfileTest extends TestCase
             'name' => 'Zara Khan',
             'location' => 'Kochi',
             'height' => '175',
-            'phone' => '+91 99887 76655',
+            'phone' => '+919988776655',
             'email' => 'zara@example.com',
         ]);
 
@@ -139,7 +139,7 @@ class RoleSpecificProfileTest extends TestCase
         $user = $this->makeUser(UserRole::FashionDesigner, [
             'name' => 'Elena Roy',
             'email' => 'elena@example.com',
-            'phone' => '+91 91234 56789',
+            'phone' => '+919123456789',
         ]);
 
         $response = $this->actingAs($user)->get(route('profile.fashion-designer'));
@@ -151,7 +151,7 @@ class RoleSpecificProfileTest extends TestCase
             'brand' => 'Elena Couture',
             'place' => 'Kochi',
             'experience' => '6',
-            'phone' => '+91 91234 56789',
+            'phone' => '+919123456789',
             'email' => 'elena@example.com',
             'about' => 'Sustainable luxury bespoke bridal and evening wear brand.',
             'service' => ['bridal-couture', 'pret-wear'],
@@ -166,7 +166,7 @@ class RoleSpecificProfileTest extends TestCase
             'user_id' => $user->id,
             'brand_name' => 'Elena Couture',
             'location' => 'Kochi',
-            'phone' => '+91 91234 56789',
+            'phone' => '+919123456789',
             'email' => 'elena@example.com',
         ]);
 
@@ -250,7 +250,7 @@ class RoleSpecificProfileTest extends TestCase
 
         foreach ($creativeRoles as $item) {
             $user = $this->makeUser($item['role'], [
-                'name' => 'Creative '.$item['category'],
+                'name' => 'Creative '.str_replace('-', ' ', $item['category']),
                 'email' => $item['category'].'@example.com',
                 'phone' => '+91 98111 22233',
             ]);
@@ -457,7 +457,7 @@ class RoleSpecificProfileTest extends TestCase
         $user = $this->makeUser(UserRole::Model, [
             'name' => 'Pooja Hegde',
             'email' => 'pooja.model@example.com',
-            'phone' => '+91 98200 11111',
+            'phone' => '+919820011111',
             'password' => bcrypt('Password123!'),
         ]);
 
@@ -471,7 +471,7 @@ class RoleSpecificProfileTest extends TestCase
             'experience' => '5',
             'skills' => 'High fashion runway, commercial shoot, Kathak dancer',
             'modelType' => ['runway', 'commercial', 'editorial'],
-            'phone' => '+91 98200 11111',
+            'phone' => '+919820011111',
             'email' => 'pooja.model@example.com',
             'about' => 'Experienced runway and fashion model with Lakme Fashion Week experience.',
             'outstation' => 'yes',
@@ -487,7 +487,7 @@ class RoleSpecificProfileTest extends TestCase
             'user_id' => $user->id,
             'name' => 'Pooja Hegde',
             'location' => 'Bengaluru',
-            'phone' => '+91 98200 11111',
+            'phone' => '+919820011111',
             'email' => 'pooja.model@example.com',
             'age' => 25,
             'height' => '176',
@@ -511,7 +511,7 @@ class RoleSpecificProfileTest extends TestCase
         $reopenResponse->assertOk()
             ->assertSee('value="Pooja Hegde"', false)
             ->assertSee('value="Bengaluru"', false)
-            ->assertSee('value="+91 98200 11111"', false)
+            ->assertSee('value="+919820011111"', false)
             ->assertSee('value="pooja.model@example.com"', false)
             ->assertSee('value="25"', false)
             ->assertSee('value="176"', false)

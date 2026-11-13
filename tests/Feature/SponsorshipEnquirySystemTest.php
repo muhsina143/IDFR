@@ -126,7 +126,7 @@ class SponsorshipEnquirySystemTest extends TestCase
         $this->assertDatabaseHas('sponsorship_enquiries', [
             'name' => 'Rolex Luxury Timepieces',
             'email' => 'partnerships@rolex-example.com',
-            'phone' => '+91 98765 43210',
+            'phone' => '+919876543210',
             'sponsorship_type' => 'Title Sponsor',
             'status' => SponsorshipEnquiry::STATUS_NEW,
             'season_id' => $season->id,

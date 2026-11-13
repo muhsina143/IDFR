@@ -21,7 +21,7 @@
             ASDreamStudio — Photography &amp; Videography Partner of IDFR
           </h1>
           <p class="asd-hero__badge">
-            Official Photography &amp; Videography Partner of IDFR
+            Official Photography &amp; Videography Partner
           </p>
 
           <div class="asd-hero__stage">
@@ -129,7 +129,7 @@
             </div>
             <p class="section-intro" data-reveal="up" data-delay="150">
              Four Powerful Streams. One Fashion Ecosystem.
-We don't just teach fashion. We create opportunities, build talent and launch careers
+We don't just teach fashion. We create opportunities, build talent and launch careers.
             </p>
           </div>
 
@@ -194,7 +194,7 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
                     loading="lazy"
                   />
                 </div>
-                <h3 class="visually-hidden">Indian Designer Fashion Runway</h3>
+                <h3 class="visually-hidden"></h3>
                 <span class="asd-brand__rule" aria-hidden="true"></span>
                 <ul class="asd-brand__tags">
                   <li>Designers</li>
@@ -390,14 +390,20 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
                     <use href="#i-check" /></svg
                   >Models and professionals to build successful careers in the fashion and beauty industry.
                 </li>
+                <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-check" /></svg
+                  >One Vision. Multiple Opportunities. Endless Creativity.
+                </li>
               </ul>
               <div class="asd-about__more" id="asdAboutMore" hidden>
                 <p>
-                  Our Kozhikode studio houses a 2,400 sq ft cyclorama, a
-                  dedicated edit suite and a styling lounge. Beyond IDFR, we
-                  travel across India and abroad for weddings, destination
-                  shoots, brand films and live events — always with the same
-                  small, senior crew.
+                  From fashion shows and model training to beauty education and
+    professional photography and videography, every stream of
+    ASDreamStudio works together under one roof. We travel across
+    India and abroad for weddings, destination shoots, brand films
+    and live events, helping talent grow and brands tell their
+    stories with creativity.
                 </p>
               </div>
               <button
@@ -444,10 +450,14 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
                 Every story, <em>framed</em>
               </h2>
             </div>
-            <p class="section-intro" data-reveal="up" data-delay="150">
+            <!-- <p class="section-intro" data-reveal="up" data-delay="150">
               Seven ways we tell stories. Open a category to explore more of our
               work.
-            </p>
+            </p> -->
+            <p class="section-intro" data-reveal="up" data-delay="150">
+  Explore our creativity across diverse categories, from weddings and
+  engagements to fashion shows, portraits, events and films.
+</p>
           </div>
         </div>
 
@@ -689,10 +699,14 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
                 <em>Clients</em>
               </h2>
             </div>
-            <p class="section-intro" data-reveal="up" data-delay="200">
+            <!-- <p class="section-intro" data-reveal="up" data-delay="200">
               Fashion houses, publications and agencies who cast their campaigns
               with IDFR talent. Select a client to read their story.
-            </p>
+            </p> -->
+            <p class="section-intro" data-reveal="up" data-delay="200">
+  Fashion houses, publications and agencies who trust ASDreamStudio
+  with their campaigns. Select a client to read their story.
+</p>
           </div>
 
           <div class="clients__layout">

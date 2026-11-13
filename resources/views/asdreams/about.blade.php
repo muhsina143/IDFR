@@ -102,14 +102,20 @@
                     <use href="#i-check" /></svg
                   >Models and professionals to build successful careers in the fashion and beauty industry.
                 </li>
+                 <li>
+                  <svg class="icon" aria-hidden="true">
+                    <use href="#i-check" /></svg
+                  >One Vision. Multiple Opportunities. Endless Creativity.
+                </li>
               </ul>
               <div class="asd-about__more" id="asdAboutMore" hidden>
                 <p>
-                  Our Kozhikode studio houses a 2,400 sq ft cyclorama, a
-                  dedicated edit suite and a styling lounge. Beyond IDFR, we
-                  travel across India and abroad for weddings, destination
-                  shoots, brand films and live events — always with the same
-                  small, senior crew.
+                  From fashion shows and model training to beauty education and
+    professional photography and videography, every stream of
+    ASDreamStudio works together under one roof. We travel across
+    India and abroad for weddings, destination shoots, brand films
+    and live events, helping talent grow and brands tell their
+    stories with creativity.
                 </p>
               </div>
               <button

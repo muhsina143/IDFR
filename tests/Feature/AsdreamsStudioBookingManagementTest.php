@@ -54,7 +54,7 @@ class AsdreamsStudioBookingManagementTest extends TestCase
 
         $this->assertDatabaseHas('asdreams_shoot_bookings', [
             'name' => 'Kalyan Media Works',
-            'phone' => '+91 98765 11223',
+            'phone' => '+919876511223',
             'email' => 'contact@kalyanmedia.example',
             'booking_type' => 'studio',
             'shoot_type' => 'Studio Rental',
@@ -114,7 +114,7 @@ class AsdreamsStudioBookingManagementTest extends TestCase
         $res2 = $this->postJson(route('asd.studio-booking.submit'), $payload);
         $res2->assertStatus(200);
 
-        $this->assertEquals(1, AsdreamsShootBooking::where('phone', '+91 97777 66666')->count());
+        $this->assertEquals(1, AsdreamsShootBooking::where('phone', '+919777766666')->count());
     }
 
     public function test_guest_cannot_access_admin_studio_bookings(): void

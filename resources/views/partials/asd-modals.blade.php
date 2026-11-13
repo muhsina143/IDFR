@@ -290,7 +290,7 @@
         required. Our studio team will contact you to confirm details.
       </p>
 
-      <form class="profile-form" id="shootBookForm" method="POST" action="{{ route('asd.shoot-booking.submit') }}" novalidate>
+      <form class="profile-form" id="shootBookForm" method="POST" action="{{ route('asd.shoot-booking.submit') }}" data-validate data-ajax="true" novalidate>
         @csrf
         <div class="field">
           <label for="shootName"
@@ -303,7 +303,9 @@
             autocomplete="name"
             required
             minlength="2"
-            maxlength="80"
+            maxlength="60"
+            data-rules="required|min:2|max:60|name"
+            data-label="Name"
             placeholder="Your full name"
             data-autofocus
           />
@@ -321,7 +323,9 @@
             autocomplete="tel"
             inputmode="tel"
             required
-            maxlength="20"
+            maxlength="25"
+            data-rules="required|phone"
+            data-label="Phone Number"
             placeholder="+91 98765 43210"
           />
           <span class="field__error" aria-live="polite"></span>
@@ -339,6 +343,8 @@
             inputmode="email"
             required
             maxlength="120"
+            data-rules="required|email|max:120"
+            data-label="Email Address"
             placeholder="you@example.com"
           />
           <span class="field__error" aria-live="polite"></span>
@@ -348,7 +354,7 @@
           <label for="shootDate"
             >Date of Shoot <span aria-hidden="true">*</span></label
           >
-          <input type="date" id="shootDate" name="shoot_date" required />
+          <input type="date" id="shootDate" name="shoot_date" required data-rules="required|date|date_after_or_equal:today" data-label="Date of Shoot" />
           <span class="field__error" aria-live="polite"></span>
         </div>
 
@@ -360,7 +366,9 @@
             type="text"
             id="shootSubject"
             name="shoot_type"
-            maxlength="120"
+            maxlength="150"
+            data-rules="max:150"
+            data-label="Subject"
             placeholder="e.g. Wedding film, December 2026"
           />
           <span class="field__error" aria-live="polite"></span>
@@ -448,7 +456,7 @@
         Our team will contact you to confirm studio availability and equipment setup.
       </p>
 
-      <form class="profile-form" id="studioBookForm" method="POST" action="{{ route('asd.studio-booking.submit') }}" novalidate>
+      <form class="profile-form" id="studioBookForm" method="POST" action="{{ route('asd.studio-booking.submit') }}" data-validate data-ajax="true" novalidate>
         @csrf
         <div class="field profile-form__full">
           <label for="studioName"
@@ -462,6 +470,8 @@
             required
             minlength="2"
             maxlength="100"
+            data-rules="required|min:2|max:100"
+            data-label="Name / Company Name"
             placeholder="Your name or company"
             data-autofocus
           />
@@ -479,7 +489,9 @@
             autocomplete="tel"
             inputmode="tel"
             required
-            maxlength="20"
+            maxlength="25"
+            data-rules="required|phone"
+            data-label="Phone Number"
             placeholder="+91 98765 43210"
           />
           <span class="field__error" aria-live="polite"></span>
@@ -497,6 +509,8 @@
             inputmode="email"
             required
             maxlength="120"
+            data-rules="required|email|max:120"
+            data-label="Email Address"
             placeholder="you@example.com"
           />
           <span class="field__error" aria-live="polite"></span>
@@ -516,6 +530,8 @@
               min="1"
               max="60"
               step="1"
+              data-rules="required|numeric|min:1|max:60"
+              data-label="Number of Days"
               value="1"
             />
             <span class="unit__label" aria-hidden="true">days</span>
@@ -534,6 +550,8 @@
             required
             minlength="2"
             maxlength="150"
+            data-rules="required|min:2|max:150"
+            data-label="Purpose of Rental"
             placeholder="e.g. Photography, Videography, Fashion shoot"
             autocomplete="off"
           />
@@ -544,7 +562,7 @@
           <label for="studioStart"
             >Booking Start Date <span aria-hidden="true">*</span></label
           >
-          <input type="date" id="studioStart" name="start" required />
+          <input type="date" id="studioStart" name="start" required data-rules="required|date|date_after_or_equal:today" data-label="Booking Start Date" />
           <span class="field__error" aria-live="polite"></span>
         </div>
 
@@ -552,7 +570,7 @@
           <label for="studioEnd"
             >Booking End Date <span aria-hidden="true">*</span></label
           >
-          <input type="date" id="studioEnd" name="end" required />
+          <input type="date" id="studioEnd" name="end" required data-rules="required|date|date_after_or_equal:#studioStart" data-label="Booking End Date" />
           <span class="field__error" aria-live="polite"></span>
         </div>
 

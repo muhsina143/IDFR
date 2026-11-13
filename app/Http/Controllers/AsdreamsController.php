@@ -108,9 +108,11 @@ class AsdreamsController extends Controller
      */
     public function team(): View
     {
-        $team = AsdreamsTeamMember::published()->get();
+        $founders = AsdreamsTeamMember::active()->founders()->ordered()->get();
+        $coFounders = AsdreamsTeamMember::active()->coFounders()->ordered()->get();
+        $teamMembers = AsdreamsTeamMember::active()->teamMembers()->ordered()->get();
 
-        return view('asdreams.team', compact('team'));
+        return view('asdreams.team', compact('founders', 'coFounders', 'teamMembers'));
     }
 
     /**
@@ -173,18 +175,9 @@ class AsdreamsController extends Controller
     /**
      * Handle Offer Enquiry submission.
      */
-    public function handleOfferEnquiry(Request $request): JsonResponse|RedirectResponse
+    public function handleOfferEnquiry(\App\Http\Requests\Asdreams\AsdreamsOfferEnquiryRequest $request): JsonResponse|RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|min:2|max:100',
-            'phone' => 'required|string|min:8|max:25',
-            'email' => 'nullable|email|max:120',
-            'date' => 'nullable|date',
-            'offer' => 'required_without_all:offer_id,banner_id|nullable|string',
-            'offer_id' => 'nullable|integer',
-            'banner_id' => 'nullable|integer',
-            'message' => 'nullable|string|max:1000',
-        ]);
+        $validated = $request->validated();
 
         $offer = null;
         if (! empty($validated['offer_id'])) {
@@ -237,16 +230,9 @@ class AsdreamsController extends Controller
     /**
      * Handle Contact Page enquiry submission.
      */
-    public function handleContactEnquiry(Request $request): JsonResponse|RedirectResponse
+    public function handleContactEnquiry(\App\Http\Requests\Asdreams\AsdreamsContactRequest $request): JsonResponse|RedirectResponse
     {
-        $validated = $request->validate([
-            'brand' => 'nullable|string|max:50',
-            'name' => 'required|string|min:2|max:100',
-            'phone' => 'required|string|min:8|max:25',
-            'email' => 'nullable|email|max:120',
-            'subject' => 'nullable|string|max:150',
-            'message' => 'nullable|string|max:1500',
-        ]);
+        $validated = $request->validated();
 
         $brand = $validated['brand'] ?? 'asdreams';
 
@@ -283,19 +269,9 @@ class AsdreamsController extends Controller
     /**
      * Handle shoot booking submission.
      */
-    public function handleShootBooking(Request $request): JsonResponse|RedirectResponse
+    public function handleShootBooking(\App\Http\Requests\Asdreams\AsdreamsShootBookingRequest $request): JsonResponse|RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|min:2|max:100',
-            'phone' => 'required|string|min:8|max:25',
-            'email' => 'required|email|max:120',
-            'shoot_date' => 'nullable|date',
-            'date' => 'nullable|date',
-            'subject' => 'nullable|string|max:150',
-            'shoot_type' => 'nullable|string|max:150',
-            'message' => 'nullable|string|max:1000',
-            'notes' => 'nullable|string|max:1000',
-        ]);
+        $validated = $request->validated();
 
         $message = 'Thank you for choosing ASDreamStudio! Your shoot booking request has been received. Our team will contact you within 24 hours to confirm details.';
 
@@ -348,31 +324,9 @@ class AsdreamsController extends Controller
     /**
      * Handle studio rental booking submission.
      */
-    public function handleStudioBooking(Request $request): JsonResponse|RedirectResponse
+    public function handleStudioBooking(\App\Http\Requests\Asdreams\AsdreamsStudioBookingRequest $request): JsonResponse|RedirectResponse
     {
-        if ($request->filled('production_type') && ! $request->has('purpose')) {
-            $request->merge(['purpose' => $request->input('production_type')]);
-        }
-        if ($request->filled('hire_date') && ! $request->has('start')) {
-            $request->merge(['start' => $request->input('hire_date')]);
-        }
-        if ($request->has('start') && ! $request->has('end')) {
-            $request->merge(['end' => $request->input('start')]);
-        }
-        if ($request->filled('duration') && ! $request->has('days')) {
-            $request->merge(['days' => 1]);
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|min:2|max:100',
-            'phone' => 'required|string|min:8|max:25',
-            'email' => 'required|email|max:120',
-            'days' => 'required|integer|min:1|max:60',
-            'purpose' => 'required|string|min:2|max:150',
-            'start' => 'required|date',
-            'end' => 'required|date|after_or_equal:start',
-            'notes' => 'nullable|string|max:1000',
-        ]);
+        $validated = $request->validated();
 
         $message = 'Your studio booking request has been submitted successfully! Our representative will contact you within 5 hours to confirm availability.';
 

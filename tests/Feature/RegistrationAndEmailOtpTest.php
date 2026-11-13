@@ -148,15 +148,15 @@ class RegistrationAndEmailOtpTest extends TestCase
         // 5c. Valid registration stores hashed password
         $responseOk = $this->postJson('/register', $this->validPayload([
             'email' => 'securepass@example.com',
-            'password' => 'superSecretPassword!',
-            'password_confirmation' => 'superSecretPassword!',
+            'password' => 'superSecretPassword1!',
+            'password_confirmation' => 'superSecretPassword1!',
         ]));
         $responseOk->assertStatus(201);
 
         $user = User::where('email', 'securepass@example.com')->first();
         $this->assertNotNull($user);
-        $this->assertNotEquals('superSecretPassword!', $user->password);
-        $this->assertTrue(Hash::check('superSecretPassword!', $user->password));
+        $this->assertNotEquals('superSecretPassword1!', $user->password);
+        $this->assertTrue(Hash::check('superSecretPassword1!', $user->password));
     }
 
     /**

@@ -112,7 +112,7 @@ class ProfileController extends Controller
     /**
      * Save the Model Profile.
      */
-    public function saveModel(Request $request): JsonResponse|RedirectResponse
+    public function saveModel(\App\Http\Requests\Profile\SaveModelProfileRequest $request): JsonResponse|RedirectResponse
     {
         if ($redirect = $this->authorizeRole('model')) {
             return $redirect;
@@ -120,35 +120,7 @@ class ProfileController extends Controller
 
         $user = Auth::guard('web')->user();
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:150'],
-            'gender' => ['required', 'string', 'in:male,female,other,Male,Female,Other'],
-            'place' => ['required', 'string', 'max:100'],
-            'age' => ['required', 'integer', 'min:14', 'max:70'],
-            'height' => ['required', 'numeric', 'min:100', 'max:230'],
-            'category' => ['required', 'string', 'in:experienced,new-face,Experienced,New Face'],
-            'experience' => ['required', 'numeric', 'min:0', 'max:50'],
-            'skills' => ['required', 'string', 'min:2'],
-            'modelType' => ['required', 'array', 'min:1'],
-            'modelType.*' => ['string'],
-            'phone' => ['nullable', 'string', 'max:25'],
-            'email' => ['nullable', 'email', 'max:150'],
-            'about' => ['nullable', 'string'],
-            'bust' => ['nullable', 'string', 'max:30'],
-            'waist' => ['nullable', 'string', 'max:30'],
-            'hips' => ['nullable', 'string', 'max:30'],
-            'shoe' => ['nullable', 'string', 'max:30'],
-            'outstation' => ['required', 'in:yes,no,Yes,No'],
-            'international' => ['required', 'in:yes,no,Yes,No'],
-            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-            'portfolio_image_1' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-            'portfolio_image_2' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-            'portfolio_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-        ], [
-            'modelType.required' => 'Please select at least one model type.',
-            'category.required' => 'Please select your experience category (Experienced or New Face).',
-            'place.required' => 'Please select your city or location.',
-        ]);
+        $validated = $request->validated();
 
         $existingModel = ModelProfile::where('user_id', $user->id)->first();
         if (! $existingModel) {
@@ -283,7 +255,7 @@ class ProfileController extends Controller
     /**
      * Save the Fashion Designer Profile.
      */
-    public function saveDesigner(Request $request): JsonResponse|RedirectResponse
+    public function saveDesigner(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'fashion-designer');
     }
@@ -379,8 +351,9 @@ class ProfileController extends Controller
     /**
      * Save a Creative Professional profile.
      */
-    public function handleSaveCreative(Request $request, string $category): JsonResponse|RedirectResponse
+    public function handleSaveCreative(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request, ?string $category = null): JsonResponse|RedirectResponse
     {
+        $category = $category ?: $request->resolveCategorySlug();
         if ($category === 'party-event-mnagement') {
             $category = 'party-event-management';
         }
@@ -401,84 +374,7 @@ class ProfileController extends Controller
         }
 
         $activeFields = $categoryModel->getActiveFormFields();
-
-        // Base validation rules
-        $rules = [
-            'name' => ['required', 'string', 'min:2', 'max:150'],
-            'profession' => ['nullable', 'string', 'max:150'],
-            'place' => ['required', 'string', 'max:100'],
-            'experience' => ['required', 'numeric', 'min:0', 'max:40'],
-            'phone' => ['required', 'string', 'max:25'],
-            'email' => ['required', 'email', 'max:150'],
-            'about' => ['required', 'string', 'min:20'],
-            'kit' => ['nullable', 'string'],
-            'equipment' => ['nullable', 'string'],
-            'software' => ['nullable', 'string'],
-            'materials' => ['nullable', 'string'],
-            'atelier' => ['nullable', 'string'],
-            'atelier_notes' => ['nullable', 'string'],
-            'service' => ['nullable', 'array'],
-            'service.*' => ['string'],
-            'outstation' => ['required', 'in:yes,no,Yes,No'],
-            'brand' => ['nullable', 'string', 'max:100'],
-            'profile_photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-            'portfolio_image_1' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-            'portfolio_image_2' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-            'portfolio_images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'],
-        ];
-
-        $customMessages = [
-            'service.required' => 'Please select at least one specialisation or service.',
-            'about.min' => 'Please write at least 20 characters in your bio.',
-            'place.required' => 'Please select your city or location.',
-        ];
-
-        $hasServiceField = false;
-        foreach ($activeFields as $field) {
-            $key = $field->field_key;
-            $isServiceField = ($key === 'service' || str_starts_with($key, 'service_') || str_contains($key, 'service'));
-
-            if ($isServiceField) {
-                $hasServiceField = true;
-                $options = $field->options;
-                if (is_string($options)) {
-                    $decoded = json_decode($options, true);
-                    $options = is_array($decoded) ? $decoded : [];
-                }
-                $hasConfiguredOptions = ! empty($options);
-
-                $serviceRule = ($field->is_required && $hasConfiguredOptions)
-                    ? ['required', 'array', 'min:1']
-                    : ['nullable', 'array'];
-
-                $rules['service'] = $serviceRule;
-                $rules['service.*'] = ['string'];
-
-                if ($key !== 'service') {
-                    $rules[$key] = ['nullable', 'array'];
-                    $rules["{$key}.*"] = ['string'];
-                }
-            } elseif (in_array($key, ['kit', 'equipment', 'software', 'materials', 'atelier'], true)) {
-                $rules[$key] = $field->is_required ? ['required', 'string'] : ['nullable', 'string'];
-            } elseif (! isset($rules[$key])) {
-                $rules[$key] = self::sanitizeValidationRules($field->validation_rules, (bool) $field->is_required, (string) $field->field_type);
-            }
-        }
-        if (! $hasServiceField) {
-            unset($rules['service'], $rules['service.*']);
-        }
-
-        // Merge category-specific service field into 'service' if needed
-        if (! $request->has('service')) {
-            foreach ($activeFields as $field) {
-                if (str_starts_with($field->field_key, 'service_') && $request->has($field->field_key)) {
-                    $request->merge(['service' => $request->input($field->field_key)]);
-                    break;
-                }
-            }
-        }
-
-        $validated = $request->validate($rules, $customMessages);
+        $validated = $request->validated();
 
         $existingProfile = CreativeProfessional::where('category', $category)
             ->where('user_id', $user->id)
@@ -672,7 +568,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('makeup-artist');
     }
 
-    public function saveMakeupArtist(Request $request): JsonResponse|RedirectResponse
+    public function saveMakeupArtist(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'makeup-artist');
     }
@@ -682,7 +578,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('hairstylist');
     }
 
-    public function saveHairstylist(Request $request): JsonResponse|RedirectResponse
+    public function saveHairstylist(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'hairstylist');
     }
@@ -692,7 +588,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('photographer');
     }
 
-    public function savePhotographer(Request $request): JsonResponse|RedirectResponse
+    public function savePhotographer(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'photographer');
     }
@@ -702,7 +598,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('videographer');
     }
 
-    public function saveVideographer(Request $request): JsonResponse|RedirectResponse
+    public function saveVideographer(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'videographer');
 
@@ -713,7 +609,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('drone-pilot');
     }
 
-    public function saveDronePilot(Request $request): JsonResponse|RedirectResponse
+    public function saveDronePilot(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'drone-pilot');
     }
@@ -723,7 +619,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('photo-video-editor');
     }
 
-    public function savePhotoVideoEditor(Request $request): JsonResponse|RedirectResponse
+    public function savePhotoVideoEditor(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'photo-video-editor');
     }
@@ -733,7 +629,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('jewellery-designer');
     }
 
-    public function saveJewelleryDesigner(Request $request): JsonResponse|RedirectResponse
+    public function saveJewelleryDesigner(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'jewellery-designer');
     }

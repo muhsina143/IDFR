@@ -281,7 +281,7 @@
                 $savedShoe = old('shoe', $meas['Shoe'] ?? ($meas['shoe'] ?? ''));
               @endphp
 
-              <form class="profile-form" id="profileForm" method="POST" action="{{ route('profile.model.save') }}" data-profile-kind="model" data-profile-label="model" enctype="multipart/form-data" novalidate>
+              <form class="profile-form" id="profileForm" method="POST" action="{{ route('profile.model.save') }}" data-profile-kind="model" data-profile-label="model" enctype="multipart/form-data" data-validate data-ajax="true" data-server-errors='@json($errors->getMessages())' novalidate>
                 @csrf
                 <input type="file" name="profile_photo" id="pfFile_profile_photo" class="visually-hidden" tabindex="-1" aria-hidden="true" style="display:none;" />
                 <input type="file" name="portfolio_image_1" id="pfFile_portfolio_1" class="visually-hidden" tabindex="-1" aria-hidden="true" style="display:none;" />
@@ -290,7 +290,7 @@
                   <label for="pfName">Name</label>
                   <input
                     type="text"
-                    id="pfName"
+                    id="pfName" maxlength="150" data-rules="required|min:2|max:150|name" data-label="Name"
                     name="name"
                     autocomplete="name"
                     required
@@ -305,10 +305,10 @@
                   <label for="pfPhone">Phone</label>
                   <input
                     type="tel"
-                    id="pfPhone"
+                    id="pfPhone" data-rules="phone" data-label="Phone"
                     name="phone"
                     autocomplete="tel"
-                    placeholder="+91 …"
+                    placeholder="+971 54 178 6786"
                     value="{{ old('phone', $model->phone ?? ($user->phone ?? '')) }}"
                   />
                   <span class="field__error" aria-live="polite"></span>
@@ -318,7 +318,7 @@
                   <label for="pfEmail">Email</label>
                   <input
                     type="email"
-                    id="pfEmail"
+                    id="pfEmail" data-rules="email|max:150" data-label="Email"
                     name="email"
                     autocomplete="email"
                     placeholder="you@example.com"
@@ -329,7 +329,7 @@
 
                 <div class="field">
                   <label for="pfGender">Gender</label>
-                  <select id="pfGender" name="gender" required>
+                  <select id="pfGender" name="gender" required data-rules="select" data-label="Gender">
                     <option value="">Select gender</option>
                     <option value="male" {{ $savedGender === 'male' ? 'selected' : '' }}>Male</option>
                     <option value="female" {{ $savedGender === 'female' ? 'selected' : '' }}>Female</option>
@@ -342,7 +342,7 @@
                   <div class="combo" id="placeCombo">
                     <input
                       type="text"
-                      id="pfPlace"
+                      id="pfPlace" data-rules="required|min:2|max:100" data-label="Place"
                       name="place"
                       role="combobox"
                       aria-autocomplete="list"
@@ -370,7 +370,7 @@
                   <div class="unit">
                     <input
                       type="number"
-                      id="pfAge"
+                      id="pfAge" data-rules="required|numeric|min:14|max:70" data-label="Age"
                       name="age"
                       inputmode="numeric"
                       required
@@ -390,7 +390,7 @@
                   <div class="unit">
                     <input
                       type="number"
-                      id="pfHeight"
+                      id="pfHeight" data-rules="required|numeric|min:100|max:230" data-label="Height"
                       name="height"
                       inputmode="numeric"
                       required
@@ -438,7 +438,7 @@
                   <div class="unit">
                     <input
                       type="number"
-                      id="pfExperience"
+                      id="pfExperience" data-rules="required|numeric|min:0|max:50" data-label="Experience"
                       name="experience"
                       inputmode="decimal"
                       required
@@ -480,7 +480,7 @@
 <div class="field profile-form__full">
                   <label for="pfSkills">Skills</label>
                   <textarea
-                    id="pfSkills"
+                    id="pfSkills" data-rules="required|min:2|max:500" data-label="Skills"
                     name="skills"
                     rows="3"
                     required
@@ -511,7 +511,7 @@
                       <label class="choice choice--check"
                         ><input
                           type="checkbox"
-                          name="modelType[]"
+                          name="modelType[]" data-rules="group_min:1" data-label="Model Type"
                           value="{{ $typeKey }}"
                           {{ in_array($typeKey, (array) $savedTypes, true) ? 'checked' : '' }}
                         /><span>{{ $typeTitle }}</span></label

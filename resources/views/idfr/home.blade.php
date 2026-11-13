@@ -497,7 +497,7 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
 
                   <img
 
-                    src="{{ asset('images/logo/idfr-mark.png') }}"
+                    src="{{ asset('images/logo/idfr-logo.png') }}"
 
                     alt="IDFR"
 
@@ -581,7 +581,7 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
 
                   <img
 
-                    src="{{ asset('images/asdreams/brands/athuls-academy-logo.png') }}"
+                    src="{{ asset('images/asdreams/brands/at1_new.png') }}"
 
                     alt=""
 
@@ -619,7 +619,7 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
 
                   class="btn btn--ghost btn--sm asd-brand__btn"
 
-                  href="https://athulsacademy.com/"
+                  href="{{ route('asd.contact', ['brand' => 'athuls']) }}"
 
                   target="_blank"
 
@@ -641,7 +641,7 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
 
 
 
-            <li class="asd-brand" data-reveal="up" data-delay="300">
+            <!-- <li class="asd-brand" data-reveal="up" data-delay="300">
 
               <img
 
@@ -739,8 +739,47 @@ We don't just teach fashion. We create opportunities, build talent and launch ca
 
               </div>
 
+            </li> -->
+<li class="asd-brand" data-reveal="up" data-delay="300">
+              <img
+                class="photo asd-brand__img"
+                src="{{ asset('images/asdreams/brands/lakme-academy.jpg') }}"
+                alt="Makeup artist applying eyeshadow"
+                width="900"
+                height="1300"
+                loading="lazy"
+              />
+              <div class="asd-brand__body">
+                <div class="asd-brand__logo asd-brand__logo--lg">
+                  <img
+                    src="{{ asset('images/asdreams/brands/lak1_new.png') }}"
+                    alt="Lakmé Academy, Vidyaranyapura"
+                    width="864"
+                    height="525"
+                    loading="lazy"
+                  />
+                </div>
+                <h3 class="visually-hidden">Lakmé Academy</h3>
+                <p class="asd-brand__tagline">
+                  <span>Makeup &bull; Hair</span> <span>Nails &bull; Skin</span>
+                </p>
+                <span class="asd-brand__rule" aria-hidden="true"></span>
+                <ul class="asd-brand__tags">
+                  <li>Professional Courses</li>
+                  <li>Workshops</li>
+                  <li>Practical Training</li>
+                  <li>Career Development</li>
+                </ul>
+                <a
+                  class="btn btn--ghost btn--sm asd-brand__btn"
+                  href="{{ route('asd.contact', ['brand' => 'lakme']) }}"
+                  aria-label="Explore Lakmé Academy"
+                  ><span>Explore</span
+                  ><svg class="icon" aria-hidden="true">
+                    <use href="#i-arrow-right" /></svg
+                ></a>
+              </div>
             </li>
-
           </ul>
 
         </div>

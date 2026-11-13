@@ -450,6 +450,10 @@ function logoSVG(logo, label) {
 
 function validateForm(form) {
 
+    if (window.IDFRValidator && form && form.hasAttribute('data-validate')) {
+        return window.IDFRValidator.validateForm(form);
+    }
+
     let firstInvalid = null;
 
     const fieldErrors = new Map();
@@ -513,6 +517,8 @@ function validateForm(form) {
 
 
 function clearFormErrors(form) {
+
+    if (window.IDFRValidator && form) window.IDFRValidator.clearForm(form);
 
     $$('.field', form).forEach((f) => f.classList.remove('has-error'));
 
@@ -1974,6 +1980,9 @@ function showEnquiry(body, person, isModel = null) {
                         }
                     }, 2800);
                 } else {
+                    if (window.IDFRValidator && data?.errors) {
+                        window.IDFRValidator.applyServerErrors(form, data.errors);
+                    }
                     if (formStatus) {
                         formStatus.style.display = 'block';
                         formStatus.style.background = 'rgba(239, 68, 68, 0.15)';
@@ -3414,6 +3423,8 @@ const Auth = (() => {
     function clearFormErrors(form) {
 
         if (!form) return;
+
+        if (window.IDFRValidator) window.IDFRValidator.clearForm(form);
 
         $$('.field.has-error', form).forEach((f) => f.classList.remove('has-error'));
 
@@ -7832,7 +7843,11 @@ function initAsdEnquiry() {
 
             } else {
 
-                toast(data.message || 'Could not submit enquiry. Please check the entered fields.');
+                if (window.IDFRValidator && data?.errors) {
+                    window.IDFRValidator.applyServerErrors(form, data.errors);
+                }
+
+                toast(data?.message || 'Could not submit enquiry. Please check the entered fields.');
 
             }
 
@@ -7840,11 +7855,7 @@ function initAsdEnquiry() {
 
             console.error('Enquiry submission error:', err);
 
-            toast('Enquiry submitted successfully! Our team will contact you shortly.');
-
-            form.reset();
-
-            clearFormErrors(form);
+            toast('Unable to submit enquiry right now. Please try again.');
 
         } finally {
 

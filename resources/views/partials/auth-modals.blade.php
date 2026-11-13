@@ -187,6 +187,8 @@
           id="panelLogin"
           role="tabpanel"
           aria-labelledby="tabLogin"
+          data-validate
+          data-ajax="true"
           novalidate
         >
           @if(session('error'))
@@ -207,6 +209,8 @@
               name="email"
               autocomplete="email"
               required
+              data-rules="required|email"
+              data-label="Email address"
               placeholder="you@example.com"
             />
             <span class="field__error" aria-live="polite"></span>
@@ -219,8 +223,9 @@
               name="password"
               autocomplete="current-password"
               required
-              minlength="6"
-              placeholder="Minimum 6 characters"
+              data-rules="required"
+              data-label="Password"
+              placeholder="Enter your password"
             />
             <span class="field__error" aria-live="polite"></span>
           </div>
@@ -265,6 +270,8 @@
           id="panelForgotPassword"
           role="tabpanel"
           aria-labelledby="forgotTitle"
+          data-validate
+          data-ajax="true"
           novalidate
           hidden
         >
@@ -285,6 +292,9 @@
               name="email"
               autocomplete="email"
               required
+              data-rules="required|email"
+              data-label="Email address"
+              data-error-target="#forgotEmailError"
               placeholder="you@example.com"
             />
             <span class="field__error" id="forgotEmailError" aria-live="polite"></span>
@@ -309,6 +319,8 @@
           id="panelRegister"
           role="tabpanel"
           aria-labelledby="tabRegister"
+          data-validate
+          data-ajax="true"
           novalidate
           hidden
         >
@@ -321,6 +333,9 @@
               autocomplete="name"
               required
               minlength="2"
+              maxlength="60"
+              data-rules="required|min:2|max:60|name"
+              data-label="Full name"
               placeholder="Your full name"
             />
             <span class="field__error" aria-live="polite"></span>
@@ -333,6 +348,8 @@
               name="email"
               autocomplete="email"
               required
+              data-rules="required|email"
+              data-label="Email address"
               placeholder="you@example.com"
             />
             <span class="field__error" aria-live="polite"></span>
@@ -345,14 +362,15 @@
               name="phone"
               autocomplete="tel"
               required
-              pattern="[0-9+\s\-]{8,20}"
+              data-rules="required|phone"
+              data-label="Phone number"
               placeholder="+91 98765 43210"
             />
             <span class="field__error" aria-live="polite"></span>
           </div>
           <div class="field">
             <label for="regRole">I am joining as</label>
-            <select id="regRole" name="role" required>
+            <select id="regRole" name="role" required data-rules="select" data-label="Role">
               <option value="">Select your role</option>
               <option value="model">Model</option>
               @php
@@ -390,8 +408,10 @@
               name="password"
               autocomplete="new-password"
               required
-              minlength="6"
-              placeholder="Minimum 6 characters"
+              minlength="8"
+              data-rules="required|password"
+              data-label="Password"
+              placeholder="Minimum 8 chars (letters & numbers)"
             />
             <span class="field__error" aria-live="polite"></span>
           </div>
@@ -403,14 +423,16 @@
               name="password_confirmation"
               autocomplete="new-password"
               required
-              minlength="6"
+              minlength="8"
               data-match="#regPassword"
+              data-rules="required|same:#regPassword"
+              data-label="Confirm password"
               placeholder="Re-enter your password"
             />
             <span class="field__error" aria-live="polite"></span>
           </div>
           <label class="check"
-            ><input type="checkbox" name="terms" id="regTerms" required /><span
+            ><input type="checkbox" name="terms" id="regTerms" required data-rules="checked" data-label="Terms &amp; Conditions" data-error-target="#regTermsError" data-message="You must accept the terms and privacy policy." /><span
               >I agree to the
               <a href="#terms" data-program="terms"
                 >Terms &amp; Conditions</a
@@ -435,6 +457,8 @@
           id="panelVerifyOtp"
           role="tabpanel"
           aria-labelledby="tabRegister"
+          data-validate
+          data-ajax="true"
           novalidate
           hidden
         >
@@ -457,6 +481,9 @@
               maxlength="6"
               placeholder="••••••"
               required
+              data-rules="required|digits:6"
+              data-label="Verification code"
+              data-error-target="#verifyOtpError"
               style="font-size: 22px; letter-spacing: 8px; text-align: center; font-family: monospace; font-weight: 600;"
             />
             <span class="field__error" id="verifyOtpError" aria-live="polite"></span>
@@ -543,7 +570,7 @@
             Our executive sponsorship desk will follow up promptly with presentation decks and package deliverables.
           </p>
 
-          <form class="profile-form" id="sponsorEnquiryForm" method="POST" action="{{ route('sponsorship.enquiry') }}" novalidate>
+          <form class="profile-form" id="sponsorEnquiryForm" method="POST" action="{{ route('sponsorship.enquiry') }}" data-validate data-ajax="true" novalidate>
             @csrf
             <input type="hidden" name="season_id" value="{{ $currentSeason?->id }}" />
 
@@ -559,6 +586,8 @@
                 required
                 minlength="2"
                 maxlength="120"
+                data-rules="required|min:2|max:120"
+                data-label="Name / Company Name"
                 placeholder="Your name or company"
                 data-autofocus
               />
@@ -577,6 +606,8 @@
                 inputmode="email"
                 required
                 maxlength="120"
+                data-rules="required|email|max:120"
+                data-label="Email Address"
                 placeholder="you@company.com"
               />
               <span class="field__error" aria-live="polite"></span>
@@ -594,6 +625,8 @@
                 inputmode="tel"
                 required
                 maxlength="25"
+                data-rules="required|phone"
+                data-label="Phone Number"
                 placeholder="+91 98765 43210"
               />
               <span class="field__error" aria-live="polite"></span>
@@ -603,7 +636,7 @@
               <label for="sponsorType"
                 >Type of Sponsorship <span aria-hidden="true">*</span></label
               >
-              <select id="sponsorType" name="sponsorship_type" required>
+              <select id="sponsorType" name="sponsorship_type" required data-rules="select" data-label="Type of Sponsorship">
                 <option value="" selected disabled>Select a sponsorship type</option>
                 @php
                   $availableSponsorTypes = $sponsorshipTypes ?? \App\Models\SponsorshipEnquiry::availableTypes();

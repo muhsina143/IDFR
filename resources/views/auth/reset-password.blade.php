@@ -137,7 +137,7 @@
           </div>
         @endif
 
-        <form method="POST" action="{{ route('password.update') }}" class="auth-form" novalidate>
+        <form method="POST" action="{{ route('password.update') }}" class="auth-form" data-validate data-server-errors='@json($errors->getMessages())' novalidate>
           @csrf
           <input type="hidden" name="token" value="{{ $token }}">
 
@@ -149,6 +149,8 @@
               name="email"
               value="{{ old('email', $email) }}"
               required
+              data-rules="required|email"
+              data-label="Email address"
               autocomplete="email"
               readonly
               style="opacity: 0.85; background: rgba(255, 255, 255, 0.04);"
@@ -162,9 +164,11 @@
               id="resetPassword"
               name="password"
               required
-              minlength="6"
+              minlength="8"
+              data-rules="required|password"
+              data-label="New Password"
               autocomplete="new-password"
-              placeholder="Minimum 6 characters"
+              placeholder="Minimum 8 chars (letters & numbers)"
               autofocus
             />
           </div>
@@ -176,7 +180,9 @@
               id="resetPasswordConfirmation"
               name="password_confirmation"
               required
-              minlength="6"
+              minlength="8"
+              data-rules="required|same:#resetPassword"
+              data-label="Confirm New Password"
               autocomplete="new-password"
               placeholder="Re-enter your new password"
             />

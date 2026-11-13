@@ -34,26 +34,9 @@ class AuthController extends Controller
      * Handle user registration with single-role selection and email OTP dispatch.
      * Safely updates unverified accounts on retry without creating duplicate rows.
      */
-    public function register(Request $request): JsonResponse|RedirectResponse
+    public function register(\App\Http\Requests\Auth\RegisterRequest $request): JsonResponse|RedirectResponse
     {
-        $allowedRoles = array_unique(array_merge(
-            UserRole::registrationValues(),
-            ProfessionalCategory::where('is_active', true)->pluck('slug')->toArray()
-        ));
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:150'],
-            'email' => ['required', 'string', 'email:rfc', 'max:255'],
-            'phone' => ['required', 'string', 'regex:/^[0-9+\s\-]{8,20}$/'],
-            'role' => ['required', 'string', Rule::in($allowedRoles)],
-            'model_type' => ['nullable', 'string', 'max:100'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'terms' => ['accepted'],
-        ], [
-            'role.in' => 'Please select a valid registration role.',
-            'terms.accepted' => 'Please accept the terms and conditions to continue.',
-            'phone.regex' => 'Please enter a valid phone number (8 to 20 digits).',
-        ]);
+        $validated = $request->validated();
 
         $email = strtolower(trim($validated['email']));
         $existingUser = User::where('email', $email)->first();
@@ -129,7 +112,7 @@ class AuthController extends Controller
     /**
      * Verify the 6-digit email OTP.
      */
-    public function verifyOtp(Request $request): JsonResponse|RedirectResponse
+    public function verifyOtp(\App\Http\Requests\Auth\VerifyOtpRequest $request): JsonResponse|RedirectResponse
     {
         $throttleKey = 'verify-otp:'.Str::transliterate(Str::lower($request->input('email', '')).'|'.$request->ip());
 
@@ -146,10 +129,7 @@ class AuthController extends Controller
 
         RateLimiter::hit($throttleKey, 60);
 
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'otp' => ['required', 'string', 'size:6'],
-        ]);
+        $validated = $request->validated();
 
         $user = User::where('email', strtolower(trim($validated['email'])))->first();
 
@@ -212,11 +192,9 @@ class AuthController extends Controller
     /**
      * Resend a fresh 6-digit email OTP respecting the 60-second cooldown.
      */
-    public function resendOtp(Request $request): JsonResponse
+    public function resendOtp(\App\Http\Requests\Auth\ResendOtpRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-        ]);
+        $validated = $request->validated();
 
         $user = User::where('email', strtolower(trim($validated['email'])))->first();
 
@@ -263,12 +241,9 @@ class AuthController extends Controller
      * Prevents login if the user has not verified their email,
      * and redirects admin accounts to the dedicated admin portal.
      */
-    public function login(Request $request): JsonResponse|RedirectResponse
+    public function login(\App\Http\Requests\Auth\LoginRequest $request): JsonResponse|RedirectResponse
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $credentials = $request->validated();
 
         $email = strtolower(trim($credentials['email']));
         $throttleKey = 'user-login:'.Str::transliterate($email.'|'.$request->ip());

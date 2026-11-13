@@ -385,8 +385,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::delete('gallery/categories/{category}', [AdminAsdreamsGalleryController::class, 'destroyCategory'])->name('gallery.categories.destroy');
 
             // 7. Team Management
+            Route::post('team/reorder', [AdminAsdreamsTeamController::class, 'reorder'])->name('team.reorder');
             Route::resource('team', AdminAsdreamsTeamController::class)->except(['show']);
-            Route::post('team/{team}/toggle-status', [AdminAsdreamsTeamController::class, 'toggleStatus'])->name('team.toggle-status');
+            Route::match(['post', 'patch'], 'team/{team}/toggle-status', [AdminAsdreamsTeamController::class, 'toggleStatus'])->name('team.toggle-status');
 
             // 8. Contact Page Management
             Route::get('contact', [AdminAsdreamsContactController::class, 'index'])->name('contact.index');

@@ -1,11 +1,11 @@
 @extends('layouts.master')
 
-@section('favicon', asset('images/logo/idfr-mark.png'))
+@section('favicon', asset('images/asdreams/asd-logo.png'))
 
 @section('preloader')
 <div class="preloader" aria-hidden="true">
   <div class="preloader__inner">
-    <img src="{{ asset('images/logo/idfr-mark.png') }}" alt="" width="474" height="220" />
+    @include('partials.splash-logo')
     <span class="preloader__line"></span>
     <span class="preloader__text">Fashion Show — {{ $currentSeason ? $currentSeason->title : 'Season 4' }}</span>
   </div>

@@ -17,12 +17,9 @@ class ProfileEnquiryController extends Controller
     /**
      * Send a 6-digit verification OTP to the visitor's email address.
      */
-    public function sendOtp(Request $request): JsonResponse
+    public function sendOtp(\App\Http\Requests\Idfr\ProfileEnquiryOtpRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'string', 'email:rfc', 'max:255'],
-            'name' => ['nullable', 'string', 'max:150'],
-        ]);
+        $validated = $request->validated();
 
         $email = strtolower(trim($validated['email']));
         $userName = trim($validated['name'] ?? 'Client') ?: 'Client';
@@ -83,12 +80,9 @@ class ProfileEnquiryController extends Controller
     /**
      * Verify the entered 6-digit OTP code against the latest stored hash.
      */
-    public function verifyOtp(Request $request): JsonResponse
+    public function verifyOtp(\App\Http\Requests\Idfr\ProfileEnquiryVerifyOtpRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'string', 'email:rfc', 'max:255'],
-            'otp' => ['required', 'string', 'size:6'],
-        ]);
+        $validated = $request->validated();
 
         $email = strtolower(trim($validated['email']));
         $otp = trim($validated['otp']);
@@ -142,21 +136,9 @@ class ProfileEnquiryController extends Controller
     /**
      * Submit and store the verified booking enquiry, dispatching admin & client notifications.
      */
-    public function store(Request $request): JsonResponse
+    public function store(\App\Http\Requests\Idfr\ProfileEnquiryRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:150'],
-            'email' => ['required', 'string', 'email:rfc', 'max:255'],
-            'phone' => ['required', 'string', 'min:7', 'max:25'],
-            'assignment_type' => ['required', 'string', Rule::in(ProfileEnquiry::ASSIGNMENT_TYPES)],
-            'preferred_date' => ['nullable', 'date'],
-            'location' => ['required', 'string', 'min:2', 'max:200'],
-            'brief' => ['required', 'string', 'min:10', 'max:3000'],
-            'professional_type' => ['required', 'string', 'in:model,creative_professional,designer'],
-            'professional_id' => ['nullable', 'integer'],
-            'professional_name' => ['required', 'string', 'max:150'],
-            'professional_category' => ['required', 'string', 'max:100'],
-        ]);
+        $validated = $request->validated();
 
         $email = strtolower(trim($validated['email']));
 
@@ -176,10 +158,12 @@ class ProfileEnquiryController extends Controller
             ], 422);
         }
 
+        $professionalId = $validated['professional_id'] ?? null;
+
         // Prevent duplicate submissions within 60 seconds
         $existingRecent = ProfileEnquiry::where('email', $email)
             ->where('professional_type', $validated['professional_type'])
-            ->where('professional_id', $validated['professional_id'])
+            ->where('professional_id', $professionalId)
             ->where('assignment_type', $validated['assignment_type'])
             ->where('created_at', '>=', now()->subSeconds(60))
             ->first();
@@ -195,7 +179,7 @@ class ProfileEnquiryController extends Controller
         // Store Enquiry
         $enquiry = ProfileEnquiry::create([
             'professional_type' => $validated['professional_type'],
-            'professional_id' => $validated['professional_id'],
+            'professional_id' => $professionalId,
             'professional_name' => trim($validated['professional_name']),
             'professional_category' => trim($validated['professional_category']),
             'name' => trim($validated['name']),

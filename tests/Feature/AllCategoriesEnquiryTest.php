@@ -58,7 +58,7 @@ class AllCategoriesEnquiryTest extends TestCase
             // Verify email OTP verification works
             $otpRes = $this->postJson(route('enquiry.send-otp'), [
                 'email' => $email,
-                'name' => 'Client '.$index,
+                'name' => 'Client Test',
             ]);
             $otpRes->assertOk();
             Mail::assertSent(EnquiryVerificationOtpMail::class);
@@ -70,7 +70,7 @@ class AllCategoriesEnquiryTest extends TestCase
             $submitRes = $this->withSession([
                 'verified_enquiry_email_'.md5($email) => now()->timestamp,
             ])->postJson(route('enquiry.submit'), [
-                'name' => 'Client for '.$item['category'],
+                'name' => 'Client for '.str_replace('&', 'and', $item['category']),
                 'email' => $email,
                 'phone' => '+91 911112222'.$index,
                 'assignment_type' => $item['assignment'],

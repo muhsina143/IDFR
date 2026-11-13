@@ -111,7 +111,7 @@ class SeasonModelRegistrationSystemTest extends TestCase
 
         $this->assertDatabaseHas('season_model_registrations', [
             'full_name' => 'Meera Nambiar',
-            'whatsapp_number' => '+91 98765 43210',
+            'whatsapp_number' => '+919876543210',
             'season_id' => $this->season8->id,
             'age' => 22,
             'gender' => 'female',
@@ -122,7 +122,7 @@ class SeasonModelRegistrationSystemTest extends TestCase
             'registration_status' => 'pending',
         ]);
 
-        $registration = SeasonModelRegistration::where('whatsapp_number', '+91 98765 43210')->first();
+        $registration = SeasonModelRegistration::where('whatsapp_number', '+919876543210')->first();
         $this->assertNotNull($registration);
         $this->assertStringStartsWith('REG-S8-', $registration->registration_number);
     }
@@ -159,7 +159,7 @@ class SeasonModelRegistrationSystemTest extends TestCase
             'category' => 'kids',
             'citizenship' => 'Indian',
             'parent_name' => 'Sunil Kumar',
-            'parent_contact' => '+91 91234 56780',
+            'parent_contact' => '+919123456780',
             'parent_relationship' => 'Father',
         ];
 
@@ -169,7 +169,7 @@ class SeasonModelRegistrationSystemTest extends TestCase
         $this->assertDatabaseHas('season_model_registrations', [
             'full_name' => 'Aarav Kumar',
             'parent_name' => 'Sunil Kumar',
-            'parent_contact' => '+91 91234 56780',
+            'parent_contact' => '+919123456780',
             'category' => 'kids',
         ]);
     }
@@ -193,7 +193,7 @@ class SeasonModelRegistrationSystemTest extends TestCase
         $second = $this->post(route('idfr.tickets.submit'), $payload);
         $second->assertSessionHas('info');
 
-        $count = SeasonModelRegistration::where('whatsapp_number', '+91 98989 89898')->count();
+        $count = SeasonModelRegistration::where('whatsapp_number', '+919898989898')->count();
         $this->assertEquals(1, $count);
     }
 

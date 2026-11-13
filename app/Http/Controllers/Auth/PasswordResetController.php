@@ -22,14 +22,9 @@ class PasswordResetController extends Controller
     /**
      * Send a password reset link to the given user email.
      */
-    public function sendResetLinkEmail(Request $request): JsonResponse|RedirectResponse
+    public function sendResetLinkEmail(\App\Http\Requests\Auth\ForgotPasswordRequest $request): JsonResponse|RedirectResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'string', 'email:rfc', 'max:255'],
-        ], [
-            'email.required' => 'Please enter your email address.',
-            'email.email' => 'Please enter a valid email address.',
-        ]);
+        $validated = $request->validated();
 
         $email = strtolower(trim($validated['email']));
         $throttleKey = 'forgot-password:'.Str::transliterate($email.'|'.$request->ip());
@@ -129,16 +124,9 @@ class PasswordResetController extends Controller
     /**
      * Reset the given user's password.
      */
-    public function resetPassword(Request $request): JsonResponse|RedirectResponse
+    public function resetPassword(\App\Http\Requests\Auth\ResetPasswordRequest $request): JsonResponse|RedirectResponse
     {
-        $request->validate([
-            'token' => ['required', 'string'],
-            'email' => ['required', 'string', 'email:rfc', 'max:255'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
-        ], [
-            'password.min' => 'The password must be at least 6 characters.',
-            'password.confirmed' => 'The password confirmation does not match.',
-        ]);
+        $request->validated();
 
         $credentials = $request->only('email', 'password', 'password_confirmation', 'token');
         $credentials['email'] = strtolower(trim($credentials['email']));

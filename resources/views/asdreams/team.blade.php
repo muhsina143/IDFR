@@ -32,35 +32,139 @@
             </p>
           </div>
 
-          <ul class="models__grid">
-            @forelse($team as $index => $member)
-              <li class="model-card" style="--i: {{ $index }}">
-                <figure class="model-card__media">
-                  <img
-                    src="{{ $member->photo_url }}"
-                    alt="{{ $member->name }}"
-                    width="600"
-                    height="800"
-                  />
-                </figure>
-                <h2 class="model-card__name">{{ $member->name }}</h2>
-                <p class="model-card__meta">{{ $member->designation }}</p>
-                @if($member->bio)
-                  <p class="model-card__bio" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.35rem;">{{ $member->bio }}</p>
-                @endif
-              </li>
-            @empty
-              <li class="model-card" style="--i: 0">
-                <h2 class="model-card__name">No Team Members</h2>
-                <p class="model-card__meta">Roster coming soon</p>
-              </li>
-            @endforelse
-          </ul>
+          @if($founders->isNotEmpty())
+            <div class="team-group team-group--founders" aria-labelledby="foundersTitle">
+              <div class="team-group__head" data-reveal="up">
+                <p class="section-label">THE VISIONARIES</p>
+                <h2 class="section-title team-group__title" id="foundersTitle">
+                  Our <em>Founders</em>
+                </h2>
+              </div>
 
-          <!-- <p class="team-page__note">
-            These names, roles and portraits are placeholders. They will be
-            replaced when the studio roster and photographs are ready.
-          </p> -->
+              <div class="team-leadership-grid team-leadership-grid--founders">
+                @foreach($founders as $index => $founder)
+                  <article class="team-leadership-card team-leadership-card--founder" data-reveal="up" data-delay="{{ ($index % 3) * 90 }}">
+                    <figure class="team-leadership-card__media">
+                      <img
+                        src="{{ $founder->photo_url }}"
+                        alt="{{ $founder->name }}"
+                        width="600"
+                        height="800"
+                      />
+                      <span class="team-leadership-card__badge">Founder</span>
+                    </figure>
+                    <div class="team-leadership-card__body">
+                      <h3 class="team-leadership-card__name">{{ $founder->name }}</h3>
+                      @if($founder->designation)
+                        <p class="team-leadership-card__designation">{{ $founder->designation }}</p>
+                      @endif
+                      @if($founder->bio)
+                        <blockquote class="team-leadership-card__bio">{{ $founder->bio }}</blockquote>
+                      @endif
+                      @if($founder->instagram || $founder->linkedin)
+                        <div class="team-leadership-card__socials">
+                          @if($founder->instagram)
+                            <a href="{{ $founder->instagram }}" target="_blank" rel="noopener" aria-label="{{ $founder->name }} Instagram">Instagram</a>
+                          @endif
+                          @if($founder->linkedin)
+                            <a href="{{ $founder->linkedin }}" target="_blank" rel="noopener" aria-label="{{ $founder->name }} LinkedIn">LinkedIn</a>
+                          @endif
+                        </div>
+                      @endif
+                    </div>
+                  </article>
+                @endforeach
+              </div>
+            </div>
+          @endif
+
+          @if($coFounders->isNotEmpty())
+            <div class="team-group team-group--cofounders" aria-labelledby="coFoundersTitle">
+              <div class="team-group__head" data-reveal="up">
+                <p class="section-label">Leadership</p>
+                <h2 class="section-title team-group__title" id="coFoundersTitle">
+                  Our <em>Co-Founders</em>
+                </h2>
+              </div>
+
+              <div class="team-leadership-grid team-leadership-grid--cofounders">
+                @foreach($coFounders as $index => $coFounder)
+                  <article class="team-leadership-card team-leadership-card--cofounder" data-reveal="up" data-delay="{{ ($index % 3) * 90 }}">
+                    <figure class="team-leadership-card__media">
+                      <img
+                        src="{{ $coFounder->photo_url }}"
+                        alt="{{ $coFounder->name }}"
+                        width="600"
+                        height="800"
+                      />
+                      <span class="team-leadership-card__badge team-leadership-card__badge--outline">Co-Founder</span>
+                    </figure>
+                    <div class="team-leadership-card__body">
+                      <h3 class="team-leadership-card__name">{{ $coFounder->name }}</h3>
+                      @if($coFounder->designation)
+                        <p class="team-leadership-card__designation">{{ $coFounder->designation }}</p>
+                      @endif
+                      @if($coFounder->bio)
+                        <blockquote class="team-leadership-card__bio">{{ $coFounder->bio }}</blockquote>
+                      @endif
+                      @if($coFounder->instagram || $coFounder->linkedin)
+                        <div class="team-leadership-card__socials">
+                          @if($coFounder->instagram)
+                            <a href="{{ $coFounder->instagram }}" target="_blank" rel="noopener" aria-label="{{ $coFounder->name }} Instagram">Instagram</a>
+                          @endif
+                          @if($coFounder->linkedin)
+                            <a href="{{ $coFounder->linkedin }}" target="_blank" rel="noopener" aria-label="{{ $coFounder->name }} LinkedIn">LinkedIn</a>
+                          @endif
+                        </div>
+                      @endif
+                    </div>
+                  </article>
+                @endforeach
+              </div>
+            </div>
+          @endif
+
+          @if($teamMembers->isNotEmpty())
+            <div class="team-group team-group--members" aria-labelledby="studioCrewTitle">
+              @if($founders->isNotEmpty() || $coFounders->isNotEmpty())
+                <div class="team-group__head team-group__head--left" data-reveal="up">
+                  <p class="section-label">The Crew</p>
+                  <h2 class="section-title team-group__title" id="studioCrewTitle">
+                    Creative <em>Team</em>
+                  </h2>
+                </div>
+              @endif
+
+              <ul class="models__grid">
+                @foreach($teamMembers as $index => $member)
+                  <li class="model-card" style="--i: {{ $index }}" data-reveal="up" data-delay="{{ ($index % 4) * 70 }}">
+                    <figure class="model-card__media">
+                      <img
+                        src="{{ $member->photo_url }}"
+                        alt="{{ $member->name }}"
+                        width="600"
+                        height="800"
+                      />
+                    </figure>
+                    <h2 class="model-card__name">{{ $member->name }}</h2>
+                    @if($member->designation)
+                      <p class="model-card__meta">{{ $member->designation }}</p>
+                    @endif
+                    @if($member->bio)
+                      <p class="model-card__bio">{{ $member->bio }}</p>
+                    @endif
+                  </li>
+                @endforeach
+              </ul>
+            </div>
+          @endif
+
+          @if($founders->isEmpty() && $coFounders->isEmpty() && $teamMembers->isEmpty())
+            <div class="team-page__empty" data-reveal="up">
+              <p class="team-page__empty-title">No Team Members Yet</p>
+              <p class="model-card__meta">Roster coming soon</p>
+            </div>
+          @endif
         </div>
       </section>
     </main>

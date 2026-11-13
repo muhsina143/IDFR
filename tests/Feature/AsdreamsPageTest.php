@@ -306,7 +306,7 @@ class AsdreamsPageTest extends TestCase
 
         $this->assertDatabaseHas('asdreams_offer_enquiries', [
             'name' => 'Aarav Patel',
-            'phone' => '+91 9845012345',
+            'phone' => '+919845012345',
             'email' => 'aarav@example.com',
         ]);
     }
@@ -331,7 +331,7 @@ class AsdreamsPageTest extends TestCase
 
         $this->assertDatabaseHas('asdreams_contact_enquiries', [
             'name' => 'Priya Nair',
-            'phone' => '+91 9745123456',
+            'phone' => '+919745123456',
             'subject' => 'Fashion Editorial Shoot',
         ]);
     }
@@ -358,7 +358,7 @@ class AsdreamsPageTest extends TestCase
         $this->assertDatabaseHas('asdreams_contact_enquiries', [
             'brand' => 'athuls',
             'name' => 'Kavya Suresh',
-            'phone' => '+91 9847111222',
+            'phone' => '+919847111222',
         ]);
 
         // 2. Lakme Academy enquiry
@@ -378,7 +378,7 @@ class AsdreamsPageTest extends TestCase
         $this->assertDatabaseHas('asdreams_contact_enquiries', [
             'brand' => 'lakme',
             'name' => 'Ananya Sharma',
-            'phone' => '+91 9847333444',
+            'phone' => '+919847333444',
         ]);
 
         // 3. Admin can view and filter contact enquiries by brand
@@ -418,7 +418,7 @@ class AsdreamsPageTest extends TestCase
 
         $this->assertDatabaseHas('asdreams_shoot_bookings', [
             'name' => 'Test Client',
-            'phone' => '+91 9876543210',
+            'phone' => '+919876543210',
         ]);
     }
 
@@ -726,7 +726,7 @@ class AsdreamsPageTest extends TestCase
             'offer_id' => $lakmeOffer->id,
             'offer_title' => 'The Lakmé Beauty Experience',
             'name' => 'Divya Nair',
-            'phone' => '+91 9811223344',
+            'phone' => '+919811223344',
         ]);
 
         // 3. Also test seeded offer submission (Golden Vows)
@@ -882,7 +882,7 @@ class AsdreamsPageTest extends TestCase
         $enquiryResponse->assertSessionHas('success');
 
         // Assert DB has enquiry linked to both banner and offer
-        $enquiry = AsdreamsOfferEnquiry::where('phone', '+91 9900112233')->first();
+        $enquiry = AsdreamsOfferEnquiry::where('phone', '+919900112233')->first();
         $this->assertNotNull($enquiry);
         $this->assertEquals($banner->id, $enquiry->banner_id);
         $this->assertEquals($offer->id, $enquiry->offer_id);
@@ -901,7 +901,7 @@ class AsdreamsPageTest extends TestCase
             ->get(route('admin.asdreams.enquiries.show-offer', $enquiry->id));
         $adminDetail->assertStatus(200);
         $adminDetail->assertSee('Aditya Roy', false);
-        $adminDetail->assertSee('+91 9900112233', false);
+        $adminDetail->assertSee('+919900112233', false);
         $adminDetail->assertSee('Commercial Brand Visuals', false);
         $adminDetail->assertSee('Atmospheric Lighting', false);
 

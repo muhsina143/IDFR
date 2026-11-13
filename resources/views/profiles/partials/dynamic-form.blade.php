@@ -12,6 +12,9 @@
     data-profile-kind="creative"
     data-profile-label="{{ $profileLabel }}"
     enctype="multipart/form-data"
+    data-validate
+    data-ajax="true"
+    data-server-errors='@json($errors->getMessages())'
     novalidate
 >
     @csrf
@@ -90,13 +93,19 @@
         @endphp
 
         @if($field->field_type === 'text')
+            @php
+                $textRules = array_filter([
+                    ($isRequired && $key !== 'profession') ? 'required' : null,
+                    $key === 'name' ? 'min:2|max:150|name' : ($key === 'place' ? 'min:2|max:100' : 'max:150'),
+                ]);
+            @endphp
             <div class="field {{ $widthClass }}">
                 <label for="{{ $fieldId }}">{{ $field->label }}</label>
                 <input
                     type="text"
                     id="{{ $fieldId }}"
                     name="{{ $key }}"
-                    @if($key === 'profession') readonly @endif
+                    @if($key === 'profession') readonly @else data-rules="{{ implode('|', $textRules) }}" data-label="{{ $field->label }}" @endif
                     @if($key === 'name') autocomplete="name" minlength="2" @endif
                     @if($isRequired && $key !== 'profession') required @endif
                     placeholder="{{ $field->placeholder }}"
@@ -121,6 +130,8 @@
                         autocomplete="off"
                         spellcheck="false"
                         @if($isRequired) required @endif
+                        data-rules="{{ $isRequired ? 'required|min:2|max:100' : 'min:2|max:100' }}"
+                        data-label="{{ $field->label }}"
                         placeholder="{{ $field->placeholder }}"
                         value="{{ $val }}"
                     />
@@ -149,6 +160,8 @@
                         min="0"
                         max="40"
                         step="0.5"
+                        data-rules="{{ $isRequired ? 'required|numeric|min:0|max:40' : 'numeric|min:0|max:40' }}"
+                        data-label="{{ $field->label }}"
                         placeholder="{{ $field->placeholder }}"
                         value="{{ $val }}"
                     />
@@ -169,6 +182,8 @@
                     name="{{ $key }}"
                     autocomplete="tel"
                     @if($isRequired) required @endif
+                    data-rules="{{ $isRequired ? 'required|phone' : 'phone' }}"
+                    data-label="{{ $field->label }}"
                     placeholder="{{ $field->placeholder }}"
                     value="{{ $val }}"
                 />
@@ -185,6 +200,8 @@
                     name="{{ $key }}"
                     autocomplete="email"
                     @if($isRequired) required @endif
+                    data-rules="{{ $isRequired ? 'required|email|max:150' : 'email|max:150' }}"
+                    data-label="{{ $field->label }}"
                     placeholder="{{ $field->placeholder }}"
                     value="{{ $val }}"
                 />
@@ -201,6 +218,8 @@
                     rows="{{ $key === 'about' ? 4 : 2 }}"
                     @if($key === 'about') minlength="20" @endif
                     @if($isRequired) required @endif
+                    data-rules="{{ $key === 'about' ? ($isRequired ? 'required|min:20' : 'min:20') : ($isRequired ? 'required|max:2000' : 'max:2000') }}"
+                    data-label="{{ $field->label }}"
                     placeholder="{{ $field->placeholder }}"
                 >{{ $val }}</textarea>
                 @if($field->help_text)<small class="field__note">{{ $field->help_text }}</small>@endif
@@ -230,13 +249,14 @@
                         <span>No service options have been configured for this profession yet. Options can be added in <strong>Admin Dashboard &rarr; Dynamic Forms &rarr; Fields</strong>.</span>
                     </div>
                 @else
-                    <div class="choices choices--grid">
+                    <div class="choices choices--grid pill-group">
                         @foreach($options as $optKey => $optLabel)
                             <label class="choice choice--check">
                                 <input
                                     type="checkbox"
                                     name="{{ $checkboxName }}"
                                     value="{{ $optKey }}"
+                                    @if($isRequired) data-rules="group_min:1" data-label="{{ $field->label }}" @endif
                                     {{ (in_array($optKey, $selectedArray, true) || in_array($optLabel, $selectedArray, true)) ? 'checked' : '' }}
                                 /><span>{{ $optLabel }}</span>
                             </label>
@@ -286,7 +306,7 @@
             @endphp
             <div class="field {{ $widthClass }}">
                 <label for="{{ $fieldId }}">{{ $field->label }}</label>
-                <select id="{{ $fieldId }}" name="{{ $key }}" @if($isRequired) required @endif>
+                <select id="{{ $fieldId }}" name="{{ $key }}" @if($isRequired) required data-rules="select" data-label="{{ $field->label }}" @endif>
                     <option value="">{{ $field->placeholder ?? 'Please select' }}</option>
                     @foreach($options as $optVal => $optLabel)
                         <option value="{{ $optVal }}" {{ (string)$val === (string)$optVal ? 'selected' : '' }}>
@@ -306,6 +326,8 @@
                     id="{{ $fieldId }}"
                     name="{{ $key }}"
                     @if($isRequired) required @endif
+                    data-rules="{{ $isRequired ? 'required|url' : 'url' }}"
+                    data-label="{{ $field->label }}"
                     placeholder="{{ $field->placeholder ?? 'https://...' }}"
                     value="{{ $val }}"
                 />
@@ -321,6 +343,8 @@
                     id="{{ $fieldId }}"
                     name="{{ $key }}"
                     accept="image/*"
+                    data-rules="{{ ($isRequired && empty($val)) ? 'required|file_types:jpg,jpeg,png,webp|file_max:5' : 'file_types:jpg,jpeg,png,webp|file_max:5' }}"
+                    data-label="{{ $field->label }}"
                     @if($isRequired && empty($val)) required @endif
                 />
                 @if(!empty($val) && is_string($val))

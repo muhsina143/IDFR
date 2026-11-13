@@ -18,26 +18,9 @@ class SponsorshipEnquiryController extends Controller
     /**
      * Store an inbound sponsorship enquiry from the public modal.
      */
-    public function store(Request $request): JsonResponse|RedirectResponse
+    public function store(\App\Http\Requests\Idfr\SponsorshipEnquiryRequest $request): JsonResponse|RedirectResponse
     {
-        // Support both "sponsorship_type" and legacy "type" field name
-        if (! $request->has('sponsorship_type') && $request->has('type')) {
-            $request->merge(['sponsorship_type' => $request->input('type')]);
-        }
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:150'],
-            'email' => ['required', 'email', 'max:150'],
-            'phone' => ['required', 'string', 'min:8', 'max:30'],
-            'sponsorship_type' => ['required', 'string', 'max:120'],
-            'message' => ['nullable', 'string', 'max:2000'],
-            'season_id' => ['nullable', 'integer', 'exists:seasons,id'],
-        ], [
-            'name.required' => 'Please provide your full name or company name.',
-            'email.required' => 'A valid email address is required so we can reach you.',
-            'phone.required' => 'Please provide a valid phone or WhatsApp number.',
-            'sponsorship_type.required' => 'Please select your preferred type of sponsorship.',
-        ]);
+        $validated = $request->validated();
 
         // Resolve season details (defaulting to the current active runway season)
         $season = null;

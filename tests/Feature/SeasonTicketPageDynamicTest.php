@@ -141,7 +141,7 @@ class SeasonTicketPageDynamicTest extends TestCase
         $response = $this->post(route('idfr.tickets.submit'), [
             'season_id' => $season8->id,
             'full_name' => 'Aarav Sharma',
-            'whatsapp_number' => '+91 98765 43210',
+            'whatsapp_number' => '+919876543210',
             'email' => 'aarav@example.com',
             'age' => 22,
             'gender' => 'male',
@@ -156,7 +156,7 @@ class SeasonTicketPageDynamicTest extends TestCase
         $this->assertDatabaseHas('season_model_registrations', [
             'season_id' => $season8->id,
             'full_name' => 'Aarav Sharma',
-            'whatsapp_number' => '+91 98765 43210',
+            'whatsapp_number' => '+919876543210',
             'payment_status' => 'unpaid',
             'registration_status' => 'pending',
         ]);

@@ -403,7 +403,8 @@ class CreativeProfessionalSpecialisationFieldsMigrationTest extends TestCase
         ];
 
         foreach ($categories as $slug => $data) {
-            $user = $this->makeUser($slug, ['name' => 'Talent for '.ucfirst($slug)]);
+            $displaySlug = ucwords(str_replace('-', ' ', $slug));
+            $user = $this->makeUser($slug, ['name' => 'Talent for '.$displaySlug]);
 
             // 1. GET page
             $url = "/profiles/{$slug}";
@@ -413,7 +414,7 @@ class CreativeProfessionalSpecialisationFieldsMigrationTest extends TestCase
 
             // 2. POST save profile
             $payload = [
-                'name' => 'Talent for '.ucfirst($slug),
+                'name' => 'Talent for '.$displaySlug,
                 'profession' => ucfirst(str_replace('-', ' ', $slug)),
                 'place' => 'Kochi',
                 'experience' => 5,

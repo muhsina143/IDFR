@@ -184,8 +184,8 @@ class ForgotPasswordTest extends TestCase
         $response = $this->post(route('password.update'), [
             'token' => $token,
             'email' => 'varun.roy@example.com',
-            'password' => 'new_pass_after_expiry',
-            'password_confirmation' => 'new_pass_after_expiry',
+            'password' => 'new_pass_after_expiry_1',
+            'password_confirmation' => 'new_pass_after_expiry_1',
         ]);
 
         $response->assertSessionHasErrors(['email']);

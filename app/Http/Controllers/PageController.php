@@ -335,15 +335,9 @@ class PageController extends Controller
     /**
      * Handle contact form submission and persist to database.
      */
-    public function handleContact(Request $request): JsonResponse|RedirectResponse
+    public function handleContact(\App\Http\Requests\Idfr\ContactRequest $request): JsonResponse|RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'min:2', 'max:150'],
-            'phone' => ['required', 'string', 'min:8', 'max:30'],
-            'email' => ['nullable', 'email', 'max:150'],
-            'subject' => ['nullable', 'string', 'max:200'],
-            'message' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $enquiry = ContactEnquiry::create([
             'name' => $validated['name'],
@@ -371,42 +365,9 @@ class PageController extends Controller
     /**
      * Handle model registration submission.
      */
-    public function handleTicketBooking(Request $request): JsonResponse|RedirectResponse
+    public function handleTicketBooking(\App\Http\Requests\Idfr\SeasonRegistrationRequest $request): JsonResponse|RedirectResponse
     {
-        // Backward-compatibility mapping if legacy form inputs are submitted
-        if ($request->filled('name') && ! $request->filled('full_name')) {
-            $request->merge(['full_name' => $request->input('name')]);
-        }
-        if ($request->filled('phone') && ! $request->filled('whatsapp_number')) {
-            $request->merge(['whatsapp_number' => $request->input('phone')]);
-        }
-        if (! $request->filled('age')) {
-            $request->merge(['age' => 21]);
-        }
-        if (! $request->filled('gender')) {
-            $request->merge(['gender' => 'female']);
-        }
-        if (! $request->filled('category')) {
-            $request->merge(['category' => 'adult']);
-        }
-        if (! $request->filled('citizenship')) {
-            $request->merge(['citizenship' => 'Indian']);
-        }
-
-        $validated = $request->validate([
-            'season_id' => ['required', 'exists:seasons,id'],
-            'full_name' => ['required', 'string', 'min:2', 'max:150'],
-            'whatsapp_number' => ['required', 'string', 'min:8', 'max:50'],
-            'email' => ['nullable', 'email', 'max:150'],
-            'age' => ['required', 'integer', 'min:3', 'max:99'],
-            'gender' => ['required', 'string', 'in:male,female,other,Male,Female,Other'],
-            'category' => ['required', 'string', 'in:adult,kids,Adult,Kids'],
-            'citizenship' => ['required', 'string', 'min:2', 'max:100'],
-            'parent_name' => ['nullable', 'string', 'max:150'],
-            'parent_contact' => ['nullable', 'string', 'max:50'],
-            'parent_relationship' => ['nullable', 'string', 'max:50'],
-            'additional_info' => ['nullable', 'string', 'max:2000'],
-        ]);
+        $validated = $request->validated();
 
         $season = Season::findOrFail($validated['season_id']);
 

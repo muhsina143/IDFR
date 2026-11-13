@@ -222,6 +222,9 @@
                 data-season-title="{{ $seasonTitle }}"
                 action="{{ route('idfr.tickets.submit') }}"
                 method="POST"
+                data-validate
+                data-ajax="true"
+                data-server-errors='@json($errors->getMessages())'
                 novalidate
               >
                 @csrf
@@ -241,6 +244,8 @@
                     required
                     minlength="2"
                     maxlength="150"
+                    data-rules="required|min:2|max:150|name"
+                    data-label="Full Name"
                     placeholder="e.g. Ananya Menon"
                     value="{{ old('full_name') }}"
                   />
@@ -259,11 +264,12 @@
                     autocomplete="tel"
                     inputmode="tel"
                     required
-                    pattern="\+?[0-9\s\-]{8,20}"
+                    data-rules="required|phone"
+                    data-label="WhatsApp Number"
                     placeholder="e.g. +91 98765 43210"
                     value="{{ old('whatsapp_number') }}"
                   />
-                  <span class="field__hint">Include country code (e.g. +91 for India). Official updates will be sent here.</span>
+                  <span class="field__hint">Include country code (e.g. +971, +91, +1). Official updates will be sent here.</span>
                   <span class="field__error" aria-live="polite"></span>
                 </div>
 
@@ -276,6 +282,8 @@
                     name="email"
                     autocomplete="email"
                     maxlength="150"
+                    data-rules="email|max:150"
+                    data-label="Email Address"
                     placeholder="you@example.com"
                     value="{{ old('email') }}"
                   />
@@ -295,6 +303,8 @@
                     min="3"
                     max="99"
                     step="1"
+                    data-rules="required|numeric|min:3|max:99"
+                    data-label="Age"
                     placeholder="e.g. 21"
                     value="{{ old('age', 21) }}"
                   />
@@ -307,7 +317,7 @@
                   <label for="regGender"
                     >Gender <span aria-hidden="true">*</span></label
                   >
-                  <select id="regGender" name="gender" required>
+                  <select id="regGender" name="gender" required data-rules="select" data-label="Gender">
                     <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Select gender</option>
                     <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>Female</option>
                     <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>Male</option>
@@ -321,7 +331,7 @@
                   <label for="regCategory"
                     >Registration Category <span aria-hidden="true">*</span></label
                   >
-                  <select id="regCategory" name="category" required>
+                  <select id="regCategory" name="category" required data-rules="select" data-label="Registration Category">
                     <option value="adult" {{ old('category') === 'adult' ? 'selected' : 'selected' }}>Adult (18+ Years)</option>
                     <option value="kids" {{ old('category') === 'kids' ? 'selected' : '' }}>Kids / Minor (&lt; 18 Years)</option>
                   </select>
@@ -339,6 +349,8 @@
                     name="citizenship"
                     required
                     maxlength="100"
+                    data-rules="required|min:2|max:100|alpha"
+                    data-label="Citizenship / Nationality"
                     placeholder="e.g. Indian"
                     value="{{ old('citizenship', 'Indian') }}"
                   />
@@ -363,6 +375,8 @@
                         id="regParentName"
                         name="parent_name"
                         maxlength="150"
+                        data-rules="required|min:2|max:150|name"
+                        data-label="Parent / Guardian Name"
                         placeholder="e.g. Rajesh Menon"
                         value="{{ old('parent_name') }}"
                       />
@@ -375,7 +389,9 @@
                         type="tel"
                         id="regParentContact"
                         name="parent_contact"
-                        maxlength="50"
+                        maxlength="25"
+                        data-rules="required|phone"
+                        data-label="Guardian Contact"
                         placeholder="e.g. +91 98765 11223"
                         value="{{ old('parent_contact') }}"
                       />
@@ -389,6 +405,8 @@
                         id="regParentRelationship"
                         name="parent_relationship"
                         maxlength="50"
+                        data-rules="max:50"
+                        data-label="Relationship to Participant"
                         placeholder="e.g. Mother, Father, Legal Guardian"
                         value="{{ old('parent_relationship') }}"
                       />
@@ -404,6 +422,8 @@
                     name="additional_info"
                     rows="3"
                     maxlength="2000"
+                    data-rules="max:2000"
+                    data-label="Additional Information"
                     placeholder="Include height, previous runway or shoot experience, Instagram handle, or portfolio links."
                   >{{ old('additional_info') }}</textarea>
                   <span class="field__hint">Optional details to assist our casting panel review.</span>
