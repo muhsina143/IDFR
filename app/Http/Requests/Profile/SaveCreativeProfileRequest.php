@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Requests\Concerns\CommonRules;
 use App\Models\ProfessionalCategory;
 use Database\Seeders\DynamicProfileFormSeeder;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -69,28 +70,43 @@ class SaveCreativeProfileRequest extends FormRequest
 
     /**
      * Prepare incoming creative profile data for validation.
+     *
+     * For checkbox_group service fields: alias service_* → service[] so the
+     * existing array validation path works unchanged.
+     * For select/dropdown service fields: leave the raw key as-is; the rules()
+     * method will validate it as a scalar string under its own key.
      */
     protected function prepareForValidation(): void
     {
         $this->normalizeInputs(phoneFields: ['phone'], emailFields: ['email']);
 
         $categoryModel = $this->categoryModel();
-        if ($categoryModel && ! $this->has('service')) {
-            foreach ($categoryModel->getActiveFormFields() as $field) {
-                $key = $field->field_key;
-                if (str_starts_with($key, 'service_') && $this->has($key)) {
-                    $this->merge(['service' => $this->input($key)]);
+        if (! $categoryModel || $this->has('service')) {
+            return;
+        }
 
-                    break;
-                }
+        foreach ($categoryModel->getActiveFormFields() as $field) {
+            $key = $field->field_key;
+            $isServiceKey = ($key === 'service' || str_starts_with($key, 'service_') || str_contains($key, 'service'));
+
+            if (! $isServiceKey || ! $this->has($key)) {
+                continue;
             }
+
+            // Only alias to service[] for checkbox_group (multi-select).
+            // select/dropdown fields stay under their own key.
+            if (in_array($field->field_type, ['checkbox_group', 'checkboxes'], true)) {
+                $this->merge(['service' => $this->input($key)]);
+            }
+
+            break;
         }
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -139,14 +155,27 @@ class SaveCreativeProfileRequest extends FormRequest
                 }
                 $hasConfiguredOptions = ! empty($options);
 
-                $rules['service'] = ($field->is_required && $hasConfiguredOptions)
-                    ? ['required', 'array', 'min:1']
-                    : ['nullable', 'array'];
-                $rules['service.*'] = ['string'];
+                // select/dropdown service fields submit a single scalar value.
+                // checkbox_group fields submit an array; keep the existing array path.
+                $isSelectType = in_array($field->field_type, ['select', 'dropdown'], true);
 
-                if ($key !== 'service') {
-                    $rules[$key] = ['nullable', 'array'];
-                    $rules["{$key}.*"] = ['string'];
+                if ($isSelectType) {
+                    // Validate under the field's own key (e.g. event_service) as a string.
+                    $rules[$key] = ($field->is_required && $hasConfiguredOptions)
+                        ? ['required', 'string']
+                        : ['nullable', 'string'];
+                    // Also allow it in $rules under 'service' as optional (prepareForValidation won't alias it).
+                    unset($rules['service'], $rules['service.*']);
+                } else {
+                    $rules['service'] = ($field->is_required && $hasConfiguredOptions)
+                        ? ['required', 'array', 'min:1']
+                        : ['nullable', 'array'];
+                    $rules['service.*'] = ['string'];
+
+                    if ($key !== 'service') {
+                        $rules[$key] = ['nullable', 'array'];
+                        $rules["{$key}.*"] = ['string'];
+                    }
                 }
             } elseif (in_array($key, ['kit', 'equipment', 'software', 'materials', 'atelier'], true)) {
                 $rules[$key] = $field->is_required ? ['required', 'string'] : ['nullable', 'string'];
@@ -175,8 +204,11 @@ class SaveCreativeProfileRequest extends FormRequest
     {
         return array_merge($this->sharedValidationMessages(), [
             'service.required' => 'Please select at least one specialisation or service.',
+            'service.array' => 'Please select your specialisations using the checkboxes.',
             'about.min' => 'Please write at least 20 characters in your bio.',
             'place.required' => 'Please select your city or location.',
+            // Covers select-type service fields like event_service
+            '*.required' => 'This field is required.',
         ]);
     }
 }

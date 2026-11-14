@@ -187,7 +187,7 @@
         id="brandsPopStatus"
       ></p>
     </section>
-    <section class="brands-pop__brands">
+    <!-- <section class="brands-pop__brands">
       <div class="brands-pop__head">
         <h2
           class="section-title brands-pop__title"
@@ -212,9 +212,12 @@
             $brandName = $brand->name;
             $brandTagline = $brand->tagline;
 
-            if ($brand->name === 'Indian Designer Fashion Runway' || $brand->name === 'IDFR') {
-              $brandName = 'IDFR';
-              $brandTagline = ($brand->tagline && $brand->tagline !== 'IDFR') ? $brand->tagline : 'Indian Designer Fashion Runway';
+            // IDFR card: show only the logo (no name text, no tagline text under it)
+            $isIdfr = in_array($brand->name, ['IDFR', 'Indian Designer Fashion Runway'], true);
+
+            if ($isIdfr) {
+              $brandName = 'IDFR';      // kept only for aria-label / alt text
+              $brandTagline = null;
             } elseif (str_contains($brand->name, 'Athul')) {
               $brandName = 'Athul’s Academy';
               $brandTagline = (!$brand->tagline || $brand->tagline === 'Modelling & Grooming') ? 'Fashion & Modelling' : $brand->tagline;
@@ -240,10 +243,84 @@
                     loading="lazy"
                   />
                 </span>
-                <span class="asd-brand__name brands-pop__name">{{ $brandName }}</span>
-                @if($brandTagline)
-                  <span class="brands-pop__tag">{{ $brandTagline }}</span>
-                @endif
+                @unless($isIdfr)
+                  <span class="asd-brand__name brands-pop__name">{{ $brandName }}</span>
+                  @if($brandTagline)
+                    <span class="brands-pop__tag">{{ $brandTagline }}</span>
+                  @endif
+                @endunless
+                <span class="brands-pop__go" aria-hidden="true">
+                  <svg class="icon"><use href="#i-arrow-right" /></svg>
+                </span>
+              </span>
+            </a>
+          </li>
+        @endforeach
+      </ul>
+    </section> -->
+    <section class="brands-pop__brands">
+      <div class="brands-pop__head">
+        <h2
+          class="section-title brands-pop__title"
+          id="brandsPopupTitle"
+          tabindex="-1"
+          data-autofocus
+        >
+          Our <em>Brands</em>
+        </h2>
+      </div>
+      <ul class="brands-pop__grid">
+        @foreach($asdBrands ?? [] as $brand)
+          @php
+            $variantClass = match($brand->css_variant) {
+              'wide' => 'brands-pop__logo--wide',
+              'tall' => 'brands-pop__logo--tall',
+              'lakme' => 'brands-pop__logo--lakme',
+              default => '',
+            };
+
+            // Format brand name and subtitle consistently across all four cards
+            $brandName = $brand->name;
+            $brandTagline = $brand->tagline;
+
+            // IDFR card: show only the logo (no name text, no tagline text under it)
+            $isIdfr = in_array($brand->name, ['IDFR', 'Indian Designer Fashion Runway'], true);
+
+            if ($isIdfr) {
+              $brandName = 'IDFR';      // kept only for aria-label / alt text
+              $brandTagline = null;
+              $variantClass = trim($variantClass . ' brands-pop__logo--idfr'); // logo-only card: logo fills the gap
+            } elseif (str_contains($brand->name, 'Athul')) {
+              $brandName = 'Athul’s Academy';
+              $brandTagline = (!$brand->tagline || $brand->tagline === 'Modelling & Grooming') ? 'Fashion & Modelling' : $brand->tagline;
+            } elseif ($brand->name === 'Beauty & Wellness' || $brand->name === 'Lakme' || $brand->name === 'Lakmé Academy') {
+              $brandName = 'Lakmé Academy';
+              $brandTagline = 'Beauty & Wellness';
+            }
+
+            $linkUrl = $brand->link_url;
+            if ($brandName === 'IDFR' && ($linkUrl === '/' || empty($linkUrl) || $linkUrl === '#')) {
+              $linkUrl = route('idfr.home');
+            } elseif ($brandName === 'ASDreamStudio' && ($linkUrl === '/asdreams#home' || empty($linkUrl) || $linkUrl === '#')) {
+              $linkUrl = route('asd.home');
+            }
+          @endphp
+          <li class="brands-pop__item">
+            <a class="brands-pop__link" href="{{ $linkUrl }}" aria-label="{{ $brandName }}">
+              <span class="brands-pop__logo {{ $variantClass }}">
+                <span class="brands-pop__mark">
+                  <img
+                    src="{{ $brand->logo_url }}"
+                    alt="{{ $brandName }}"
+                    loading="lazy"
+                  />
+                </span>
+                @unless($isIdfr)
+                  <span class="asd-brand__name brands-pop__name">{{ $brandName }}</span>
+                  @if($brandTagline)
+                    <span class="brands-pop__tag">{{ $brandTagline }}</span>
+                  @endif
+                @endunless
                 <span class="brands-pop__go" aria-hidden="true">
                   <svg class="icon"><use href="#i-arrow-right" /></svg>
                 </span>

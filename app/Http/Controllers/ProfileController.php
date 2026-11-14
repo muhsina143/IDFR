@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Profile\SaveCreativeProfileRequest;
+use App\Http\Requests\Profile\SaveModelProfileRequest;
 use App\Models\CreativeProfessional;
 use App\Models\Designer;
 use App\Models\ModelProfile;
@@ -112,7 +114,7 @@ class ProfileController extends Controller
     /**
      * Save the Model Profile.
      */
-    public function saveModel(\App\Http\Requests\Profile\SaveModelProfileRequest $request): JsonResponse|RedirectResponse
+    public function saveModel(SaveModelProfileRequest $request): JsonResponse|RedirectResponse
     {
         if ($redirect = $this->authorizeRole('model')) {
             return $redirect;
@@ -255,7 +257,7 @@ class ProfileController extends Controller
     /**
      * Save the Fashion Designer Profile.
      */
-    public function saveDesigner(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
+    public function saveDesigner(SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'fashion-designer');
     }
@@ -351,7 +353,7 @@ class ProfileController extends Controller
     /**
      * Save a Creative Professional profile.
      */
-    public function handleSaveCreative(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request, ?string $category = null): JsonResponse|RedirectResponse
+    public function handleSaveCreative(SaveCreativeProfileRequest $request, ?string $category = null): JsonResponse|RedirectResponse
     {
         $category = $category ?: $request->resolveCategorySlug();
         if ($category === 'party-event-mnagement') {
@@ -482,8 +484,16 @@ class ProfileController extends Controller
             ?? [];
         if (empty($submittedServices)) {
             foreach ($activeFields as $field) {
-                if (str_starts_with($field->field_key, 'service_') && $request->has($field->field_key)) {
-                    $submittedServices = (array) $request->input($field->field_key);
+                $isServiceKey = ($field->field_key === 'service'
+                    || str_starts_with($field->field_key, 'service_')
+                    || str_contains($field->field_key, 'service'));
+
+                if ($isServiceKey && $request->has($field->field_key)) {
+                    $raw = $validated[$field->field_key] ?? $request->input($field->field_key);
+                    // checkbox_group → already an array; select/dropdown → wrap scalar
+                    $submittedServices = in_array($field->field_type, ['select', 'dropdown'], true)
+                        ? array_filter([$raw])          // ["wedding"] — empty string filtered out
+                        : (array) $raw;
                     break;
                 }
             }
@@ -568,7 +578,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('makeup-artist');
     }
 
-    public function saveMakeupArtist(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
+    public function saveMakeupArtist(SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'makeup-artist');
     }
@@ -578,7 +588,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('hairstylist');
     }
 
-    public function saveHairstylist(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
+    public function saveHairstylist(SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'hairstylist');
     }
@@ -588,7 +598,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('photographer');
     }
 
-    public function savePhotographer(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
+    public function savePhotographer(SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'photographer');
     }
@@ -598,7 +608,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('videographer');
     }
 
-    public function saveVideographer(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
+    public function saveVideographer(SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'videographer');
 
@@ -609,7 +619,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('drone-pilot');
     }
 
-    public function saveDronePilot(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
+    public function saveDronePilot(SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'drone-pilot');
     }
@@ -619,7 +629,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('photo-video-editor');
     }
 
-    public function savePhotoVideoEditor(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
+    public function savePhotoVideoEditor(SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'photo-video-editor');
     }
@@ -629,7 +639,7 @@ class ProfileController extends Controller
         return $this->showCreativeProfile('jewellery-designer');
     }
 
-    public function saveJewelleryDesigner(\App\Http\Requests\Profile\SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
+    public function saveJewelleryDesigner(SaveCreativeProfileRequest $request): JsonResponse|RedirectResponse
     {
         return $this->handleSaveCreative($request, 'jewellery-designer');
     }

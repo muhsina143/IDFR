@@ -8241,12 +8241,10 @@ html.brands-pop-first .preloader__inner {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.75) 0%,
-    rgba(0, 0, 0, 0.15) 45%,
-    transparent 70%
-  );
+  background: linear-gradient(0deg,
+      rgba(0, 0, 0, 0.75) 0%,
+      rgba(0, 0, 0, 0.15) 45%,
+      transparent 70%);
   pointer-events: none;
   transition: background-color 0.4s ease;
 }
@@ -8607,7 +8605,7 @@ html.brands-pop-first .preloader__inner {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.team-group + .team-group {
+.team-group+.team-group {
   margin-top: clamp(3.25rem, 6vw, 5.25rem);
   padding-top: clamp(3rem, 5.5vw, 4.75rem);
   border-top: 1px solid rgba(229, 184, 61, 0.16);
@@ -8638,12 +8636,10 @@ html.brands-pop-first .preloader__inner {
   display: flex;
   flex-direction: column;
   min-width: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(229, 184, 61, 0.08) 0%,
-    rgba(14, 14, 14, 0.96) 52%,
-    #070707 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(229, 184, 61, 0.08) 0%,
+      rgba(14, 14, 14, 0.96) 52%,
+      #070707 100%);
   border: 1px solid var(--gold-a35);
   border-radius: 2px;
   overflow: hidden;
@@ -8785,6 +8781,7 @@ html.brands-pop-first .preloader__inner {
 }
 
 @media (max-width: 1024px) {
+
   .team-leadership-card--founder,
   .team-leadership-card--cofounder {
     flex: 0 1 calc((100% - 1.5rem) / 2);
@@ -8797,6 +8794,7 @@ html.brands-pop-first .preloader__inner {
 }
 
 @media (max-width: 600px) {
+
   .team-leadership-card--founder,
   .team-leadership-card--cofounder {
     flex: 1 1 100%;
@@ -11535,4 +11533,30 @@ button.is-loading,
     min-height: 36px;
     right: 0.4rem;
   }
+}
+
+/* IDFR card: logo only (no name/tagline). Logo ~150px wide, centred, like the HTML version */
+.brands-pop__logo--idfr {
+  justify-content: center !important;
+}
+
+.brands-pop__logo--idfr .brands-pop__mark {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  height: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: visible !important;
+}
+
+.brands-pop__logo--idfr .brands-pop__mark img {
+  width: 120px !important;
+  /* change this to make the logo bigger/smaller */
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  transform: none !important;
+  /* removes the old scale() that cut the logo */
 }

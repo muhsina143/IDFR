@@ -303,13 +303,17 @@
                     $options = is_array($decoded) ? $decoded : [];
                 }
                 $options = is_array($options) ? $options : [];
+                // Normalize $val: select fields expect a scalar; arrays (e.g. from old('service', [])) must be flattened.
+                $selectVal = is_array($val) ? (string) ($val[array_key_first($val)] ?? '') : (string) $val;
+                // Also flatten nested option arrays so {{ $optLabel }} is never an array.
+                $options = array_map(fn($v) => is_array($v) ? (string) ($v[array_key_first($v)] ?? '') : (string) $v, $options);
             @endphp
             <div class="field {{ $widthClass }}">
                 <label for="{{ $fieldId }}">{{ $field->label }}</label>
                 <select id="{{ $fieldId }}" name="{{ $key }}" @if($isRequired) required data-rules="select" data-label="{{ $field->label }}" @endif>
                     <option value="">{{ $field->placeholder ?? 'Please select' }}</option>
                     @foreach($options as $optVal => $optLabel)
-                        <option value="{{ $optVal }}" {{ (string)$val === (string)$optVal ? 'selected' : '' }}>
+                        <option value="{{ $optVal }}" {{ $selectVal === (string)$optVal ? 'selected' : '' }}>
                             {{ $optLabel }}
                         </option>
                     @endforeach

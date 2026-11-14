@@ -938,7 +938,7 @@
                 @foreach($roleProfile->custom_fields as $fKey => $fVal)
                   @php
                     $fieldObj = isset($formFields) ? $formFields->firstWhere('field_key', $fKey) : null;
-                    $fLabel = $fieldObj ? $fieldObj->field_label : ucwords(str_replace('_', ' ', $fKey));
+                    $fLabel = $fieldObj ? ($fieldObj->label ?? ucwords(str_replace('_', ' ', $fKey))) : ucwords(str_replace('_', ' ', $fKey));
                   @endphp
                   <div class="profile-data-box">
                     <div class="profile-data-box__label">{{ $fLabel }}</div>
